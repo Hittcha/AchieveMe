@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/userButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/googleg_standard_color_18" />
+
+        <TextView
+            android:id="@+id/welcome_message"
+            android:layout_width="match_parent"
+            android:layout_height="37dp"
+            android:text="Привет !"
+            android:textColor="@color/black"
+            android:textSize="15sp" />
+
+    </LinearLayout>
+
+    <HorizontalScrollView
+        android:id="@+id/horizontalScrollView"
+        android:layout_width="411dp"
+        android:layout_height="308dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.862"
+        tools:layout_editor_absoluteX="0dp">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+
+            <Button
+                android:id="@+id/buttonnext"
+                android:layout_width="191dp"
+                android:layout_height="299dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:text="Путь Гигадика" />
+
+            <Button
+                android:id="@+id/button5"
+                android:layout_width="191dp"
+                android:layout_height="299dp"
+                android:layout_marginRight="16dp"
+                android:layout_weight="1"
+                android:text="Button" />
+
+            <Button
+                android:id="@+id/button4"
+                android:layout_width="191dp"
+                android:layout_height="299dp"
+                android:layout_marginRight="16dp"
+                android:layout_weight="1"
+                android:text="Button" />
+        </LinearLayout>
+    </HorizontalScrollView>
+
+    <ScrollView
+        android:layout_width="279dp"
+        android:layout_height="176dp"
+        app:layout_constraintBottom_toTopOf="@+id/horizontalScrollView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.835">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Список лидеров" />
+
+            <Button
+                android:id="@+id/button6"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Button" />
+
+            <Button
+                android:id="@+id/button7"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Button" />
+
+            <Button
+                android:id="@+id/button8"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Button" />
+        </LinearLayout>
+    </ScrollView>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

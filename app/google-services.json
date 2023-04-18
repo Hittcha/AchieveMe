@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "752626893415",
+    "project_id": "bureau-e5d08",
+    "storage_bucket": "bureau-e5d08.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:752626893415:android:36b9f52744e3799bcdcac2",
+        "android_client_info": {
+          "package_name": "com.Bureau.Achivki"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "752626893415-arafuef15nb43kigsv9s1caktlfqhcah.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBAOWR7Hb_9J7HlCRSms586UBbyKBbSwFA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "752626893415-arafuef15nb43kigsv9s1caktlfqhcah.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
