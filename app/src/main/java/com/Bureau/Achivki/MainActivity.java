@@ -364,8 +364,11 @@ public class MainActivity extends AppCompatActivity {
                             paint.setShader(shader);
 
                             Canvas canvas = new Canvas(circleBitmap);
-                            canvas.drawCircle(bitmap.getWidth() / 2f, bitmap.getHeight() / 2f, bitmap.getWidth() / 2f, paint);
-
+                            if (bitmap.getHeight() > bitmap.getWidth()){
+                                canvas.drawCircle(bitmap.getWidth() / 2f, bitmap.getHeight() / 2f, bitmap.getWidth() / 2f, paint);
+                            }else{
+                                canvas.drawCircle(bitmap.getWidth() / 2f, bitmap.getHeight() / 2f, bitmap.getHeight() / 2f, paint);
+                            }
                             userButton.setImageBitmap(circleBitmap);
                         }
                     }).addOnFailureListener(new OnFailureListener() {
