@@ -10,5 +10,11 @@
 
     <string name="ach1_text">Bleeding Coco</string>
 
+    <!-- android_large___1 strings -->
+    <string name="ek_img_content">ExportKit Image</string>
+    <string name="__________________string"> </string>
+    <string name="____string"></string>
+    <string name="______string">:</string>
+
 
 </resources>

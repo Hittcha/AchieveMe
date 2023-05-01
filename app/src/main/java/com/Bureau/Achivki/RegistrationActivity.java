@@ -1,25 +1,40 @@
 package com.Bureau.Achivki;
 
+import static android.content.ContentValues.TAG;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import androidx.annotation.NonNull;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class RegistrationActivity extends AppCompatActivity {
 
@@ -48,7 +63,7 @@ public class RegistrationActivity extends AppCompatActivity {
         database = FirebaseDatabase.getInstance();
         ref = database.getReference();
 
-        DatabaseReference achivRef = database.getReference("Achiv");
+        DatabaseReference achivRef = database.getReference("Achievements");
 
         registrationButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -61,26 +76,57 @@ public class RegistrationActivity extends AppCompatActivity {
                                 @Override
                                 public void onComplete(@NonNull Task<AuthResult> task) {
                                     if (task.isSuccessful()){
-                                        ref.child("Users").child(mAuth.getCurrentUser().getUid()).child("email").setValue(emailEditText.getText().toString());
-                                        ref.child("Users").child(mAuth.getCurrentUser().getUid()).child("userName").setValue(userNameEditText.getText().toString());
+                                        FirebaseFirestore db = FirebaseFirestore.getInstance();
+                                        CollectionReference usersRef = db.collection("Users");
 
-                                        //ref.child("Users").child(mAuth.getCurrentUser().getUid()).child("Achiv");
+                                        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+                                        FirebaseUser currentUser = mAuth.getCurrentUser();
 
-                                        achivRef.addValueEventListener(new ValueEventListener() {
+                                        ArrayList<String> favorites = new ArrayList<>();
+
+                                        //TextView nameTextView = findViewById(R.id.nameTextView);
+                                        String name = userNameEditText.getText().toString();
+
+                                        //TextView emailTextView = findViewById(R.id.emailEditText);
+                                        String email = emailEditText.getText().toString();
+
+                                        String profileImageUrl = "/users/StandartUser/";
+
+                                        if (currentUser != null) {
+                                           // Map<String, Object> user = new HashMap<>();
+
+                                        }
+
+                                        db.collection("Achievements").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                                             @Override
-                                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                                for (DataSnapshot achivSnapshot : dataSnapshot.getChildren()) {
-                                                    String achivName = achivSnapshot.getKey().toString();
-                                                    ref.child("Users").child(mAuth.getCurrentUser().getUid()).child("Achiv").child(achivName).setValue(false);
+                                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                                Map<String, Object> user = new HashMap<>();
+                                                //user.put("achievements", categoriesArray);
+                                                if (task.isSuccessful()) {
+                                                    ArrayList<String> categories = new ArrayList<>();
+                                                    for (QueryDocumentSnapshot document : task.getResult()) {
+                                                        String category = document.getString("category");
+                                                        //categories.add(category);
+                                                        user.put(category, categories);
+                                                       // usersRef.document(currentUser.getUid()).set(user);
+                                                    }
+                                                    //String[] categoriesArray = categories.toArray(new String[categories.size()]);
+                                                    // categoriesArray теперь содержит список категорий в виде массива String
+                                                    // Можно передать его в каталог Users для документа пользователя
+                                                   // Map<String, Object> user = new HashMap<>();
+                                                    //user.put("achievements", categoriesArray);
+                                                    // usersRef.document(currentUser.getUid()).set(user);
+                                                } else {
+                                                    Log.d(TAG, "Error getting documents: ", task.getException());
                                                 }
-                                            }
-
-                                            @Override
-                                            public void onCancelled(@NonNull DatabaseError error) {
-
+                                                user.put("name", name);
+                                                user.put("email", email);
+                                                user.put("favorites", favorites);
+                                                user.put("score", 0L);
+                                                user.put("profileImageUrl", "/users/StandartUser/UserAvatar.png");
+                                                usersRef.document(currentUser.getUid()).set(user);
                                             }
                                         });
-
 
                                         Intent intent = new Intent(RegistrationActivity.this, MainActivity.class);
                                         startActivity(intent);

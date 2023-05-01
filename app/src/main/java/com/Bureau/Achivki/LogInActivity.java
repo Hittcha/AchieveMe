@@ -44,7 +44,6 @@ public class LogInActivity extends AppCompatActivity {
         loginButton = findViewById(R.id.login_button);
 
 
-
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -64,7 +63,7 @@ public class LogInActivity extends AppCompatActivity {
                                 @Override
                                 public void onComplete(@NonNull Task<AuthResult> task) {
                                     if (task.isSuccessful()){
-                                        ref.child("Users").child(mAuth.getCurrentUser().getUid()).child("email").setValue(emailEditText.getText().toString());
+                                        //ref.child("Users").child(mAuth.getCurrentUser().getUid()).child("email").setValue(emailEditText.getText().toString());
 
                                         Intent intent = new Intent(LogInActivity.this, MainActivity.class);
                                         startActivity(intent);
