@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,6 +42,14 @@ public class SuggestAchieveActivity extends AppCompatActivity {
     private TextView editTextTextAchieveDesc;
     private FirebaseAuth mAuth;
 
+    private ImageButton favoritesButton;
+
+    private ImageButton achieveListButton;
+
+    private ImageButton leaderListButton;
+
+    private ImageButton menuButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,6 +65,45 @@ public class SuggestAchieveActivity extends AppCompatActivity {
         FirebaseUser currentUser = mAuth.getCurrentUser();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference usersRef = db.collection("Users").document(currentUser.getUid());
+
+        leaderListButton = findViewById(R.id.imageButtonLeaderList);
+
+        menuButton = findViewById(R.id.imageButtonMenu);
+
+        favoritesButton = findViewById(R.id.imageButtonFavorites);
+
+        achieveListButton = findViewById(R.id.imageButtonAchieveList);
+
+        leaderListButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(SuggestAchieveActivity.this, LeaderBoardActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        menuButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(SuggestAchieveActivity.this, MainActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        achieveListButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(SuggestAchieveActivity.this, AchieveListActivity.class);
+                startActivity(intent);
+            }
+        });
+        favoritesButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(SuggestAchieveActivity.this, ListOfFavoritesActivity.class);
+                startActivity(intent);
+            }
+        });
 
 
        // Map<String, Object> userAchievements = new HashMap<>();

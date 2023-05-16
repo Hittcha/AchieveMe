@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MyAchievementsActivity">
+    android:background="#1D1D1D"
+    tools:context=".MyFriendsList">
 
     <LinearLayout
         android:id="@+id/group_2"
@@ -28,7 +29,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@null"
-            app:srcCompat="@drawable/menuiconclicked" />
+            app:srcCompat="@drawable/menuicon" />
 
         <ImageButton
             android:id="@+id/imageButtonAchieveList"
@@ -51,9 +52,14 @@
     <ScrollView
         android:layout_width="409dp"
         android:layout_height="0dp"
+        android:layout_marginStart="1dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="1dp"
+        android:layout_marginBottom="1dp"
         app:layout_constraintBottom_toTopOf="@+id/group_2"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:layout_editor_absoluteX="2dp">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
             android:id="@+id/scrollView"

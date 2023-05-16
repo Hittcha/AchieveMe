@@ -13,10 +13,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -31,6 +33,9 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class AchievementDescriptionActivity extends AppCompatActivity {
 
     private TextView descMessage;
@@ -40,6 +45,7 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
     private ImageButton delButton;
 
     private ImageButton backButton;
+    private ImageButton confirmButton;
 
     private DatabaseReference ref;
     private DatabaseReference ref1;
@@ -65,6 +71,8 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
 
         descMessage = findViewById(R.id.desc_message);
 
+        confirmButton = findViewById(R.id.confirmButton);
+
         Intent intent = getIntent();
         String achieveName = intent.getStringExtra("Achieve_key");
         String categoryName = intent.getStringExtra("Category_key");
@@ -72,6 +80,9 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
 
 
         boolean received = getIntent().getBooleanExtra("Is_Received", false);
+
+        boolean proof = getIntent().getBooleanExtra("ProofNeeded", false);
+
 
         if (received == true) {
             System.out.println("sdadasd " + received);
@@ -81,6 +92,11 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
             System.out.println("else");
             delButton.setVisibility(View.GONE); // скрываем кнопку
             addButton.setVisibility(View.VISIBLE); // отображаем кнопку
+        }
+
+        if (proof == true) {
+            System.out.println("Proooooooooooooooooooooof");
+            showProofButton();
         }
 
 
@@ -94,7 +110,7 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         CollectionReference achievementsRef = db.collection("Achievements");
 
-        achievementsRef.whereEqualTo("category", categoryName).get()
+        achievementsRef.whereEqualTo("name", achieveName).get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -119,8 +135,73 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
             }
         });
 
+        confirmButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(AchievementDescriptionActivity.this, AchieveConfirmation.class);
+                intent.putExtra("Achieve_key", achieveName);
+                startActivity(intent);
+            }
+        });
+
 
         addButton.setOnClickListener(new View.OnClickListener() {
+                                         @Override
+                                         public void onClick(View v) {
+
+                                             if (proof == true) {
+                                                 System.out.println("Proooooooooooooooooooooof");
+                                                 showProofButton();
+
+                                             }else {
+
+
+                                                 mAuth = FirebaseAuth.getInstance();
+                                                 FirebaseUser currentUser = mAuth.getCurrentUser();
+                                                 FirebaseFirestore db = FirebaseFirestore.getInstance();
+                                                 DocumentReference usersRef = db.collection("Users").document(currentUser.getUid());
+
+
+                                                 // Map<String, Object> userAchievements = new HashMap<>();
+
+                                                 usersRef.get().addOnSuccessListener(documentSnapshot -> {
+                                                     Map<String, Object> userAchievements = documentSnapshot.getData();
+                                                     if (userAchievements == null) {
+                                                         // Если пользователь не существует, создаем новый документ
+                                                         userAchievements = new HashMap<>();
+                                                         userAchievements.put("userAchievements", new HashMap<>());
+                                                     } else if (!userAchievements.containsKey("userAchievements")) {
+                                                         // Если Map achieve не существует, создаем его
+                                                         userAchievements.put("userAchievements", new HashMap<>());
+                                                     }
+
+                                                     // Получаем текущий Map achieve из документа пользователя
+                                                     Map<String, Object> achieveMap = (Map<String, Object>) userAchievements.get("userAchievements");
+
+                                                     // Создаем новый Map с информацией о новом достижении
+                                                     Map<String, Object> newAchieveMap = new HashMap<>();
+                                                     newAchieveMap.put("name", achieveName);
+                                                     newAchieveMap.put("confirmed", true);
+                                                     newAchieveMap.put("proofsended", true);
+
+                                                     // Добавляем новое достижение в Map achieve пользователя
+                                                     achieveMap.put(achieveName, newAchieveMap);
+
+                                                     // Сохраняем обновленный Map achieve в Firestore
+                                                     userAchievements.put("userAchievements", achieveMap);
+                                                     usersRef.set(userAchievements);
+                                                     addScore(userName);
+                                                     Toast.makeText(AchievementDescriptionActivity.this, "Достижение добавлено", Toast.LENGTH_SHORT).show();
+                                                 });
+
+                                                 showButtonDel();
+                                             }
+                                         }
+                                     });
+
+
+
+        /*addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -153,10 +234,42 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
                 });
                 showButtonDel();
             }
+        });*/
+
+        delButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                mAuth = FirebaseAuth.getInstance();
+                FirebaseUser currentUser = mAuth.getCurrentUser();
+                FirebaseFirestore db = FirebaseFirestore.getInstance();
+                DocumentReference usersRef = db.collection("Users").document(currentUser.getUid());
+
+
+                // Map<String, Object> userAchievements = new HashMap<>();
+
+                usersRef.get().addOnSuccessListener(documentSnapshot -> {
+                    Map<String, Object> userAchievements = documentSnapshot.getData();
+
+                    Map<String, Object> achieveMap = (Map<String, Object>) userAchievements.get("userAchievements");
+
+                    achieveMap.remove(achieveName);
+
+                    userAchievements.put("userAchievements", achieveMap);
+
+                    usersRef.set(userAchievements);
+
+                    delScore(userName);
+
+                    Toast.makeText(AchievementDescriptionActivity.this, "Достижение удалено", Toast.LENGTH_SHORT).show();
+                });
+                showButtonAdd();
+            }
         });
 
 
-        delButton.setOnClickListener(new View.OnClickListener() {
+
+        /*delButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -191,7 +304,8 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
 
                 showButtonAdd();
             }
-        });
+        });*/
+
         addFavorites.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -408,5 +522,10 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
                     }
                 });
 
+    }
+    public void showProofButton(){
+        addButton.setVisibility(View.GONE); // скрываем кнопку
+        confirmButton.setVisibility(View.VISIBLE); // отображаем кнопку
+        delButton.setVisibility(View.GONE);
     }
 }

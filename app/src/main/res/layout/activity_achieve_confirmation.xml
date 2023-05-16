@@ -5,7 +5,7 @@
     android:background="#1D1D1D"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SuggestAchieveActivity">
+    tools:context=".AchieveConfirmation">
 
     <LinearLayout
         android:id="@+id/group_2"
@@ -49,58 +49,54 @@
 
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/Description"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@color/white"
-        android:text="Тут вы можете придумать свое достижение"
-        app:layout_constraintBottom_toBottomOf="parent"
+    <ImageView
+        android:id="@+id/image_view"
+        android:layout_width="247dp"
+        android:layout_height="315dp"
+        android:layout_marginTop="16dp"
+        android:background="#1D1D1D"
+        android:cropToPadding="true"
+        android:scaleType="centerCrop"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.112" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/suggestButton"
-        android:layout_width="wrap_content"
+        android:id="@+id/button_choose_image"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="312dp"
-        android:text="Сохранить"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="228dp"
+        android:text="Выбрать изображение"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextTextAchieveName" />
+        app:layout_constraintTop_toBottomOf="@+id/image_view"
+        app:layout_constraintVertical_bias="0.811" />
 
-    <EditText
-        android:id="@+id/editTextTextAchieveName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@color/white"
-        android:textColorHint="@color/white"
-        android:layout_marginTop="60dp"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:hint="Название достижения"
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="220dp"
+        android:layout_height="206dp"
+        app:layout_constraintBottom_toTopOf="@+id/button_choose_image"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/Description" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.735"
+        tools:srcCompat="@tools:sample/avatars" />
 
-    <EditText
-        android:id="@+id/editTextTextAchieveDesc"
+    <Button
+        android:id="@+id/button2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="Описание"
-        android:inputType="textPersonName"
-        android:textColor="@color/white"
-        android:textColorHighlight="#FFFFFF"
-        android:textColorHint="@color/white"
-        android:textColorLink="#FDFDFD"
-        app:layout_constraintBottom_toTopOf="@+id/suggestButton"
+        android:text="Добавить к себе на страницу"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/group_2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextTextAchieveName"
-        app:layout_constraintVertical_bias="0.19" />
+        app:layout_constraintTop_toBottomOf="@+id/button_choose_image" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

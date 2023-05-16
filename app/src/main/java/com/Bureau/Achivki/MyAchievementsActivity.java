@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -47,6 +48,8 @@ public class MyAchievementsActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,6 +79,46 @@ public class MyAchievementsActivity extends AppCompatActivity {
                     createAchieveButton(name, desc);
                 }
                 // Здесь можно продолжить работу с полученным Map достижений
+            }
+        });
+
+        leaderListButton = findViewById(R.id.imageButtonLeaderList);
+
+        menuButton = findViewById(R.id.imageButtonMenu);
+
+        favoritesButton = findViewById(R.id.imageButtonFavorites);
+
+        achieveListButton = findViewById(R.id.imageButtonAchieveList);
+
+        leaderListButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MyAchievementsActivity.this, LeaderBoardActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        menuButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MyAchievementsActivity.this, MainActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        achieveListButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MyAchievementsActivity.this, AchieveListActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        favoritesButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MyAchievementsActivity.this, ListOfFavoritesActivity.class);
+                startActivity(intent);
             }
         });
 

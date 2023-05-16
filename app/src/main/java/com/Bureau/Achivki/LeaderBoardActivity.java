@@ -15,6 +15,7 @@ import android.graphics.Shader;
 import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -44,9 +45,11 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
+import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -79,6 +82,8 @@ public class LeaderBoardActivity extends AppCompatActivity {
     private List<ImageButton> imageUserButtons = new ArrayList<>();
 
     private List<String> imageRefArray = new ArrayList<>();
+
+    private String profile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,6 +128,10 @@ public class LeaderBoardActivity extends AppCompatActivity {
         StorageReference imageRef = storageRef.child("users").child(mAuth.getCurrentUser().getUid()).child("UserAvatar");
 
         userAvatarView = findViewById(R.id.userAvatar);
+
+
+
+
         db = FirebaseFirestore.getInstance();
         //FirebaseAuth mAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = mAuth.getCurrentUser();
@@ -138,6 +147,10 @@ public class LeaderBoardActivity extends AppCompatActivity {
                     System.out.println("score " + userScore);
 
                     profileImageUrl = documentSnapshot.getString("profileImageUrl");
+
+                    profile = documentSnapshot.getId();
+
+                    System.out.println("profile " + profile);
 
                     userNameText.setText(userName);
 
@@ -169,32 +182,32 @@ public class LeaderBoardActivity extends AppCompatActivity {
                     }
                     if (count == 0) {
                         //String s = s.setText
-                        setImage(leader.getProfileImageUrl(), count);
+                        setImage(leader.getProfileImageUrl(), count, leader.getToken());
                         textviewListOfLeaders.get(count).setText(leader.getName());
                         textviewListOfScore.get(count).setText("Счет: " + String.valueOf(leader.getScore()));
 
                     } else if (count == 1) {
-                        setImage(leader.getProfileImageUrl(), count);
+                        setImage(leader.getProfileImageUrl(), count, leader.getToken());
                         textviewListOfLeaders.get(count).setText(leader.getName());
                         textviewListOfScore.get(count).setText(String.valueOf("Счет: " +leader.getScore()));
                     } else if (count == 2) {
-                        setImage(leader.getProfileImageUrl(), count);
+                        setImage(leader.getProfileImageUrl(), count, leader.getToken());
                         textviewListOfLeaders.get(count).setText(leader.getName());
                         textviewListOfScore.get(count).setText(String.valueOf("Счет: " +leader.getScore()));
                     }else if (count == 3) {
-                        setImage(leader.getProfileImageUrl(), count);
+                        setImage(leader.getProfileImageUrl(), count, leader.getToken());
                         textviewListOfLeaders.get(count).setText(leader.getName());
                         textviewListOfScore.get(count).setText(String.valueOf("Счет: " +leader.getScore()));
                     } else if (count == 4) {
-                        setImage(leader.getProfileImageUrl(), count);
+                        setImage(leader.getProfileImageUrl(), count, leader.getToken());
                         textviewListOfLeaders.get(count).setText(leader.getName());
                         textviewListOfScore.get(count).setText(String.valueOf("Счет: " +leader.getScore()));
                     }else if (count == 5) {
-                        setImage(leader.getProfileImageUrl(), count);
+                        setImage(leader.getProfileImageUrl(), count, leader.getToken());
                         textviewListOfLeaders.get(count).setText(leader.getName());
                         textviewListOfScore.get(count).setText(String.valueOf("Счет: " +leader.getScore()));
                     } else if (count == 6) {
-                        setImage(leader.getProfileImageUrl(), count);
+                        setImage(leader.getProfileImageUrl(), count, leader.getToken());
                         textviewListOfLeaders.get(count).setText(leader.getName());
                         textviewListOfScore.get(count).setText(String.valueOf("Счет: " +leader.getScore()));
                     }
@@ -282,12 +295,9 @@ public class LeaderBoardActivity extends AppCompatActivity {
         });
 
     }
-    public void setImage(String a, int count){
+    public void setImage(String a, int count, String token){
 
         StorageReference storageRef = FirebaseStorage.getInstance().getReference();
-        //StorageReference imageRef1 = FirebaseStorage.getInstance().getReferenceFromUrl(a);
-
-        //StorageReference imageRef1 = storageRef.child(a + "/UserAvatar");
 
         StorageReference imageRef1 = storageRef.child(a);
 
@@ -299,6 +309,15 @@ public class LeaderBoardActivity extends AppCompatActivity {
             public void onSuccess(StorageMetadata storageMetadata) {
                 String mimeType = storageMetadata.getName();
                 System.out.println("mimeType " + mimeType);
+
+                imageUserButtons.get(count).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(LeaderBoardActivity.this, OtherUserActivity.class);
+                        intent.putExtra("User_token", token);
+                        startActivity(intent);
+                    }
+                });
                 if (mimeType != null && mimeType.startsWith("User")) {
                     imageRef1.getBytes(Long.MAX_VALUE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
                         @Override
