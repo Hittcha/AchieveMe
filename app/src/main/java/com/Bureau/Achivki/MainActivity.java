@@ -59,12 +59,10 @@ public class MainActivity extends AppCompatActivity {
     private String userName;
     private String profileImageUrl;
 
-    private ImageButton leaderBoardButton;
+    private ImageButton ButtonSeasonAchieve;
     private TextView welcomeMessage;
-    private FirebaseDatabase database;
-    private DatabaseReference ref;
-    private DatabaseReference refFavorites;
-    private FirebaseAuth mAuth;
+    private TextView userScoreText;
+    private Long userScore;
     private FirebaseFirestore db;
 
     private ImageButton userbutton;
@@ -76,8 +74,6 @@ public class MainActivity extends AppCompatActivity {
     private ImageButton leaderListButton;
 
     private ImageButton menuButton;
-
-    //private String userName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,12 +91,12 @@ public class MainActivity extends AppCompatActivity {
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = mAuth.getCurrentUser();
 
-        System.out.println("11111111111111111111111111111111111111111111111111111111 " + currentUser.getUid());
-
         DocumentReference mAuthDocRef = db.collection("Users").document(currentUser.getUid());
-        //DocumentReference mAuthDocRef = db.collection("Users").document(mAuth.getCurrentUser().getUid());
-        //DocumentReference mAuthDocRef = db.collection("Users").document("a2WJ8QK47IQ8GsUiguk5gCaDtjF3");
         welcomeMessage = findViewById(R.id.welcome_message);
+
+        userScoreText = findViewById(R.id.userScore);
+
+        //User user = new User();
 
         mAuthDocRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
@@ -108,12 +104,21 @@ public class MainActivity extends AppCompatActivity {
                 if (documentSnapshot.exists()) {
                     userName = documentSnapshot.getString("name");
 
+                    userScore = documentSnapshot.getLong("score");
+
                     profileImageUrl = documentSnapshot.getString("profileImageUrl");
 
-                    welcomeMessage.setText("Привет " + userName);
+                    welcomeMessage.setText(userName);
+
+                    userScoreText.setText("Счет " + userScore);
                     // использовать имя пользователя
                     listoffavorites(userName);
                     setImage(profileImageUrl);
+
+                    //user.setName(userName);
+                    //user.setScore(Math.toIntExact(userScore));
+
+
                 } else {
                     // документ не найден
                 }
@@ -157,7 +162,6 @@ public class MainActivity extends AppCompatActivity {
 
         userbutton = findViewById(R.id.userButton);
 
-
         leaderListButton = findViewById(R.id.imageButtonLeaderList);
 
         menuButton = findViewById(R.id.imageButtonMenu);
@@ -165,6 +169,16 @@ public class MainActivity extends AppCompatActivity {
         favoritesButton = findViewById(R.id.imageButtonFavorites);
 
         achieveListButton = findViewById(R.id.imageButtonAchieveList);
+
+        ButtonSeasonAchieve = findViewById(R.id.imageButtonSeasonAchieve);
+
+        ButtonSeasonAchieve.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, SeasonsAchievements.class);
+                startActivity(intent);
+            }
+        });
 
         leaderListButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -193,6 +207,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, UserProfile.class);
+                //User user = new User("Имя пользователя", 1);
+                //intent.putExtra("user", user);
                 startActivity(intent);
             }
         });
@@ -242,9 +258,6 @@ public class MainActivity extends AppCompatActivity {
                 LinearLayout scrollView = findViewById(R.id.favoritesLinearLayout);
                 scrollView.addView(button);
             }
-            //LinearLayout scrollView = findViewById(R.id.scrollView1);
-            //scrollView.addView(button);
-
         }
     }
 

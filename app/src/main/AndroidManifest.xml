@@ -6,6 +6,8 @@
     <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
 
     <application
         android:allowBackup="true"
@@ -16,6 +18,27 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Achivki"
         tools:targetApi="31">
+        <activity
+            android:name=".MySubscriptionsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".MyFriendsList"
+            android:exported="false" />
+        <activity
+            android:name=".MyCompletedAchievements"
+            android:exported="false" />
+        <activity
+            android:name=".SeasonAchievementsDescriptionActivity"
+            android:exported="false" />
+        <activity
+            android:name=".SeasonsAchievements"
+            android:exported="false" />
+        <activity
+            android:name=".OtherUserActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AchieveConfirmation"
+            android:exported="false" />
         <activity
             android:name=".MyAchievementsActivity"
             android:exported="false" />
@@ -45,13 +68,7 @@
             android:exported="false" />
         <activity
             android:name=".MainActivity2"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+            android:exported="false" />
         <activity
             android:name=".MainActivity"
             android:exported="true">

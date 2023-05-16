@@ -39,7 +39,10 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.auth.User;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 
 public class MainActivity2 extends AppCompatActivity {
@@ -62,6 +65,8 @@ public class MainActivity2 extends AppCompatActivity {
     private ProgressBar progressBar;
 
     private FirebaseFirestore db;
+
+    private String confirmed = "sfd";
 
     private int count = 0;
     private int totalScore = 0;
@@ -87,14 +92,6 @@ public class MainActivity2 extends AppCompatActivity {
 
         DocumentReference mAuthDocRef = db.collection("Users").document(currentUser.getUid());
 
-
-
-
-       /* Intent intent = getIntent();
-        String categoryName = intent.getStringExtra("Category_key");
-
-        System.out.println(categoryName);*/
-
         backButton = findViewById(R.id.imageButtonBack);
 
         backButton.setOnClickListener(new View.OnClickListener() {
@@ -113,121 +110,12 @@ public class MainActivity2 extends AppCompatActivity {
 
                     //welcomeMessage.setText("Привет " + userName);
                     // использовать имя пользователя
-                    createAchieveList(userName);
+                    createAchieveList(userName, currentUser.getUid());
                 } else {
                     // документ не найден
                 }
             }
         });
-
-        //createAchieveList();
-
-      /*  FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("Achiv");
-
-        //путь до списка ачивок
-        DatabaseReference buttonsRef = database.getReference("Achievements").child(categoryName);
-
-        //путь до списка ачивок пользователя
-        mAuth = FirebaseAuth.getInstance();
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Users").child(mAuth.getCurrentUser().getUid()).child("Achiev").child(categoryName);
-
-        //создаем кнопки ачивок
-        buttonsRef.addValueEventListener(new ValueEventListener() {
-           // private int a = 0;
-
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot buttonSnapshot : dataSnapshot.getChildren()) {
-
-                    count++;
-
-                    //SetCa(10);
-                    setMyValue(100);
-
-                    String buttonName = buttonSnapshot.getKey().toString();
-
-                    System.out.println(dataSnapshot.child(buttonName+"/id").getValue());
-
-                    Button button = new Button(MainActivity2.this);
-                    button.setText(buttonName);
-                    button.setBackgroundColor(Color.BLUE);
-
-                    // здесь можно добавить дополнительные параметры для кнопки, например, размеры, цвет, обработчик нажатия и т.д.
-
-                    LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
-                            LinearLayout.LayoutParams.MATCH_PARENT,
-                            LinearLayout.LayoutParams.WRAP_CONTENT
-                    );
-                    layoutParams.setMargins(20, 20, 20, 20);
-                    button.setBackgroundColor(Color.GREEN);
-
-                    button.setLayoutParams(layoutParams);
-
-                    button.setTag(buttonName);
-                    //int a = 0;
-                    ref.addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-
-                            String ac = snapshot.child(buttonName).getValue().toString();
-
-                            boolean test = (boolean) snapshot.child(buttonName).getValue();
-                            int testo = 10;
-
-                            //Ca = testo;
-
-                            SetCa(testo);
-
-                            if (test == false){
-                                button.setBackgroundColor(Color.RED);
-                                //a--;
-
-                            }
-                            else{
-                                button.setBackgroundColor(Color.GREEN);
-                                a++;
-                            }
-                            System.out.println("A  "+ a);
-
-                           // Ca = a;
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
-
-                        }
-
-                    });
-
-                    button.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            // Обработка нажатия кнопки
-                            Intent intent = new Intent(MainActivity2.this, AchievementDescriptionActivity.class);
-                            intent.putExtra("Achieve_key", buttonName);
-                            intent.putExtra("Category_key", categoryName);
-                            startActivity(intent);
-                        }
-                    });
-
-                    LinearLayout scrollView = findViewById(R.id.scrollView1);
-                    scrollView.addView(button);
-
-                }
-                System.out.println("Count  "+ count);
-
-
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-
-        });
-
-        System.out.println("myValue =  "+ myValue);
-*/
     }
 
     public void countUser(){
@@ -240,7 +128,7 @@ public class MainActivity2 extends AppCompatActivity {
         progressBar.setProgress(a);
     }
 
-    public void createAchieveList(String name){
+    public void createAchieveList(String name, String userId){
 
         Intent intent = getIntent();
         String categoryName = intent.getStringExtra("Category_key");
@@ -251,56 +139,65 @@ public class MainActivity2 extends AppCompatActivity {
 
         CollectionReference achievementCollectionRef = FirebaseFirestore.getInstance().collection("Achievements");
 
-        // Создаем запрос для получения документов только с категорией "кулинар"
-        Query query = achievementCollectionRef.whereEqualTo("category", categoryName);
 
-        query.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-            @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                List<String> achievements = new ArrayList<>();
+        // Получение ссылки на коллекцию пользователей
+        CollectionReference usersCollectionRef = FirebaseFirestore.getInstance().collection("Users");
 
-                // Проходимся по всем документам и получаем значения поля "achieve"
-                for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots.getDocuments()) {
-                    String achievement = documentSnapshot.getString("name");
+        // Получение ссылки на коллекцию достижений
+        CollectionReference achievementsCollectionRef = FirebaseFirestore.getInstance().collection("Achievements");
 
-                    count++;
+        // Получение идентификатора пользователя
+        //String userId = "2skonTHGvld6H74APIfSuc7vxZJ2";
 
-                    CollectionReference usersRef = FirebaseFirestore.getInstance().collection("Users");
+        // Получение документа пользователя из коллекции Users
+        DocumentReference userDocRef = usersCollectionRef.document(userId);
+        userDocRef.get().addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot userDocSnapshot = task.getResult();
+                        if (userDocSnapshot.exists()) {
+                            // Получение Map UserAchieve пользователя
+                            Map<String, Object> userAchieveMap = (Map<String, Object>) userDocSnapshot.get("userAchievements");
 
-                    // Получаем список достижений пользователя с именем Олег
-                    usersRef.whereEqualTo("name", name).get().addOnCompleteListener(task -> {
-                        if (task.isSuccessful()) {
-                            for (DocumentSnapshot document : task.getResult().getDocuments()) {
+                            //Map<String, Object> userAchieveMap1 = (Map<String, Object>) userDocSnapshot.get("userAchievements");
 
-                                //count++;
-                                // Получаем список достижений пользователя
-                                ArrayList<String> userAchievements = (ArrayList<String>) document.get(categoryName);
-                                if (userAchievements.contains(achievement)) {
+                            // Получение достижений пользователя
+                            Set<String> userAchievements = userAchieveMap.keySet();
+                           // List<String> userAchievementsList = new ArrayList<>(userAchievements);
+                            // Получение документов достижений из коллекции achievements
+                            Query categoryQuery = achievementsCollectionRef.whereEqualTo("category", categoryName);
+                            categoryQuery.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                                @Override
+                                public void onSuccess(QuerySnapshot querySnapshot) {
+                                    for (DocumentSnapshot document : querySnapshot.getDocuments()) {
+                                        count++;
+                                        // Получаем имя достижения из документа
+                                        String achievementName = document.getString("name");
+                                        boolean proof = document.getBoolean("proof");
+                                       // boolean confirm = document.getBoolean("confirmed");
+                                        System.out.println("proof " + proof);
+                                        //System.out.println("proof " + confirm);
 
-                                    createButton(achievement, "green", categoryName, name);
+                                       // System.out.println("wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww " +p);
 
-                                    achievedone++;
-
-                                    //button.setBackgroundColor(Color.GREEN);
-                                    System.out.println("Есть " + achievement);
-                                } else {
-                                    createButton(achievement, "black", categoryName, name);
-                                    //button.setBackgroundColor(Color.RED);
-                                    System.out.println("Нет " + achievement);
+                                        // Сравниваем достижения пользователя и в категории "кулинария"
+                                        if (userAchievements.contains(achievementName)) {
+                                            // Если достижение есть и там и там, выводим на экран
+                                            //createButton(achievementName, "green", categoryName, name, proof);
+                                            System.out.println("Достижение \"" + achievementName + "\" есть и у пользователя, и в категории " + categoryName);
+                                            checkStatus(achievementName, categoryName, name, proof);
+                                            achievedone++;
+                                        }else{
+                                            createButton(achievementName, "black", categoryName, name, proof);
+                                            //checkStatus(achievementName, categoryName, name, proof);
+                                            System.out.println("Нет " + achievementName);
+                                        }
+                                    }
+                                    p(achievedone , count);
                                 }
-                                // Здесь нужно добавить код для добавления кнопки на экран.
-                            }
-                            //System.out.println("category " + achievement);
-                            if (achievement != null && !achievements.contains(achievement)) {
-                                achievements.add(achievement);
-                            }
-                            p(achievedone , count);
+                            });
                         }
-                    });
-                }
-            }
-        });
-
+                    }
+                });
 
         //System.out.println(categoryName);
         backButton = findViewById(R.id.imageButtonBack);
@@ -345,139 +242,78 @@ public class MainActivity2 extends AppCompatActivity {
             }
         });
 
-        // backButton.setBackgroundResource(R.drawable.achievebackgroundgreen);
+    }
 
+    private void checkStatus(String achievementName, String categoryName, String name, boolean proof){
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
 
-        /*FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("Achiv");*
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference userRef = db.collection("Users").document(currentUser.getUid());
 
-        //путь до списка ачивок
-        DatabaseReference buttonsRef = database.getReference("Achievements").child(categoryName).child("AchieveName");
+        List<String> achievementNames = new ArrayList<>();
 
-        //путь до списка ачивок пользователя
-        mAuth = FirebaseAuth.getInstance();
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Users").child(mAuth.getCurrentUser().getUid());
+        // String confirmed = "sfd";
 
-        DatabaseReference ref1 = FirebaseDatabase.getInstance().getReference();*/
-
-
-        //создаем кнопки ачивок
-        /*buttonsRef.addValueEventListener(new ValueEventListener() {
-
+        userRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot buttonSnapshot : dataSnapshot.getChildren()) {
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                Map<String, Object> userData = documentSnapshot.getData();
+                Map<String, Object> achievements = (Map<String, Object>) userData.get("userAchievements");
 
-                    //count++;
+                for (Map.Entry<String, Object> entry : achievements.entrySet()) {
+                    Map<String, Object> achievement = (Map<String, Object>) entry.getValue();
 
-                    int count = (int) dataSnapshot.getChildrenCount();
-
-                    System.out.println("COUNT = " + count);
-
-
-                    String buttonName = buttonSnapshot.getKey().toString();
-
-                   // long a = (long) dataSnapshot.child(buttonName + "/score").getValue();
-
-                    //System.out.println("Score " + a);
-
-                    System.out.println(dataSnapshot.child(buttonName+"/id").getValue());
-
-                    Button button = new Button(MainActivity2.this);
-                    button.setText(buttonName);
-                    button.setBackgroundColor(Color.BLUE);
-
-                    // здесь можно добавить дополнительные параметры для кнопки, например, размеры, цвет, обработчик нажатия и т.д.
-
-                    LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
-                            LinearLayout.LayoutParams.MATCH_PARENT,
-                            LinearLayout.LayoutParams.MATCH_PARENT
-                    );
-                    layoutParams.setMargins(20, 20, 20, 20);
-                    button.setBackgroundColor(Color.GREEN);
-
-                    //button.setLayoutParams(new LinearLayout.LayoutParams(500, 600));
-
-
-                   // LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(932, 128);
-                    //layoutParams.setMargins(20, 20, 20, 20);
-
-                    button.setLayoutParams(layoutParams);
-
-                    button.setTag(buttonName);
-                    //button.setBackgroundResource(R.drawable.achievebackground);
-
-                    ref.addValueEventListener(new ValueEventListener() {
-                    //ref1.addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-
-                            //String ac = snapshot.child(buttonName).getValue().toString();
-
-                            boolean test = (boolean) snapshot.child("Achiev").child(categoryName).child(buttonName).getValue();
-                            //System.out.println("score1 " + a);
-
-                            //int userScore = (int) snapshot.child("Achiev").child("Score").getValue();
-
-                            if (test == false){
-                                button.setBackgroundColor(Color.RED);
-                                button.setBackgroundResource(R.drawable.achievebackground);
-
-                            }
-                            else{
-                                button.setBackgroundColor(Color.GREEN);
-                                button.setBackgroundResource(R.drawable.achievebackgroundgreen);
-                                achievedone++;
-                                //setAchievedone(achievedone);
-
-                            }
-                           // totalScore = count*count
-                           p(achievedone , count);
+                    if (achievement.get("name").equals(achievementName)) {
+                        Boolean confirmed = (Boolean) achievement.get("confirmed");
+                        Boolean proofsended = (Boolean) achievement.get("proofsended");
+                        //System.out.println(confirmed);
+                        if(confirmed == true){
+                            System.out.println("confirmed");
+                            createButton(achievementName,"green", categoryName, name, proof);
+                        }else if (proofsended == true) {
+                            createButton(achievementName,"yellow", categoryName, name, proof);
+                            System.out.println("proofsended");
+                            //createButton(achievementName, "green", categoryName, name, proof);
+                        }else{
+                            createButton(achievementName,"black", categoryName, name, proof);
+                            System.out.println("not ");
                         }
+                    }
 
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
-
-                        }
-
-                    });
-
-                    //p(achievedone , count);
-                    button.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            // Обработка нажатия кнопки
-                            Intent intent = new Intent(MainActivity2.this, AchievementDescriptionActivity.class);
-                            intent.putExtra("Achieve_key", buttonName);
-                            intent.putExtra("Category_key", categoryName);
-                            startActivity(intent);
-                        }
-                    });
-
-                    LinearLayout scrollView = findViewById(R.id.scrollView1);
-                    scrollView.addView(button);
-
+                    //createAchieveButton(name, desc);
                 }
-
+                // Здесь можно продолжить работу с полученным Map достижений
             }
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-
-        });*/
-
+        });
     }
 
 
 
-    private void createButton(String name, String color, String categoryName, String username) {
+    private void createButton(String name, String color, String categoryName, String username, boolean proof) {
         LinearLayout layout = findViewById(R.id.scrollView1);
         Button button = new Button(MainActivity2.this);
         button.setText(name);
         button.setBackgroundColor(Color.BLUE);
 
         boolean received;
+
+        // Получаем ссылку на коллекцию "Users"
+        CollectionReference usersRef = FirebaseFirestore.getInstance().collection("Users");
+
+        // Создаем запрос, который возвращает только документы, у которых есть достижение "красноярск"
+        Query query = usersRef.whereEqualTo("userAchievements.Путешествие в Скандинавию.name", name);
+
+        System.out.println(query);
+
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference userRef = db.collection("Users").document(currentUser.getUid());
+
+        List<String> achievementNames = new ArrayList<>();
+       // String confirmed = "sfd";
 
             // здесь можно добавить дополнительные параметры для кнопки, например, размеры, цвет, обработчик нажатия и т.д.
 
@@ -490,6 +326,9 @@ public class MainActivity2 extends AppCompatActivity {
 
         if (color == "green"){
             button.setBackgroundResource(R.drawable.achievebackgroundgreen);
+            received = true;
+        }else if(color == "yellow"){
+            button.setBackgroundResource(R.drawable.achievebackgroundyellow);
             received = true;
         }else{
             button.setBackgroundResource(R.drawable.achievebackground);
@@ -505,6 +344,7 @@ public class MainActivity2 extends AppCompatActivity {
                 intent.putExtra("Category_key", categoryName);
                 intent.putExtra("Is_Received", received);
                 intent.putExtra("User_name", username);
+                intent.putExtra("ProofNeeded", proof);
                 startActivity(intent);
             }
         });

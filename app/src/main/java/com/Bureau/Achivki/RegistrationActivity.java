@@ -90,6 +90,14 @@ public class RegistrationActivity extends AppCompatActivity {
                                         //TextView emailTextView = findViewById(R.id.emailEditText);
                                         String email = emailEditText.getText().toString();
 
+                                        String pass = passwordEditText.getText().toString();
+
+                                        Map<String, Object> userAchieveMap = new HashMap<>();
+                                        Map<String, Object> userCreatedAchieveMap = new HashMap<>();
+                                        Map<String, Object> userPhotoMap = new HashMap<>();
+                                        Map<String, Object> subscribers = new HashMap<>();
+                                        Map<String, Object> friends = new HashMap<>();
+
                                         String profileImageUrl = "/users/StandartUser/";
 
                                         if (currentUser != null) {
@@ -103,13 +111,13 @@ public class RegistrationActivity extends AppCompatActivity {
                                                 Map<String, Object> user = new HashMap<>();
                                                 //user.put("achievements", categoriesArray);
                                                 if (task.isSuccessful()) {
-                                                    ArrayList<String> categories = new ArrayList<>();
+                                                    /*ArrayList<String> categories = new ArrayList<>();
                                                     for (QueryDocumentSnapshot document : task.getResult()) {
                                                         String category = document.getString("category");
                                                         //categories.add(category);
                                                         user.put(category, categories);
                                                        // usersRef.document(currentUser.getUid()).set(user);
-                                                    }
+                                                    }*/
                                                     //String[] categoriesArray = categories.toArray(new String[categories.size()]);
                                                     // categoriesArray теперь содержит список категорий в виде массива String
                                                     // Можно передать его в каталог Users для документа пользователя
@@ -122,8 +130,16 @@ public class RegistrationActivity extends AppCompatActivity {
                                                 user.put("name", name);
                                                 user.put("email", email);
                                                 user.put("favorites", favorites);
+                                                user.put("pass", pass);
                                                 user.put("score", 0L);
+                                                user.put("friendscount", 0L);
+                                                user.put("subs", 0L);
                                                 user.put("profileImageUrl", "/users/StandartUser/UserAvatar.png");
+                                                user.put("userAchievements", userAchieveMap);
+                                                user.put("achieve", userCreatedAchieveMap);
+                                                user.put("userPhotos", userPhotoMap);
+                                                user.put("subscribers", subscribers);
+                                                user.put("friends", friends);
                                                 usersRef.document(currentUser.getUid()).set(user);
                                             }
                                         });
