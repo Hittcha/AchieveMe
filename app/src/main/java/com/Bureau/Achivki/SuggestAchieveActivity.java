@@ -105,6 +105,17 @@ public class SuggestAchieveActivity extends AppCompatActivity {
             }
         });
 
+        ImageButton usersListButton = findViewById(R.id.imageButtonUsersList);
+        usersListButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(SuggestAchieveActivity.this, UsersListActivity.class);
+                //User user = new User("Имя пользователя", 1);
+                //intent.putExtra("user", user);
+                startActivity(intent);
+            }
+        });
+
 
        // Map<String, Object> userAchievements = new HashMap<>();
 

@@ -17,6 +17,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.NumberPicker;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -134,6 +135,10 @@ public class MainActivity2 extends AppCompatActivity {
         String categoryName = intent.getStringExtra("Category_key");
         boolean recived = true;
 
+        TextView categoryTextView = findViewById(R.id.categoryNameTextView);
+
+        categoryTextView.setText(categoryName);
+
         // Получаем ссылки на коллекции в Firestore
 
 
@@ -238,6 +243,17 @@ public class MainActivity2 extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity2.this, AchieveListActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        ImageButton usersListButton = findViewById(R.id.imageButtonUsersList);
+        usersListButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity2.this, UsersListActivity.class);
+                //User user = new User("Имя пользователя", 1);
+                //intent.putExtra("user", user);
                 startActivity(intent);
             }
         });

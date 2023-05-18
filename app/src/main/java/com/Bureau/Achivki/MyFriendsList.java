@@ -153,6 +153,17 @@ public class MyFriendsList extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        ImageButton usersListButton = findViewById(R.id.imageButtonUsersList);
+        usersListButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MyFriendsList.this, UsersListActivity.class);
+                //User user = new User("Имя пользователя", 1);
+                //intent.putExtra("user", user);
+                startActivity(intent);
+            }
+        });
     }
 
     public void createFriendBlock(String name, String avatarUrl, DocumentReference mAuthDocRef, String  key, String userID){

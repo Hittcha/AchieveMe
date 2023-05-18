@@ -16,20 +16,31 @@
         app:layout_constraintBottom_toBottomOf="parent">
 
         <ImageButton
-            android:id="@+id/imageButtonLeaderList"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@null"
-            android:src="@drawable/crownicon" />
-
-        <ImageButton
             android:id="@+id/imageButtonMenu"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@null"
+            android:scaleType="center"
             app:srcCompat="@drawable/menuiconclicked" />
+
+        <ImageButton
+            android:id="@+id/imageButtonLeaderList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@null"
+            android:scaleType="center"
+            android:src="@drawable/crownicon" />
+
+        <ImageButton
+            android:id="@+id/imageButtonUsersList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@null"
+            android:scaleType="center"
+            app:srcCompat="@drawable/otherusers" />
 
         <ImageButton
             android:id="@+id/imageButtonAchieveList"
@@ -37,6 +48,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@null"
+            android:scaleType="center"
             app:srcCompat="@drawable/achievelist" />
 
         <ImageButton
@@ -94,7 +106,6 @@
         android:layout_height="wrap_content"
         android:text="Добавить к себе на страницу"
         android:visibility="invisible"
-        app:layout_constraintBottom_toTopOf="@+id/group_2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/button_choose_image" />

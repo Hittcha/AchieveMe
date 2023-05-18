@@ -51,15 +51,8 @@ import java.util.List;
 import java.util.Map;
 
 public class OtherUserActivity extends AppCompatActivity {
-
-
-    private static final int PERMISSION_REQUEST_CODE = 1;
-    private static final int PICK_IMAGE_REQUEST_CODE = 2;
-    private StorageReference storageRef;
     private FirebaseFirestore db;
-
     private String userName;
-
     private String otherUserName;
 
     private long userScore;
@@ -148,7 +141,7 @@ public class OtherUserActivity extends AppCompatActivity {
 
                                                                    friendsCountText.setText("Подписки: " + userFriends);
 
-                                                                   subsCountText.setText("Подписчики" + userSubs);
+                                                                   subsCountText.setText("Подписчики: " + userSubs);
 
 
 
@@ -173,6 +166,8 @@ public class OtherUserActivity extends AppCompatActivity {
                                                                        System.out.println("key: " + key);
                                                                        Long likes = (Long) achievement.get("likes");
                                                                        String url = (String) achievement.get("url");
+                                                                       String time = (String) achievement.get("time");
+                                                                       String achname = (String) achievement.get("name");
 
                                                                        ArrayList<String> people = (ArrayList<String>) achievement.get("like");
 
@@ -180,7 +175,7 @@ public class OtherUserActivity extends AppCompatActivity {
                                                                        System.out.println("likes: " + likes);
                                                                        System.out.println("url: " + url);
 
-                                                                       createImageBlock(url, likes, people, userToken, key ,userName);
+                                                                       createImageBlock(url, likes, people, userToken, key ,userName, time, achname);
                                                                    }
 
 
@@ -192,10 +187,6 @@ public class OtherUserActivity extends AppCompatActivity {
                                                    }
         });
 
-        //loadPhotoGrid(userToken);
-
-        //subscribeButton = findViewById(R.id.subscribeButton);
-
         leaderListButton = findViewById(R.id.imageButtonLeaderList);
 
         menuButton = findViewById(R.id.imageButtonMenu);
@@ -203,34 +194,6 @@ public class OtherUserActivity extends AppCompatActivity {
         favoritesButton = findViewById(R.id.imageButtonFavorites);
 
         achieveListButton = findViewById(R.id.imageButtonAchieveList);
-
-
-        /*subscribeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mAuthDocRef.get().addOnSuccessListener(documentSnapshot -> {
-                    Map<String, Object> friends = documentSnapshot.getData();
-
-
-                    // Получаем текущий Map achieve из документа пользователя
-                    Map<String, Object> friendMap = (Map<String, Object>) friends.get("friends");
-
-                    // Создаем новый Map с информацией о новом достижении
-                    Map<String, Object> newfriendMap = new HashMap<>();
-                    newfriendMap.put("name", name);
-                    newfriendMap.put("avatar", desc);
-
-                    // Добавляем новое достижение в Map achieve пользователя
-                    friendMap.put(key, newfriendMap);
-
-                    // Сохраняем обновленный Map achieve в Firestore
-                    friends.put("friends", friendMap);
-                    mAuthDocRef.set(friends);
-                    Toast.makeText(OtherUserActivity.this, "Достижение добавлено", Toast.LENGTH_SHORT).show();
-                });
-            }
-        });*/
-
         leaderListButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -263,6 +226,17 @@ public class OtherUserActivity extends AppCompatActivity {
             }
         });
 
+        ImageButton usersListButton = findViewById(R.id.imageButtonUsersList);
+        usersListButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(OtherUserActivity.this, UsersListActivity.class);
+                //User user = new User("Имя пользователя", 1);
+                //intent.putExtra("user", user);
+                startActivity(intent);
+            }
+        });
+
     }
 
     private void setSubscribeButton(String nameOtherUser, String myID, String otherID, String avatar, DocumentReference mAuthDocRef, String userName, DocumentReference mAuthDocRefOther, String profileImageUrl){
@@ -282,6 +256,8 @@ public class OtherUserActivity extends AppCompatActivity {
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     if (isChecked) {
                         //subscribeButton.setBackgroundResource(R.drawable.likeimageclicked);
+
+                        subscribeButton.setBackgroundResource(R.drawable.subbuttonclicked);
                         System.out.println("Подписан " + otherID);
                         //addLike(userName, key);
 
@@ -302,19 +278,9 @@ public class OtherUserActivity extends AppCompatActivity {
 
                         addFollower(userName, myID, profileImageUrl, mAuthDocRefOther);
 
-
-
-                        //int score = Integer.parseInt(likesTextView.getText().toString());
-                        //score++;
-                        //likesTextView.setText(Integer.toString(score));
                     } else {
-                        //subscribeButton.setBackgroundResource(R.drawable.likeimage);
-                        //System.out.println("url2 " + url);
-                        //delLike(userName, key);
 
-                        //int score = Integer.parseInt(likesTextView.getText().toString());
-                        //score--;
-                        //likesTextView.setText(Integer.toString(score));
+                        subscribeButton.setBackgroundResource(R.drawable.subbutton);
 
                         friendMap.remove(otherID);
 
@@ -499,7 +465,7 @@ public class OtherUserActivity extends AppCompatActivity {
         });
     }
 
-    private void createImageBlock(String url, Long likes, ArrayList people, String otherUserName, String key, String userToken){
+    private void createImageBlock(String url, Long likes, ArrayList people, String otherUserName, String key, String userToken, String time, String achname){
         LinearLayout parentLayout = findViewById(R.id.scrollView);
 
         //Button btnAdd = findViewById(R.id.btn_add);
@@ -509,11 +475,13 @@ public class OtherUserActivity extends AppCompatActivity {
         ConstraintLayout blockLayout = (ConstraintLayout) LayoutInflater.from(OtherUserActivity.this)
                 .inflate(R.layout.block_images, parentLayout, false);
 
-        TextView usernameTextView = blockLayout.findViewById(R.id.achname);
-        TextView balanceTextView = blockLayout.findViewById(R.id.date);
+        TextView AchieveNameTextView = blockLayout.findViewById(R.id.achname);
+        TextView DateTextView = blockLayout.findViewById(R.id.date);
         TextView likesTextView = blockLayout.findViewById(R.id.likesCount);
 
         likesTextView.setText(likes.toString());
+        DateTextView.setText(time);
+        AchieveNameTextView.setText(achname);
 
         parentLayout.addView(blockLayout);
         liked = false;

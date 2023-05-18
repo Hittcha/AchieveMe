@@ -97,6 +97,17 @@ public class ListOfFavoritesActivity extends AppCompatActivity {
             }
         });
 
+        ImageButton usersListButton = findViewById(R.id.imageButtonUsersList);
+        usersListButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ListOfFavoritesActivity.this, UsersListActivity.class);
+                //User user = new User("Имя пользователя", 1);
+                //intent.putExtra("user", user);
+                startActivity(intent);
+            }
+        });
+
         userRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {

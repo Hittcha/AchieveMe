@@ -123,10 +123,6 @@ public class UserProfile extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_profile);
 
-        //Intent intent = getIntent();
-        //User user = (User) intent.getSerializableExtra("user");
-        //String name = user.getUserName();
-
         mAuth = FirebaseAuth.getInstance();
 
         storage = FirebaseStorage.getInstance();
@@ -142,7 +138,6 @@ public class UserProfile extends AppCompatActivity {
         friendsListText = findViewById(R.id.friendsList);
 
         subscriptionsListText = findViewById(R.id.subscriptionsList);
-
 
         StorageReference storageRef = FirebaseStorage.getInstance().getReference();
         StorageReference imageRef = storageRef.child("users").child(mAuth.getCurrentUser().getUid()).child("UserAvatar");
@@ -191,15 +186,15 @@ public class UserProfile extends AppCompatActivity {
                         Long likes = (Long) achievement.get("likes");
                         String url = (String) achievement.get("url");
                         String achname = (String) achievement.get("name");
+                        String time = (String) achievement.get("time");
 
                         ArrayList<String> people = (ArrayList<String>) achievement.get("like");
 
                         // Выводим данные достижения на экран
                         System.out.println("likes: " + likes);
                         System.out.println("url: " + url);
-                        //createImageButton(t, url);
 
-                        createImageBlock(url, likes, people, userName, key, achname);
+                        createImageBlock(url, likes, people, userName, key, achname, time);
                     }
 
 
@@ -226,9 +221,6 @@ public class UserProfile extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
-        //Button buttonChooseImage = findViewById(R.id.button_choose_image);
-        //Button buttonUpload = findViewById(R.id.button_upload);
         mStorageRef = FirebaseStorage.getInstance().getReference("users").child(mAuth.getCurrentUser().getUid());
 
         System.out.println("value = " + value);
@@ -332,6 +324,17 @@ public class UserProfile extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        ImageButton usersListButton = findViewById(R.id.imageButtonUsersList);
+        usersListButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(UserProfile.this, UsersListActivity.class);
+                //User user = new User("Имя пользователя", 1);
+                //intent.putExtra("user", user);
+                startActivity(intent);
+            }
+        });
     }
 
     public void selectImageFromLibrary() {
@@ -420,9 +423,6 @@ public class UserProfile extends AppCompatActivity {
     public void setImage(String imageRef) {
 
         StorageReference storageRef = FirebaseStorage.getInstance().getReference();
-        //StorageReference imageRef1 = FirebaseStorage.getInstance().getReferenceFromUrl(a);
-
-        //StorageReference imageRef1 = storageRef.child(a + "/UserAvatar");
 
         StorageReference imageRef1 = storageRef.child(imageRef);
 
@@ -507,23 +507,25 @@ public class UserProfile extends AppCompatActivity {
         cursor.close();
     }
 
-    private void createImageBlock(String url, Long likes, ArrayList people, String userName, String key, String achname){
+    private void createImageBlock(String url, Long likes, ArrayList people, String userName, String key, String achname, String time){
         LinearLayout parentLayout = findViewById(R.id.scrollView);
 
 
         ConstraintLayout blockLayout = (ConstraintLayout) LayoutInflater.from(UserProfile.this)
                 .inflate(R.layout.block_images, parentLayout, false);
 
-        TextView usernameTextView = blockLayout.findViewById(R.id.achname);
-        TextView balanceTextView = blockLayout.findViewById(R.id.date);
+        TextView AchieveNameTextView = blockLayout.findViewById(R.id.achname);
+        TextView DateTextView = blockLayout.findViewById(R.id.date);
         TextView likesTextView = blockLayout.findViewById(R.id.likesCount);
 
         likesTextView.setText(likes.toString());
 
+        DateTextView.setText(time);
+
         parentLayout.addView(blockLayout);
         liked = false;
 
-        usernameTextView.setText(achname);
+        AchieveNameTextView.setText(achname);
 
         ToggleButton likeButton = blockLayout.findViewById(R.id.toggleButton2);
 

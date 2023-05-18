@@ -33,7 +33,10 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 public class AchievementDescriptionActivity extends AppCompatActivity {
@@ -161,6 +164,10 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
                                                  FirebaseFirestore db = FirebaseFirestore.getInstance();
                                                  DocumentReference usersRef = db.collection("Users").document(currentUser.getUid());
 
+                                                 Calendar calendar = Calendar.getInstance();
+                                                 SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss", Locale.getDefault());
+                                                 String time = sdf.format(calendar.getTime());
+
 
                                                  // Map<String, Object> userAchievements = new HashMap<>();
 
@@ -183,6 +190,7 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
                                                      newAchieveMap.put("name", achieveName);
                                                      newAchieveMap.put("confirmed", true);
                                                      newAchieveMap.put("proofsended", true);
+                                                     newAchieveMap.put("time", time);
 
                                                      // Добавляем новое достижение в Map achieve пользователя
                                                      achieveMap.put(achieveName, newAchieveMap);

@@ -16,28 +16,30 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
-public class MySubscriptionsActivity extends AppCompatActivity {
+public class UsersListActivity extends AppCompatActivity {
 
     private ImageButton favoritesButton;
 
@@ -49,58 +51,47 @@ public class MySubscriptionsActivity extends AppCompatActivity {
 
     private FirebaseFirestore db;
     private FirebaseAuth mAuth;
+
     private String userName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_my_subscriptions);
+        setContentView(R.layout.activity_users_list);
+
         mAuth = FirebaseAuth.getInstance();
 
         db = FirebaseFirestore.getInstance();
 
         FirebaseUser currentUser = mAuth.getCurrentUser();
 
-        DocumentReference mAuthDocRef = db.collection("Users").document(currentUser.getUid());
+        String userID = currentUser.getUid();
 
-        mAuthDocRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+        CollectionReference usersRef = FirebaseFirestore.getInstance().collection("Users");
+
+        usersRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                if (documentSnapshot.exists()) {
-                    userName = documentSnapshot.getString("name");
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    // Получаем результат запроса
+                    QuerySnapshot querySnapshot = task.getResult();
 
-                    //userScore = documentSnapshot.getLong("score");
+                    // Перебираем каждый документ
+                    for (QueryDocumentSnapshot document : querySnapshot) {
+                        // Получаем значение поля "name" для каждого документа
+                        String name = document.getString("name");
+                        int score = Math.toIntExact(document.getLong("score"));
+                        String avatar = document.getString("profileImageUrl");
+                        String id = document.getId();
 
-                    //System.out.println("score " + userScore);
+                        createUsersBlock(name, score, avatar, id);
 
-                    //profileImageUrl = documentSnapshot.getString("profileImageUrl");
-
-                    //userNameText.setText(userName);
-
-                    //userScoreText.setText("" + userScore);
-                    // использовать имя пользователя
-                    //setImage(profileImageUrl);
-
-
-                    Map<String, Object> userData = documentSnapshot.getData();
-                    Map<String, Object> friends = (Map<String, Object>) userData.get("subscribers");
-                    for (Map.Entry<String, Object> entry : friends.entrySet()) {
-                        Map<String, Object> friend = (Map<String, Object>) entry.getValue();
-                        String key = entry.getKey();
-                        System.out.println("key: " + key);
-
-                        String friendName = (String) friend.get("name");
-                        String friendAvatar = (String) friend.get("avatar");
-
-                        System.out.println("friendName: " + friendName);
-                        System.out.println("friendAvatar: " + friendAvatar);
-
-                        createFriendBlock(friendName, friendAvatar, mAuthDocRef, key);
-
+                        // Выводим имя на экран
+                        System.out.println("Имя пользователя: " + name);
                     }
-
                 } else {
-                    // документ не найден
+                    // Обработка ошибок
+                    System.out.println("Ошибка получения данных из Firestore: " + task.getException());
                 }
             }
         });
@@ -116,7 +107,7 @@ public class MySubscriptionsActivity extends AppCompatActivity {
         leaderListButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MySubscriptionsActivity.this, LeaderBoardActivity.class);
+                Intent intent = new Intent(UsersListActivity.this, LeaderBoardActivity.class);
                 startActivity(intent);
             }
         });
@@ -124,15 +115,7 @@ public class MySubscriptionsActivity extends AppCompatActivity {
         menuButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MySubscriptionsActivity.this, MainActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        favoritesButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MySubscriptionsActivity.this, ListOfFavoritesActivity.class);
+                Intent intent = new Intent(UsersListActivity.this, MainActivity.class);
                 startActivity(intent);
             }
         });
@@ -140,7 +123,15 @@ public class MySubscriptionsActivity extends AppCompatActivity {
         achieveListButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MySubscriptionsActivity.this, AchieveListActivity.class);
+                Intent intent = new Intent(UsersListActivity.this, AchieveListActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        favoritesButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(UsersListActivity.this, ListOfFavoritesActivity.class);
                 startActivity(intent);
             }
         });
@@ -149,60 +140,76 @@ public class MySubscriptionsActivity extends AppCompatActivity {
         usersListButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MySubscriptionsActivity.this, UsersListActivity.class);
+                Intent intent = new Intent(UsersListActivity.this, UsersListActivity.class);
                 //User user = new User("Имя пользователя", 1);
                 //intent.putExtra("user", user);
                 startActivity(intent);
             }
         });
-    }
 
-    public void createFriendBlock(String name, String avatarUrl, DocumentReference mAuthDocRef, String  key){
-        LinearLayout parentLayout = findViewById(R.id.scrollView);
+       /* leaderListButton = findViewById(R.id.imageButtonLeaderList);
 
+        menuButton = findViewById(R.id.imageButtonMenu);
 
-        ConstraintLayout blockFriends = (ConstraintLayout) LayoutInflater.from(MySubscriptionsActivity.this)
-                .inflate(R.layout.block_friends, parentLayout, false);
+        favoritesButton = findViewById(R.id.imageButtonFavorites);
 
-        TextView usernameTextView = blockFriends.findViewById(R.id.userName);
+        achieveListButton = findViewById(R.id.imageButtonAchieveList);
 
-
-        usernameTextView.setText(name);
-
-        parentLayout.addView(blockFriends);
-
-        Button delButton = blockFriends.findViewById(R.id.delete_button);
-        delButton.setVisibility(View.GONE);
-
-
-        delButton.setOnClickListener(new View.OnClickListener() {
+        leaderListButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                System.out.println("del " + name);
-                mAuthDocRef.get().addOnSuccessListener(documentSnapshot -> {
-                    Map<String, Object> userFriends = documentSnapshot.getData();
-
-                    Map<String, Object> friendMap = (Map<String, Object>) userFriends.get("subscribers");
-
-                    friendMap.remove(key);
-
-                    userFriends.put("subscribers", friendMap);
-
-                    userFriends.put("subs", Long.valueOf(friendMap.size()));
-
-                    mAuthDocRef.set(userFriends);
-
-                    parentLayout.removeView(blockFriends);
-
-                    //delScore(userName);
-
-                    Toast.makeText(MySubscriptionsActivity.this, "Пользователь удален из подписок", Toast.LENGTH_SHORT).show();
-                });
-
+                Intent intent = new Intent(MyFriendsList.this, LeaderBoardActivity.class);
+                startActivity(intent);
             }
         });
 
-        ImageView imageView = blockFriends.findViewById(R.id.imageUserButton);
+        menuButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MyFriendsList.this, MainActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        favoritesButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MyFriendsList.this, ListOfFavoritesActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        achieveListButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MyFriendsList.this, AchieveListActivity.class);
+                startActivity(intent);
+            }
+        });*/
+    }
+
+    public void createUsersBlock(String name, int score, String avatarUrl, String userID){
+        LinearLayout parentLayout = findViewById(R.id.scrollView);
+
+
+        ConstraintLayout blockFriends = (ConstraintLayout) LayoutInflater.from(UsersListActivity.this)
+                .inflate(R.layout.block_userslist, parentLayout, false);
+
+        TextView usernameTextView = blockFriends.findViewById(R.id.userName);
+        TextView scoreTextView = blockFriends.findViewById(R.id.userScore);
+        //TextView likesTextView = blockFriends.findViewById(R.id.likesCount);
+
+        usernameTextView.setText(name);
+
+        scoreTextView.setText("Счет: " + score);
+
+        parentLayout.addView(blockFriends);
+
+
+        //Button delButton = blockFriends.findViewById(R.id.delete_button);
+
+
+        ImageButton imageUserButton = blockFriends.findViewById(R.id.imageUserButton);
 
         StorageReference storageRef = FirebaseStorage.getInstance().getReference();
         StorageReference userImageRef = storageRef.child(avatarUrl);
@@ -239,9 +246,19 @@ public class MySubscriptionsActivity extends AppCompatActivity {
                     }
 
 
-                    imageView.setImageBitmap(circleBitmap);
+                    imageUserButton.setImageBitmap(circleBitmap);
 
                     //imageView.setAdjustViewBounds(true);
+                    String s = "UsersListActivity";
+
+                    imageUserButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent intent = new Intent(UsersListActivity.this, OtherUserActivity.class);
+                            intent.putExtra("User_token", userID);
+                            startActivity(intent);
+                        }
+                    });
                 }
             });
         } catch (IOException e) {

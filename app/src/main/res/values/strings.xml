@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Achivki</string>
+    <string name="app_name">AchieveMe</string>
     <string name="email_hint">E-Mail</string>
     <string name="password_hint">Password</string>
     <string name="register_button_text">Зарегистрироваться</string>

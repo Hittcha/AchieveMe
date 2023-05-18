@@ -7,26 +7,6 @@
     android:background="#1D1D1D"
     tools:context=".OtherUserActivity">
 
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/group_2"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/favoritesScrollView"
-        app:layout_constraintVertical_bias="0.0">
-
-        <LinearLayout
-            android:id="@+id/scrollView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical" />
-    </ScrollView>
-
     <LinearLayout
         android:id="@+id/group_2"
         android:layout_width="match_parent"
@@ -36,20 +16,31 @@
         app:layout_constraintBottom_toBottomOf="parent">
 
         <ImageButton
-            android:id="@+id/imageButtonLeaderList"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@null"
-            android:src="@drawable/crownicon" />
-
-        <ImageButton
             android:id="@+id/imageButtonMenu"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@null"
+            android:scaleType="center"
             app:srcCompat="@drawable/menuiconclicked" />
+
+        <ImageButton
+            android:id="@+id/imageButtonLeaderList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@null"
+            android:scaleType="center"
+            android:src="@drawable/crownicon" />
+
+        <ImageButton
+            android:id="@+id/imageButtonUsersList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@null"
+            android:scaleType="center"
+            app:srcCompat="@drawable/otherusers" />
 
         <ImageButton
             android:id="@+id/imageButtonAchieveList"
@@ -57,6 +48,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@null"
+            android:scaleType="center"
             app:srcCompat="@drawable/achievelist" />
 
         <ImageButton
@@ -68,6 +60,25 @@
             app:srcCompat="@drawable/favoritesicon" />
 
     </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/group_2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/favoritesScrollView">
+
+        <LinearLayout
+            android:id="@+id/scrollView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+    </ScrollView>
 
     <HorizontalScrollView
         android:id="@+id/favoritesScrollView"
@@ -110,7 +121,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout"
         android:layout_width="match_parent"
-        android:layout_height="122dp"
+        android:layout_height="120dp"
         android:layout_weight="1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -121,13 +132,15 @@
             android:id="@+id/friendsCount"
             android:layout_width="100dp"
             android:layout_height="28dp"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="56dp"
+            android:layout_marginTop="8dp"
             android:text="friends"
             android:textColor="@color/white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/welcome_message"
             app:layout_constraintTop_toBottomOf="@+id/scoreText"
-            app:layout_constraintVertical_bias="0.25" />
+            app:layout_constraintVertical_bias="0.0" />
+
 
         <ImageButton
             android:id="@+id/userButton"
@@ -142,56 +155,57 @@
             android:scaleType="centerCrop"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.049"
+            app:layout_constraintHorizontal_bias="0.048"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.38" />
+            app:layout_constraintVertical_bias="0.4" />
 
         <TextView
             android:id="@+id/welcome_message"
             android:layout_width="100dp"
             android:layout_height="28dp"
-            android:layout_marginStart="8dp"
+            android:layout_marginStart="20dp"
             android:text="name"
             android:textColor="@color/white"
             android:textSize="15sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/userButton"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.181" />
-
+            app:layout_constraintVertical_bias="0.173" />
 
         <TextView
             android:id="@+id/scoreText"
             android:layout_width="100dp"
             android:layout_height="28dp"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="56dp"
             android:text="score"
             android:textColor="@color/white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/welcome_message"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.18" />
+            app:layout_constraintVertical_bias="0.142" />
 
         <ToggleButton
             android:id="@+id/subscribeButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="12dp"
-            android:text="ToggleButton"
-            app:layout_constraintStart_toEndOf="@+id/userButton"
+            android:layout_width="111dp"
+            android:layout_height="34dp"
+            android:layout_marginStart="116dp"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/subbutton"
+            android:textOff=""
+            android:textOn=""
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/welcome_message" />
 
         <TextView
             android:id="@+id/subsTextView"
             android:layout_width="100dp"
             android:layout_height="28dp"
-            android:layout_marginStart="20dp"
+            android:layout_marginStart="56dp"
             android:layout_marginTop="8dp"
             android:text="subs"
             android:textColor="@color/white"
-            app:layout_constraintStart_toEndOf="@+id/subscribeButton"
+            app:layout_constraintStart_toEndOf="@+id/welcome_message"
             app:layout_constraintTop_toBottomOf="@+id/friendsCount" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

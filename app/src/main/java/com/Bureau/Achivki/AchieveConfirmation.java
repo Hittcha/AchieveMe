@@ -52,9 +52,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 public class AchieveConfirmation extends AppCompatActivity {
@@ -128,8 +130,9 @@ public class AchieveConfirmation extends AppCompatActivity {
 
                 } else {
                     // Если разрешение есть, вызываем окно выбора фотографий
-                    selectImageFromLibrary();
+                    //selectImageFromLibrary();
                 }
+                selectImageFromLibrary();
             }
         });
 
@@ -186,6 +189,17 @@ public class AchieveConfirmation extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(AchieveConfirmation.this, ListOfFavoritesActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        ImageButton usersListButton = findViewById(R.id.imageButtonUsersList);
+        usersListButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(AchieveConfirmation.this, UsersListActivity.class);
+                //User user = new User("Имя пользователя", 1);
+                //intent.putExtra("user", user);
                 startActivity(intent);
             }
         });
@@ -269,6 +283,10 @@ public class AchieveConfirmation extends AppCompatActivity {
             newAchieveMap.put("confirmed", false);
             newAchieveMap.put("proofsended", true);
             newAchieveMap.put("url", "users/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/proof/" + name);
+            Calendar calendar = Calendar.getInstance();
+            SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss", Locale.getDefault());
+            String time = sdf.format(calendar.getTime());
+            newAchieveMap.put("time", time);
 
             // Добавляем новое достижение в Map achieve пользователя
             achieveMap.put(achieveName, newAchieveMap);
@@ -337,6 +355,11 @@ public class AchieveConfirmation extends AppCompatActivity {
             newAchieveMap.put("like", people);
             newAchieveMap.put("likes", 0);
             newAchieveMap.put("url", "users/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/proof/" + name);
+
+            Calendar calendar = Calendar.getInstance();
+            SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss", Locale.getDefault());
+            String time = sdf.format(calendar.getTime());
+            newAchieveMap.put("time", time);
 
             // Добавляем новое достижение в Map achieve пользователя
             achieveMap.put(achieveName, newAchieveMap);

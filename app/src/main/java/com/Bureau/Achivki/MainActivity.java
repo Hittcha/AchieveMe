@@ -32,6 +32,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -75,10 +76,13 @@ public class MainActivity extends AppCompatActivity {
 
     private ImageButton menuButton;
 
+    private ImageButton UsersListButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
 
         db = FirebaseFirestore.getInstance();
 
@@ -172,6 +176,8 @@ public class MainActivity extends AppCompatActivity {
 
         ButtonSeasonAchieve = findViewById(R.id.imageButtonSeasonAchieve);
 
+        UsersListButton = findViewById(R.id.imageButtonUsersList);
+
         ButtonSeasonAchieve.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -207,6 +213,16 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, UserProfile.class);
+                //User user = new User("Имя пользователя", 1);
+                //intent.putExtra("user", user);
+                startActivity(intent);
+            }
+        });
+
+        UsersListButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, UsersListActivity.class);
                 //User user = new User("Имя пользователя", 1);
                 //intent.putExtra("user", user);
                 startActivity(intent);
@@ -393,5 +409,8 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+    public void onBackPressed() {
+        // Пустая реализация, чтобы ничего не происходило при нажатии кнопки "Назад"
     }
 }
