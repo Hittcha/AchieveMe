@@ -20,4 +20,9 @@
     <color name="____color">#FF0000</color>
 
     <color name="backcolor">#3B3D3E</color>
+
+    <color name="Primary">#818181</color>
+    <color name="button">#FDD835</color>
+    <color name="hintColor">#939393</color>
+    <color name="editTextColor">#585858</color>
 </resources>

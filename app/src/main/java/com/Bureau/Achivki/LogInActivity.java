@@ -38,10 +38,10 @@ public class LogInActivity extends AppCompatActivity {
         ref = database.getReference();
 
 
-        emailEditText = findViewById(R.id.email_edit_text);
-        passwordEditText = findViewById(R.id.password_edit_text);
-        registerButton = findViewById(R.id.register_button);
-        loginButton = findViewById(R.id.login_button);
+        emailEditText = findViewById(R.id.ActivityLogin_email_edit_text);
+        passwordEditText = findViewById(R.id.ActivityLogin_password_edit_text);
+        registerButton = findViewById(R.id.ActivityLogin_register_button);
+        loginButton = findViewById(R.id.ActivityLogin_login_button);
 
 
         registerButton.setOnClickListener(new View.OnClickListener() {
