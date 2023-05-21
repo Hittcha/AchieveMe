@@ -2,10 +2,6 @@ package com.Bureau.Achivki;
 
 import static android.content.ContentValues.TAG;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -14,43 +10,29 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Shader;
-import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
-import android.util.TypedValue;
-import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.FirebaseApp;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
-
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,191 +41,173 @@ public class MainActivity extends AppCompatActivity {
 
     private String userName;
     private String profileImageUrl;
-
-    private ImageButton ButtonSeasonAchieve;
     private TextView welcomeMessage;
     private TextView userScoreText;
+    private TextView userSubsText;
+    private TextView userFriendsText;
     private Long userScore;
+    private Long userSubs;
+    private Long userFriends;
     private FirebaseFirestore db;
 
-    private ImageButton userbutton;
-
-    private ImageButton favoritesButton;
-
-    private ImageButton achieveListButton;
-
-    private ImageButton leaderListButton;
-
-    private ImageButton menuButton;
-
-    private ImageButton UsersListButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Window window = getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(ContextCompat.getColor(this, R.color.appBackGround));
+        }
 
         db = FirebaseFirestore.getInstance();
-
         CollectionReference achievementsRef = db.collection("Achievements");
 
         List<String> categories = new ArrayList<>();
 
-        List<String> favorites = new ArrayList<>();
 
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = mAuth.getCurrentUser();
 
-        DocumentReference mAuthDocRef = db.collection("Users").document(currentUser.getUid());
+        assert currentUser != null;
         welcomeMessage = findViewById(R.id.welcome_message);
 
+        TextView friendsListText = findViewById(R.id.friendsList);
+        TextView subscriptionsListText = findViewById(R.id.subscriptionsList);
+        TextView scoreText = findViewById(R.id.scoreTextView);
+
         userScoreText = findViewById(R.id.userScore);
+        userSubsText = findViewById(R.id.subsCountTextView);
+        userFriendsText = findViewById(R.id.friendsCountTextView);
 
-        //User user = new User();
+        DocumentReference mAuthDocRef = db.collection("Users").document(currentUser.getUid());
 
-        mAuthDocRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                if (documentSnapshot.exists()) {
-                    userName = documentSnapshot.getString("name");
+        mAuthDocRef.get().addOnSuccessListener(documentSnapshot -> {
+            if (documentSnapshot.exists()) {
+                userName = documentSnapshot.getString("name");
 
-                    userScore = documentSnapshot.getLong("score");
+                userScore = documentSnapshot.getLong("score");
 
-                    profileImageUrl = documentSnapshot.getString("profileImageUrl");
+                userSubs = documentSnapshot.getLong("subs");
 
-                    welcomeMessage.setText(userName);
+                userFriends = documentSnapshot.getLong("friendscount");
 
-                    userScoreText.setText("Счет " + userScore);
-                    // использовать имя пользователя
-                    listoffavorites(userName);
-                    setImage(profileImageUrl);
+                profileImageUrl = documentSnapshot.getString("profileImageUrl");
 
-                    //user.setName(userName);
-                    //user.setScore(Math.toIntExact(userScore));
+                welcomeMessage.setText(userName);
+
+                userFriendsText.setText("" + userFriends);
+
+                userScoreText.setText("" + userScore);
+
+                userSubsText.setText("" + userSubs);
+
+                listoffavorites(userName);
+                setImage(profileImageUrl);
 
 
-                } else {
-                    // документ не найден
-                }
+            } else {
+                // документ не найден
             }
         });
 
 
-        achievementsRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    List<String> achievementNames = new ArrayList<>();
-                    for (QueryDocumentSnapshot document : task.getResult()) {
-                        String category = document.getString("category");
+        friendsListText.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, MyFriendsList.class);
+            startActivity(intent);
+        });
 
-                        System.out.println("category " + category);
+        scoreText.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, MyCompletedAchievements.class);
+            startActivity(intent);
+        });
 
-                        if (category != null && !categories.contains(category)) {
-                            categories.add(category);
-                        }
+        subscriptionsListText.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, MySubscriptionsActivity.class);
+            startActivity(intent);
+        });
 
-                        String achievementName = document.getId();
-                        achievementNames.add(achievementName);
+        achievementsRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                List<String> achievementNames = new ArrayList<>();
+                for (QueryDocumentSnapshot document : task.getResult()) {
+                    String category = document.getString("category");
+
+                    System.out.println("category " + category);
+
+                    if (category != null && !categories.contains(category)) {
+                        categories.add(category);
                     }
-                    createButtons(categories, 500, 500, "scrollView1");
-                } else {
-                    Log.d(TAG, "Error getting achievements: ", task.getException());
+
+                    String achievementName = document.getId();
+                    achievementNames.add(achievementName);
                 }
+                createButtons(categories, 500, 500, "scrollView1");
+            } else {
+                Log.d(TAG, "Error getting achievements: ", task.getException());
             }
         });
 
-        favoritesButton = findViewById(R.id.imageButtonFavorites);
+        ImageButton favoritesButton = findViewById(R.id.imageButtonFavorites);
 
-        favoritesButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, ListOfFavoritesActivity.class);
-                startActivity(intent);
-            }
+        favoritesButton.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, ListOfFavoritesActivity.class);
+            startActivity(intent);
         });
 
-        userbutton = findViewById(R.id.userButton);
+        ImageButton userButton = findViewById(R.id.userButton);
 
-        leaderListButton = findViewById(R.id.imageButtonLeaderList);
+        ImageButton leaderListButton = findViewById(R.id.imageButtonLeaderList);
 
-        menuButton = findViewById(R.id.imageButtonMenu);
+        ImageButton menuButton = findViewById(R.id.imageButtonMenu);
 
-        favoritesButton = findViewById(R.id.imageButtonFavorites);
 
-        achieveListButton = findViewById(R.id.imageButtonAchieveList);
+        ImageButton achieveListButton = findViewById(R.id.imageButtonAchieveList);
 
-        ButtonSeasonAchieve = findViewById(R.id.imageButtonSeasonAchieve);
+        ImageButton buttonSeasonAchieve = findViewById(R.id.imageButtonSeasonAchieve);
 
-        UsersListButton = findViewById(R.id.imageButtonUsersList);
+        ImageButton usersListButton = findViewById(R.id.imageButtonUsersList);
 
-        ButtonSeasonAchieve.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, SeasonsAchievements.class);
-                startActivity(intent);
-            }
+        buttonSeasonAchieve.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, SeasonsAchievements.class);
+            startActivity(intent);
         });
 
-        leaderListButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, LeaderBoardActivity.class);
-                startActivity(intent);
-            }
+        leaderListButton.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, LeaderBoardActivity.class);
+            startActivity(intent);
         });
 
-        menuButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, MainActivity.class);
-                startActivity(intent);
-            }
+        menuButton.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, MainActivity.class);
+            startActivity(intent);
         });
 
-        achieveListButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, AchieveListActivity.class);
-                startActivity(intent);
-            }
+        achieveListButton.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, AchieveListActivity.class);
+            startActivity(intent);
         });
-        userbutton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, UserProfile.class);
-                //User user = new User("Имя пользователя", 1);
-                //intent.putExtra("user", user);
-                startActivity(intent);
-            }
+        userButton.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, UserProfile.class);
+            startActivity(intent);
         });
 
-        UsersListButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, UsersListActivity.class);
-                //User user = new User("Имя пользователя", 1);
-                //intent.putExtra("user", user);
-                startActivity(intent);
-            }
+        usersListButton.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, UsersListActivity.class);
+            startActivity(intent);
         });
 
     }
 
     private void createButtons(List<String> achievementNames, int w, int h, String layoutid) {
-        LinearLayout layout = findViewById(R.id.scrollView1);
         for (String name : achievementNames) {
-           /* Button button = new Button(this);
-            button.setText(name);
-            layout.addView(button);*/
 
             Button button = new Button(MainActivity.this);
             button.setText(name);
             button.setBackgroundColor(Color.BLUE);
 
-
-            /*LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(w, h);*/
             LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.WRAP_CONTENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
@@ -255,15 +219,12 @@ public class MainActivity extends AppCompatActivity {
             button.setTag(name);
 
 
-            button.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    // Обработка нажатия кнопки
-                    System.out.println("Category_key  " + name);
-                    Intent intent = new Intent(MainActivity.this, MainActivity2.class);
-                    intent.putExtra("Category_key", name);
-                    startActivity(intent);
-                }
+            button.setOnClickListener(v -> {
+                // Обработка нажатия кнопки
+                System.out.println("Category_key  " + name);
+                Intent intent = new Intent(MainActivity.this, MainActivity2.class);
+                intent.putExtra("Category_key", name);
+                startActivity(intent);
             });
 
             if (layoutid == "scrollView1") {
@@ -279,88 +240,75 @@ public class MainActivity extends AppCompatActivity {
 
     private void listoffavorites(String name) {
         CollectionReference favoritesRef = db.collection("Users");
-        favoritesRef.whereEqualTo("name", name).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    //List<String> achievementNames = new ArrayList<>();
-                    // Получаем документ пользователя Олег
-                    DocumentSnapshot userDoc = task.getResult().getDocuments().get(0);
+        favoritesRef.whereEqualTo("name", name).get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot userDoc = task.getResult().getDocuments().get(0);
 
-                    // Получаем массив ачивок пользователя Олег
-                    List<String> achievements = (List<String>) userDoc.get("favorites");
+                List<String> achievements = (List<String>) userDoc.get("favorites");
 
-                    // Создаем кнопки с именами ачивок
-                    for (String achievement : achievements) {
+                // Создаем кнопки с именами ачивок
+                for (String achievement : achievements) {
 
-                        if (achievement.length() > 10) {
-                            achievement = achievement.substring(0, 10) + "...";
-                        }
-                        Button button = new Button(MainActivity.this);
-                        button.setText(achievement);
-                        button.setTextSize(10);
-                        //button.setGravity(Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL);
-
-
-                        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
-                                LinearLayout.LayoutParams.MATCH_PARENT,
-                                LinearLayout.LayoutParams.MATCH_PARENT
-                        );
-                        layoutParams.setMargins(20, 20, 20, 20);
-                        button.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-
-                                Intent intent = new Intent(MainActivity.this, ListOfFavoritesActivity.class);
-                                startActivity(intent);
-
-                            }
-                        });
-                        button.setBackgroundResource(R.drawable.favoritesachievebackground);
-                        button.setLayoutParams(layoutParams);
-                        button.setTag(achievement);
-
-                        // Добавляем кнопку на экран
-                        LinearLayout scrollView = findViewById(R.id.favoritesLinearLayout);
-                        scrollView.addView(button);
-
-                        // createButtons(achievement, 500, 500, "favoritesLinearLayout");
+                    if (achievement.length() > 10) {
+                        achievement = achievement.substring(0, 10) + "...";
                     }
-
                     Button button = new Button(MainActivity.this);
-                    //button.setText(achievement);
+                    button.setText(achievement);
                     button.setTextSize(10);
-
-                    button.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-
-                            Intent intent = new Intent(MainActivity.this, AchieveListActivity.class);
-                            // intent.putExtra("Category_key", name);
-                            startActivity(intent);
-
-                        }
-                    });
-
                     //button.setGravity(Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL);
 
 
                     LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
-                            LinearLayout.LayoutParams.WRAP_CONTENT,
-                            LinearLayout.LayoutParams.WRAP_CONTENT
+                            LinearLayout.LayoutParams.MATCH_PARENT,
+                            LinearLayout.LayoutParams.MATCH_PARENT
                     );
                     layoutParams.setMargins(20, 20, 20, 20);
-                    button.setBackgroundResource(R.drawable.addfavoritesbutton);
+                    button.setOnClickListener(v -> {
+
+                        Intent intent = new Intent(MainActivity.this, ListOfFavoritesActivity.class);
+                        startActivity(intent);
+
+                    });
+                    button.setBackgroundResource(R.drawable.favoritesachievebackground);
                     button.setLayoutParams(layoutParams);
-                    //button.setTag(achievement);
+                    button.setTag(achievement);
 
                     // Добавляем кнопку на экран
                     LinearLayout scrollView = findViewById(R.id.favoritesLinearLayout);
                     scrollView.addView(button);
 
-                } else {
-                    Log.d(TAG, "Error getting achievements: ", task.getException());
+                    // createButtons(achievement, 500, 500, "favoritesLinearLayout");
                 }
+
+                Button button = new Button(MainActivity.this);
+                //button.setText(achievement);
+                button.setTextSize(10);
+
+                button.setOnClickListener(v -> {
+
+                    Intent intent = new Intent(MainActivity.this, AchieveListActivity.class);
+                    startActivity(intent);
+
+                });
+
+                //button.setGravity(Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL);
+
+
+                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                );
+                layoutParams.setMargins(20, 20, 20, 20);
+                button.setBackgroundResource(R.drawable.addfavoritesbutton);
+                button.setLayoutParams(layoutParams);
+                //button.setTag(achievement);
+
+                // Добавляем кнопку на экран
+                LinearLayout scrollView = findViewById(R.id.favoritesLinearLayout);
+                scrollView.addView(button);
+
+            } else {
+                Log.d(TAG, "Error getting achievements: ", task.getException());
             }
         });
     }
@@ -368,49 +316,45 @@ public class MainActivity extends AppCompatActivity {
     public void setImage(String imageRef) {
 
         StorageReference storageRef = FirebaseStorage.getInstance().getReference();
-        //StorageReference imageRef1 = FirebaseStorage.getInstance().getReferenceFromUrl(a);
-
-        //StorageReference imageRef1 = storageRef.child(a + "/UserAvatar");
 
         StorageReference imageRef1 = storageRef.child(imageRef);
 
         System.out.println("URL " + imageRef1);
 
         ImageButton userButton = findViewById(R.id.userButton);
-        imageRef1.getMetadata().addOnSuccessListener(new OnSuccessListener<StorageMetadata>() {
-            @Override
-            public void onSuccess(StorageMetadata storageMetadata) {
-                String mimeType = storageMetadata.getName();
-                System.out.println("mimeType " + mimeType);
-                if (mimeType != null && mimeType.startsWith("User")) {
-                    imageRef1.getBytes(Long.MAX_VALUE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-                        @Override
-                        public void onSuccess(byte[] bytes) {
-                            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                            Bitmap circleBitmap = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
-                            BitmapShader shader = new BitmapShader(bitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
-                            Paint paint = new Paint();
-                            paint.setShader(shader);
+        imageRef1.getMetadata().addOnSuccessListener(storageMetadata -> {
+            String mimeType = storageMetadata.getName();
+            System.out.println("mimeType " + mimeType);
+            if (mimeType != null && mimeType.startsWith("User")) {
+                imageRef1.getBytes(Long.MAX_VALUE).addOnSuccessListener(bytes -> {
+                    Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                    Bitmap circleBitmap = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+                    BitmapShader shader = new BitmapShader(bitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
+                    Paint paint = new Paint();
+                    paint.setShader(shader);
 
-                            Canvas canvas = new Canvas(circleBitmap);
-                            if (bitmap.getHeight() > bitmap.getWidth()){
-                                canvas.drawCircle(bitmap.getWidth() / 2f, bitmap.getHeight() / 2f, bitmap.getWidth() / 2f, paint);
-                            }else{
-                                canvas.drawCircle(bitmap.getWidth() / 2f, bitmap.getHeight() / 2f, bitmap.getHeight() / 2f, paint);
-                            }
-                            userButton.setImageBitmap(circleBitmap);
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception exception) {
-                            // Handle any errors
-                        }
-                    });
-                }
+                    Canvas canvas = new Canvas(circleBitmap);
+                    if (bitmap.getHeight() > bitmap.getWidth()){
+                        canvas.drawCircle(bitmap.getWidth() / 2f, bitmap.getHeight() / 2f, bitmap.getWidth() / 2f, paint);
+                    }else{
+                        canvas.drawCircle(bitmap.getWidth() / 2f, bitmap.getHeight() / 2f, bitmap.getHeight() / 2f, paint);
+                    }
+                    userButton.setImageBitmap(circleBitmap);
+                }).addOnFailureListener(exception -> {
+                    // Handle any errors
+                });
             }
         });
     }
     public void onBackPressed() {
         // Пустая реализация, чтобы ничего не происходило при нажатии кнопки "Назад"
+    }
+    protected void onPause() {
+        super.onPause();
+        overridePendingTransition(0, 0);
+    }
+    protected void onResume() {
+        super.onResume();
+        overridePendingTransition(0, 0);
     }
 }

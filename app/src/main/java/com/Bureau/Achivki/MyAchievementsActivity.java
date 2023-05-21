@@ -227,5 +227,12 @@ public class MyAchievementsActivity extends AppCompatActivity {
                 LinearLayout.LayoutParams.WRAP_CONTENT
         );
     }
-
+    protected void onPause() {
+        super.onPause();
+        overridePendingTransition(0, 0);
+    }
+    protected void onResume() {
+        super.onResume();
+        overridePendingTransition(0, 0);
+    }
 }

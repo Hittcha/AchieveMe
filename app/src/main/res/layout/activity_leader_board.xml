@@ -13,7 +13,6 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         app:layout_constraintBottom_toTopOf="@+id/group_2"
         app:layout_constraintEnd_toEndOf="parent"
@@ -30,6 +29,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_marginTop="8dp"
                 android:background="@drawable/leaderfirstplacebackground"
                 android:orientation="horizontal">
 
@@ -320,7 +320,7 @@
             android:layout_weight="1"
             android:background="@null"
             android:scaleType="center"
-            app:srcCompat="@drawable/menuiconclicked" />
+            app:srcCompat="@drawable/menuicon" />
 
         <ImageButton
             android:id="@+id/imageButtonLeaderList"
@@ -329,7 +329,7 @@
             android:layout_weight="1"
             android:background="@null"
             android:scaleType="center"
-            android:src="@drawable/crownicon" />
+            android:src="@drawable/crowniconclicked" />
 
         <ImageButton
             android:id="@+id/imageButtonUsersList"

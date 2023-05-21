@@ -1,11 +1,16 @@
 package com.Bureau.Achivki;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
@@ -16,19 +21,25 @@ import java.util.Random;
 
 public class StartActivity extends AppCompatActivity {
 
-    private final String appVersion = "0.2";
+    private final String appVersion = "0.25";
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
-        //setContentView(R.layout.activity_login);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Window window = getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(ContextCompat.getColor(this, R.color.appBackGround));
+        }
 
         FirebaseApp.initializeApp(this);
 
         TextView text1 = findViewById(R.id.textView1);
         TextView text2 = findViewById(R.id.textView2);
+        TextView text3 = findViewById(R.id.textView3);
 
 
         boolean result = random50_50();
@@ -63,11 +74,14 @@ public class StartActivity extends AppCompatActivity {
                         redirectToMainScreen();
                     }
                 }else{
-
+                    text1.setVisibility(View.GONE);
+                    text2.setVisibility(View.GONE);
+                    text3.setVisibility(View.VISIBLE);
                 }
 
             } else {
                 // документ не найден
+                Toast.makeText(StartActivity.this, "Не удалось установить соединение с базой данных", Toast.LENGTH_SHORT).show();
             }
         });
 

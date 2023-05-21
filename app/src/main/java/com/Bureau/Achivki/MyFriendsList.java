@@ -13,11 +13,15 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Shader;
 import android.hardware.display.DisplayManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -61,6 +65,20 @@ public class MyFriendsList extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_friends_list);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Window window = getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(ContextCompat.getColor(this, R.color.StatusBarColor));
+        }
+
+        androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.toolbar);
+
+        setSupportActionBar(toolbar);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_back_arrow);
+        getSupportActionBar().setTitle("Мои подписки");
 
         mAuth = FirebaseAuth.getInstance();
 
@@ -216,6 +234,15 @@ public class MyFriendsList extends AppCompatActivity {
 
         ImageButton imageUserButton = blockFriends.findViewById(R.id.imageUserButton);
 
+        imageUserButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MyFriendsList.this, OtherUserActivity.class);
+                intent.putExtra("User_token", key);
+                startActivity(intent);
+            }
+        });
+
         StorageReference storageRef = FirebaseStorage.getInstance().getReference();
         StorageReference userImageRef = storageRef.child(avatarUrl);
         try {
@@ -281,5 +308,21 @@ public class MyFriendsList extends AppCompatActivity {
             mAuthDocRefOther.set(friends);
 
         });
+    }
+    protected void onPause() {
+        super.onPause();
+        overridePendingTransition(0, 0);
+    }
+    protected void onResume() {
+        super.onResume();
+        overridePendingTransition(0, 0);
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

@@ -4,15 +4,20 @@ import static android.content.ContentValues.TAG;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -56,6 +61,25 @@ public class SeasonAchievementsDescriptionActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_season_achievements_description);
 
+        Intent intent = getIntent();
+        String achieveName = intent.getStringExtra("Achieve_key");
+        String categoryName = intent.getStringExtra("Category_key");
+        String userName = intent.getStringExtra("User_name");
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Window window = getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(ContextCompat.getColor(this, R.color.StatusBarColor));
+        }
+
+        androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.toolbar);
+
+        setSupportActionBar(toolbar);
+
+        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        //getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_back_arrow);
+        getSupportActionBar().setTitle(achieveName);
+
         addButton = findViewById(R.id.submit_button);
 
         delButton = findViewById(R.id.delete_button);
@@ -67,11 +91,6 @@ public class SeasonAchievementsDescriptionActivity extends AppCompatActivity {
         descMessage = findViewById(R.id.desc_message);
 
         confirmButton = findViewById(R.id.confirmButton);
-
-        Intent intent = getIntent();
-        String achieveName = intent.getStringExtra("Achieve_key");
-        String categoryName = intent.getStringExtra("Category_key");
-        String userName = intent.getStringExtra("User_name");
 
 
         boolean received = getIntent().getBooleanExtra("Is_Received", false);
@@ -337,6 +356,15 @@ public class SeasonAchievementsDescriptionActivity extends AppCompatActivity {
         addButton.setVisibility(View.GONE); // скрываем кнопку
         confirmButton.setVisibility(View.VISIBLE); // отображаем кнопку
         delButton.setVisibility(View.GONE);
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            Intent intent = new Intent(SeasonAchievementsDescriptionActivity.this, SeasonsAchievements.class);
+            startActivity(intent);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
 }

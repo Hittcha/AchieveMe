@@ -5,7 +5,18 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#1D1D1D"
+    android:theme="@style/AppTheme"
     tools:context=".MainActivity2">
+
+  <androidx.appcompat.widget.Toolbar
+      android:id="@+id/toolbar"
+      android:layout_width="match_parent"
+      android:layout_height="?attr/actionBarSize"
+      android:background="?attr/colorPrimary"
+      android:elevation="4dp"
+      android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+      android:visibility="visible"
+      app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
 
   <LinearLayout
@@ -23,7 +34,7 @@
         android:layout_weight="1"
         android:background="@null"
         android:scaleType="center"
-        app:srcCompat="@drawable/menuiconclicked" />
+        app:srcCompat="@drawable/menuicon" />
 
     <ImageButton
         android:id="@+id/imageButtonLeaderList"
@@ -94,7 +105,7 @@
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintHorizontal_bias="0.428"
       app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toTopOf="parent"
+      app:layout_constraintTop_toBottomOf="@+id/toolbar"
       app:layout_constraintVertical_bias="0.158">
 
     <TextView
@@ -120,19 +131,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.96" />
-
-    <ImageButton
-        android:id="@+id/imageButtonBack"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@null"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.045"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.106"
-        app:srcCompat="@drawable/backarroybutton" />
 
     <TextView
         android:id="@+id/categoryNameTextView"

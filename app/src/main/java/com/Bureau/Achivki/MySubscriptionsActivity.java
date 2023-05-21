@@ -3,6 +3,7 @@ package com.Bureau.Achivki;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -11,9 +12,13 @@ import android.graphics.BitmapShader;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Shader;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -55,6 +60,21 @@ public class MySubscriptionsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_subscriptions);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Window window = getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(ContextCompat.getColor(this, R.color.StatusBarColor));
+        }
+
+        androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.toolbar);
+
+        setSupportActionBar(toolbar);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_back_arrow);
+        getSupportActionBar().setTitle("Мои подписчики");
+
         mAuth = FirebaseAuth.getInstance();
 
         db = FirebaseFirestore.getInstance();
@@ -202,7 +222,16 @@ public class MySubscriptionsActivity extends AppCompatActivity {
             }
         });
 
-        ImageView imageView = blockFriends.findViewById(R.id.imageUserButton);
+        ImageButton imageUserButton = blockFriends.findViewById(R.id.imageUserButton);
+
+        imageUserButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MySubscriptionsActivity.this, OtherUserActivity.class);
+                intent.putExtra("User_token", key);
+                startActivity(intent);
+            }
+        });
 
         StorageReference storageRef = FirebaseStorage.getInstance().getReference();
         StorageReference userImageRef = storageRef.child(avatarUrl);
@@ -239,7 +268,7 @@ public class MySubscriptionsActivity extends AppCompatActivity {
                     }
 
 
-                    imageView.setImageBitmap(circleBitmap);
+                    imageUserButton.setImageBitmap(circleBitmap);
 
                     //imageView.setAdjustViewBounds(true);
                 }
@@ -247,5 +276,21 @@ public class MySubscriptionsActivity extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+    protected void onPause() {
+        super.onPause();
+        overridePendingTransition(0, 0);
+    }
+    protected void onResume() {
+        super.onResume();
+        overridePendingTransition(0, 0);
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

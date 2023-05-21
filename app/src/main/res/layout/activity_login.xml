@@ -42,12 +42,13 @@
         android:id="@+id/activityLogin_backButton"
         android:layout_width="60dp"
         android:layout_height="60dp"
-        android:scaleType="centerCrop"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:src="@drawable/backarroybutton"
+        android:contentDescription="TODO"
         android:onClick="backButtonClick"
-        android:contentDescription="TODO" />
+        android:scaleType="centerCrop"
+        android:src="@drawable/backarroybutton"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/activityLogin_logo"

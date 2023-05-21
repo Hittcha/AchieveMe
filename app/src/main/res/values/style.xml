@@ -35,6 +35,16 @@
     </style>
     <style name="supportText">
         <item name="android:textSize">30sp</item>
+        <item name="android:textColor">#FFFFFF</item>
     </style>
+
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- ... -->
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="colorPrimary">#4A4C4D</item>
+        <item name="android:textColorPrimary">#FFFFFF</item> <!-- Цвет текста -->
+    </style>
+
 
 </resources>

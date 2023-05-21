@@ -4,12 +4,17 @@ import static android.content.ContentValues.TAG;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -64,6 +69,25 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_achievement_description);
 
+        Intent intent = getIntent();
+        String achieveName = intent.getStringExtra("Achieve_key");
+        String categoryName = intent.getStringExtra("Category_key");
+        String userName = intent.getStringExtra("User_name");
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Window window = getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(ContextCompat.getColor(this, R.color.StatusBarColor));
+        }
+
+        androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.toolbar);
+
+        setSupportActionBar(toolbar);
+
+        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        //getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_back_arrow);
+        getSupportActionBar().setTitle(achieveName);
+
         addButton = findViewById(R.id.submit_button);
 
         delButton = findViewById(R.id.delete_button);
@@ -76,10 +100,6 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
 
         confirmButton = findViewById(R.id.confirmButton);
 
-        Intent intent = getIntent();
-        String achieveName = intent.getStringExtra("Achieve_key");
-        String categoryName = intent.getStringExtra("Category_key");
-        String userName = intent.getStringExtra("User_name");
 
 
         boolean received = getIntent().getBooleanExtra("Is_Received", false);
@@ -132,6 +152,7 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //onBackPressed();
                 Intent intent = new Intent(AchievementDescriptionActivity.this, MainActivity2.class);
                 intent.putExtra("Category_key", categoryName);
                 startActivity(intent);
@@ -536,4 +557,5 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
         confirmButton.setVisibility(View.VISIBLE); // отображаем кнопку
         delButton.setVisibility(View.GONE);
     }
+
 }

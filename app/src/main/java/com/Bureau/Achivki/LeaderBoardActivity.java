@@ -4,6 +4,7 @@ import static android.content.ContentValues.TAG;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -14,10 +15,13 @@ import android.graphics.Paint;
 import android.graphics.Shader;
 import android.media.Image;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -90,6 +94,12 @@ public class LeaderBoardActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_leader_board);
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Window window = getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(ContextCompat.getColor(this, R.color.StatusBarColor));
+        }
+
         textviewListOfLeaders.add((TextView) findViewById(R.id.textPlace1));
         textviewListOfLeaders.add((TextView) findViewById(R.id.textPlace2));
         textviewListOfLeaders.add((TextView) findViewById(R.id.textPlace3));
@@ -128,6 +138,14 @@ public class LeaderBoardActivity extends AppCompatActivity {
         StorageReference imageRef = storageRef.child("users").child(mAuth.getCurrentUser().getUid()).child("UserAvatar");
 
         userAvatarView = findViewById(R.id.userAvatar);
+
+        userAvatarView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(LeaderBoardActivity.this, UserProfile.class);
+                startActivity(intent);
+            }
+        });
 
 
 
@@ -443,5 +461,12 @@ public class LeaderBoardActivity extends AppCompatActivity {
             }
         });
     }
-
+    protected void onPause() {
+        super.onPause();
+        overridePendingTransition(0, 0);
+    }
+    protected void onResume() {
+        super.onResume();
+        overridePendingTransition(0, 0);
+    }
 }

@@ -17,12 +17,19 @@ import android.graphics.Rect;
 import android.graphics.Shader;
 import android.hardware.display.DisplayManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
@@ -32,6 +39,7 @@ import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -41,6 +49,8 @@ import android.widget.ToggleButton;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
@@ -110,7 +120,11 @@ public class UserProfile extends AppCompatActivity {
 
     private ImageButton menuButton;
 
+    private ImageButton btnOpenMenu;
+    private DrawerLayout drawerLayout;
+
     private TextView scoreText;
+    Intent intent;
 
 
     private static final int PERMISSION_REQUEST_CODE = 100;
@@ -122,6 +136,71 @@ public class UserProfile extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_profile);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Window window = getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(ContextCompat.getColor(this, R.color.appBackGround));
+        }
+
+        ImageButton backButton = findViewById(R.id.imageButtonBack);
+
+        Animation anim = AnimationUtils.loadAnimation(this, R.anim.pulse);
+        backButton.setOnTouchListener((v, event) -> {
+            if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                v.startAnimation(anim);
+
+            }
+
+            onBackPressed();
+            return false;
+        });
+
+
+        drawerLayout = findViewById(R.id.drawer_layout);
+        btnOpenMenu = findViewById(R.id.btn_open_menu);
+        btnOpenMenu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                drawerLayout.openDrawer(GravityCompat.END);
+            }
+        });
+        NavigationView navigationView = findViewById(R.id.navigation_view);
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                // Обработка выбранного пункта меню
+                switch (item.getItemId()) {
+                    case R.id.nav_item1:
+                        // Действие при выборе настройки 1
+                        /*try {
+                            Thread.sleep(100); // Здесь указывается продолжительность паузы в миллисекундах
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }*/
+                        intent = new Intent(UserProfile.this, SuggestAchieveActivity.class);
+
+                        //startActivity(intent);
+                        //setContentView(R.layout.activity_main);
+                        break;
+                    case R.id.nav_item2:
+                        // Действие при выборе настройки 2
+                        intent = new Intent(UserProfile.this, MyAchievementsActivity.class);
+                        break;
+                }
+
+                // Закрытие меню после выбора пункта
+                //startActivity(intent);
+                drawerLayout.closeDrawer(GravityCompat.END);
+                /*try {
+                    Thread.sleep(100); // Здесь указывается продолжительность паузы в миллисекундах
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }*/
+                startActivity(intent);
+                return true;
+            }
+        });
 
         mAuth = FirebaseAuth.getInstance();
 
@@ -204,23 +283,6 @@ public class UserProfile extends AppCompatActivity {
             }
         });
 
-        suggestAchieveButton = findViewById(R.id.SuggestAchieve);
-        suggestAchieveButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(UserProfile.this, SuggestAchieveActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        myAchievementsButton = findViewById(R.id.myAchievementsButton);
-        myAchievementsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(UserProfile.this, MyAchievementsActivity.class);
-                startActivity(intent);
-            }
-        });
         mStorageRef = FirebaseStorage.getInstance().getReference("users").child(mAuth.getCurrentUser().getUid());
 
         System.out.println("value = " + value);
@@ -669,6 +731,14 @@ public class UserProfile extends AppCompatActivity {
             usersRef.set(userAchievements);
 
         });
+    }
+    protected void onPause() {
+        super.onPause();
+        overridePendingTransition(0, 0);
+    }
+    protected void onResume() {
+        super.onResume();
+        overridePendingTransition(0, 0);
     }
 
 }

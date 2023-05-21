@@ -117,18 +117,78 @@
                     app:layout_constraintTop_toTopOf="parent">
 
                     <TextView
+                        android:id="@+id/friendsCountTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0"
+                        android:textColor="@color/white"
+                        app:layout_constraintEnd_toEndOf="@+id/friendsList"
+                        app:layout_constraintHorizontal_bias="0.516"
+                        app:layout_constraintStart_toStartOf="@+id/friendsList"
+                        app:layout_constraintTop_toBottomOf="@+id/friendsList" />
+
+                    <TextView
+                        android:id="@+id/subsCountTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0"
+                        android:textColor="@color/white"
+                        app:layout_constraintEnd_toEndOf="@+id/subscriptionsList"
+                        app:layout_constraintHorizontal_bias="0.517"
+                        app:layout_constraintStart_toStartOf="@+id/subscriptionsList"
+                        app:layout_constraintTop_toBottomOf="@+id/subscriptionsList" />
+
+                    <TextView
+                        android:id="@+id/friendsList"
+                        android:layout_width="wrap_content"
+                        android:layout_height="24dp"
+                        android:layout_marginTop="36dp"
+                        android:layout_marginEnd="16dp"
+                        android:text="Подписки"
+                        android:textColor="@color/white"
+                        android:textSize="15sp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.655"
+                        app:layout_constraintStart_toEndOf="@+id/subscriptionsList"
+                        app:layout_constraintTop_toBottomOf="@+id/welcome_message" />
+
+                    <TextView
+                        android:id="@+id/subscriptionsList"
+                        android:layout_width="95dp"
+                        android:layout_height="24dp"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginTop="36dp"
+                        android:layout_marginEnd="20dp"
+                        android:text="Подписчики"
+                        android:textColor="@color/white"
+                        android:textSize="15sp"
+                        app:layout_constraintStart_toEndOf="@+id/scoreTextView"
+                        app:layout_constraintTop_toBottomOf="@+id/welcome_message" />
+
+                    <TextView
                         android:id="@+id/userScore"
-                        android:layout_width="100dp"
-                        android:layout_height="28dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
+                        android:layout_marginEnd="8dp"
+                        android:text="0"
+                        android:textColor="@color/white"
+                        app:layout_constraintEnd_toEndOf="@+id/scoreTextView"
+                        app:layout_constraintHorizontal_bias="0.705"
+                        app:layout_constraintStart_toStartOf="@+id/scoreTextView"
+                        app:layout_constraintTop_toBottomOf="@+id/scoreTextView" />
+
+                    <TextView
+                        android:id="@+id/scoreTextView"
+                        android:layout_width="0dp"
+                        android:layout_height="24dp"
+                        android:layout_marginStart="24dp"
+                        android:layout_marginTop="36dp"
                         android:text="Счет"
                         android:textColor="@color/white"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.102"
+                        android:textSize="15sp"
                         app:layout_constraintStart_toEndOf="@+id/userButton"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintVertical_bias="0.368" />
+                        app:layout_constraintTop_toBottomOf="@+id/welcome_message" />
 
                     <ImageButton
                         android:id="@+id/userButton"

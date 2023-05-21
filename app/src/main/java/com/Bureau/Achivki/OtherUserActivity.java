@@ -5,6 +5,7 @@ import static android.content.ContentValues.TAG;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
 
 
 import android.content.Intent;
@@ -14,10 +15,16 @@ import android.graphics.BitmapShader;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Shader;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.HorizontalScrollView;
@@ -94,6 +101,26 @@ public class OtherUserActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_other_user);
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Window window = getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(ContextCompat.getColor(this, R.color.appBackGround));
+        }
+
+        ImageButton backButton = findViewById(R.id.imageButtonBack);
+
+        Animation anim = AnimationUtils.loadAnimation(this, R.anim.pulse);
+        backButton.setOnTouchListener((v, event) -> {
+            if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                v.startAnimation(anim);
+
+            }
+
+            onBackPressed();
+            return false;
+        });
+
+
         Intent intent = getIntent();
         String userToken = intent.getStringExtra("User_token");
 
@@ -139,9 +166,9 @@ public class OtherUserActivity extends AppCompatActivity {
 
                                                                    userFriends = documentSnapshot.getLong("friendscount");
 
-                                                                   friendsCountText.setText("Подписки: " + userFriends);
+                                                                   friendsCountText.setText("" + userFriends);
 
-                                                                   subsCountText.setText("Подписчики: " + userSubs);
+                                                                   subsCountText.setText("" + userSubs);
 
 
 
@@ -150,7 +177,7 @@ public class OtherUserActivity extends AppCompatActivity {
                                                                    setSubscribeButton(otherUserName, myID, userKey, profileImageUrl, mAuthDocRef, userName, mAuthDocRefOther, myprofileImageUrl);
 
                                                                    welcomeMessage.setText(otherUserName);
-                                                                   userScoreText.setText("Счет " + userScore);
+                                                                   userScoreText.setText("" + userScore);
                                                                    //userScore.
                                                                    // использовать имя пользователя
                                                                    listoffavorites(otherUserName, userToken);
@@ -428,7 +455,7 @@ public class OtherUserActivity extends AppCompatActivity {
                                 LinearLayout.LayoutParams.MATCH_PARENT,
                                 LinearLayout.LayoutParams.MATCH_PARENT
                         );
-                        layoutParams.setMargins(20, 20, 20, 20);
+                        layoutParams.setMargins(20, 8, 20, 8);
 
                         button.setBackgroundResource(R.drawable.favoritesachievebackground);
                         button.setLayoutParams(layoutParams);
@@ -614,5 +641,13 @@ public class OtherUserActivity extends AppCompatActivity {
             usersRef.set(userAchievements);
 
         });
+    }
+    protected void onPause() {
+        super.onPause();
+        overridePendingTransition(0, 0);
+    }
+    protected void onResume() {
+        super.onResume();
+        overridePendingTransition(0, 0);
     }
 }
