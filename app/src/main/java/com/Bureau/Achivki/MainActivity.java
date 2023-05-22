@@ -219,13 +219,26 @@ public class MainActivity extends AppCompatActivity {
             button.setTag(name);
 
 
-            button.setOnClickListener(v -> {
+            button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // Обработка нажатия кнопки
+                    System.out.println("Category_key  " + name);
+                    Intent intent = new Intent(MainActivity.this, MainActivity2.class);
+                    intent.putExtra("Category_key", name);
+                    startActivity(intent);
+
+                }
+            });
+
+
+           /* button.setOnClickListener(v -> {
                 // Обработка нажатия кнопки
                 System.out.println("Category_key  " + name);
                 Intent intent = new Intent(MainActivity.this, MainActivity2.class);
                 intent.putExtra("Category_key", name);
                 startActivity(intent);
-            });
+            });*/
 
             if (layoutid == "scrollView1") {
                 LinearLayout scrollView = findViewById(R.id.scrollView1);
@@ -346,9 +359,9 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-    public void onBackPressed() {
+    /*public void onBackPressed() {
         // Пустая реализация, чтобы ничего не происходило при нажатии кнопки "Назад"
-    }
+    }*/
     protected void onPause() {
         super.onPause();
         overridePendingTransition(0, 0);
