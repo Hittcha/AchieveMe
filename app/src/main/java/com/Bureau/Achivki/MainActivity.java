@@ -13,6 +13,7 @@ import android.graphics.Shader;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -131,7 +132,7 @@ public class MainActivity extends AppCompatActivity {
 
         achievementsRef.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
-                List<String> achievementNames = new ArrayList<>();
+                //List<String> achievementNames = new ArrayList<>();
                 for (QueryDocumentSnapshot document : task.getResult()) {
                     String category = document.getString("category");
 
@@ -141,8 +142,8 @@ public class MainActivity extends AppCompatActivity {
                         categories.add(category);
                     }
 
-                    String achievementName = document.getId();
-                    achievementNames.add(achievementName);
+                    //String achievementName = document.getId();
+                    //achievementNames.add(achievementName);
                 }
                 createButtons(categories, 500, 500, "scrollView1");
             } else {
@@ -204,6 +205,8 @@ public class MainActivity extends AppCompatActivity {
     private void createButtons(List<String> achievementNames, int w, int h, String layoutid) {
         for (String name : achievementNames) {
 
+            //String test = name;
+
             Button button = new Button(MainActivity.this);
             button.setText(name);
             button.setBackgroundColor(Color.BLUE);
@@ -214,9 +217,18 @@ public class MainActivity extends AppCompatActivity {
             );
 
             layoutParams.setMargins(20, 20, 20, 20);
-            button.setBackgroundResource(R.drawable.template);
+
+            if (name.equals("Красноярск")){
+                button.setBackgroundResource(R.drawable.template_kras);
+                System.out.println("template_kras  " + name);
+            }else{
+                button.setBackgroundResource(R.drawable.template);
+                System.out.println("template_kras  " + name);
+            }
+            //button.setBackgroundResource(R.drawable.template);
             button.setLayoutParams(layoutParams);
             button.setTag(name);
+            //button.setGravity(Gravity.TOP);
 
 
             button.setOnClickListener(new View.OnClickListener() {
@@ -359,9 +371,9 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-    /*public void onBackPressed() {
+    public void onBackPressed() {
         // Пустая реализация, чтобы ничего не происходило при нажатии кнопки "Назад"
-    }*/
+    }
     protected void onPause() {
         super.onPause();
         overridePendingTransition(0, 0);
