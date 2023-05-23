@@ -100,6 +100,19 @@
         app:layout_constraintBottom_toTopOf="@id/ActivityReg_userName_edit_text"
         app:layout_constraintStart_toStartOf="@id/ActivityLogin_vertical_guidelineLeft"/>
 
+    <ImageButton
+        android:id="@+id/activityLogin_backButton"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:contentDescription="TODO"
+        android:onClick="backButtonClick"
+        android:scaleType="centerCrop"
+        android:src="@drawable/backarroybutton"
+        android:visibility="visible"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="@color/falseColor"/>
+
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/ActivityLogin_guideline"
         android:layout_width="wrap_content"
