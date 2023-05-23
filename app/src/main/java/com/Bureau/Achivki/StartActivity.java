@@ -94,7 +94,7 @@ public class StartActivity extends AppCompatActivity {
 
     private void redirectToLoginScreen() {
         // Здесь перенаправление пользователя на экран авторизации.
-        Intent intent = new Intent(StartActivity.this, LogInActivity.class);
+        Intent intent = new Intent(StartActivity.this, StartMainActivity.class);
         startActivity(intent);
     }
     private void redirectToMainScreen() {
