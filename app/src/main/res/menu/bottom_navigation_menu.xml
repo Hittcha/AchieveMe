@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/navigation_home"
+        android:icon="@drawable/menuicon"
+        android:title="Меню" />
+
+    <item
+        android:id="@+id/navigation_leaders"
+        android:icon="@drawable/crownicon"
+        android:title="Лидеры" />
+
+    <item
+        android:id="@+id/users_list"
+        android:icon="@drawable/otherusers"
+        android:title="Пользователи" />
+
+    <item
+        android:id="@+id/navigation_achievelist"
+        android:icon="@drawable/achievelist"
+        android:title="Категории" />
+
+    <item
+        android:id="@+id/navigation_favorites"
+        android:icon="@drawable/favoritesicon"
+        android:title="Избранное" />
+</menu>
