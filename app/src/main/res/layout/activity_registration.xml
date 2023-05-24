@@ -4,46 +4,135 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".RegistrationActivity">
-
-    <LinearLayout
-        android:layout_width="253dp"
-        android:layout_height="280dp"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.607">
-
+    tools:context=".RegistrationActivity"
+    android:background="@color/Primary">
 
         <EditText
+            style="@style/editText_style"
             android:id="@+id/ActivityLogin_email_edit_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="@id/ActivityLogin_guidelineTop"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/ActivityLogin_password_edit_text"
+            app:layout_constraintVertical_chainStyle="spread"
             android:hint="@string/email_hint"
             android:inputType="textEmailAddress" />
 
         <EditText
+            style="@style/editText_style"
             android:id="@+id/ActivityLogin_password_edit_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/ActivityLogin_email_edit_text"
+            app:layout_constraintBottom_toTopOf="@id/ActivityReg_userName_edit_text"
             android:hint="@string/password_hint"
             android:inputType="textPassword" />
 
         <EditText
-            android:id="@+id/userName_edit_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            style="@style/editText_style"
+            android:id="@+id/ActivityReg_userName_edit_text"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/ActivityLogin_password_edit_text"
+            app:layout_constraintBottom_toBottomOf="@id/ActivityLogin_guideline"
             android:hint="@string/userName_hint"
             android:inputType="textEmailAddress" />
 
         <Button
+            style="@style/button_style"
             android:id="@+id/ActivityLogin_register_button"
-            android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:text="@string/register_button_text" />
+            android:text="@string/register_button_text"
+            app:layout_constraintTop_toTopOf="@id/ActivityLogin_guideline"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            />
 
-    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/activityLogin_logo"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/activityLogin_textLogo"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintVertical_chainStyle="packed"
+        android:src="@drawable/ellipse_12"
+        android:contentDescription="TODO" />
+
+    <TextView
+        android:id="@+id/activityLogin_textLogo"
+        style="@style/text_logo"
+        android:textSize="30sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/app_name"
+        app:layout_constraintTop_toBottomOf="@id/activityLogin_logo"
+        app:layout_constraintBottom_toTopOf="@id/ActivityLogin_guidelineTop"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <TextView
+        style="@style/supportText"
+        android:id="@+id/activityRegistration_EmailSupportText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ваш Е-mail"
+        app:layout_constraintTop_toTopOf="@id/ActivityLogin_guidelineTop"
+        app:layout_constraintBottom_toTopOf="@id/ActivityLogin_email_edit_text"
+        app:layout_constraintStart_toStartOf="@id/ActivityLogin_vertical_guidelineLeft"/>
+    <TextView
+        android:id="@+id/activityRegistration_PasswordSupportText"
+        style="@style/supportText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ваш пароль"
+        app:layout_constraintTop_toBottomOf="@id/ActivityLogin_email_edit_text"
+        app:layout_constraintBottom_toTopOf="@id/ActivityLogin_password_edit_text"
+        app:layout_constraintStart_toStartOf="@id/ActivityLogin_vertical_guidelineLeft"/>
+    <TextView
+        android:id="@+id/activityRegistration_LoginSupportText"
+        style="@style/supportText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ваш логин"
+        app:layout_constraintTop_toBottomOf="@id/ActivityLogin_password_edit_text"
+        app:layout_constraintBottom_toTopOf="@id/ActivityReg_userName_edit_text"
+        app:layout_constraintStart_toStartOf="@id/ActivityLogin_vertical_guidelineLeft"/>
+
+    <ImageButton
+        android:id="@+id/activityLogin_backButton"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:contentDescription="TODO"
+        android:onClick="backButtonClick"
+        android:scaleType="centerCrop"
+        android:src="@drawable/backarroybutton"
+        android:visibility="visible"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="@color/falseColor"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/ActivityLogin_guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.8" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/ActivityLogin_guidelineTop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.33" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/ActivityLogin_vertical_guidelineLeft"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.15"/>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

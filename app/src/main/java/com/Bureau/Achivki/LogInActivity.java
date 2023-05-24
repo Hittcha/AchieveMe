@@ -40,17 +40,17 @@ public class LogInActivity extends AppCompatActivity {
 
         emailEditText = findViewById(R.id.ActivityLogin_email_edit_text);
         passwordEditText = findViewById(R.id.ActivityLogin_password_edit_text);
-        registerButton = findViewById(R.id.ActivityLogin_register_button);
+//        registerButton = findViewById(R.id.ActivityLogin_register_button);
         loginButton = findViewById(R.id.ActivityLogin_login_button);
 
 
-        registerButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(LogInActivity.this, RegistrationActivity.class);
-                startActivity(intent);
-            }
-        });
+//        registerButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent intent = new Intent(LogInActivity.this, RegistrationActivity.class);
+//                startActivity(intent);
+//            }
+//        });
 
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -75,5 +75,9 @@ public class LogInActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    public void backButtonClick(View view) {
+        finish();
     }
 }

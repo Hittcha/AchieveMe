@@ -21,10 +21,11 @@
 
     <color name="backcolor">#3B3D3E</color>
 
-    <color name="Primary">#1D1D1D</color>
+    <color name="Primary">#232323</color>
     <color name="button">#FDD835</color>
     <color name="hintColor">#939393</color>
     <color name="editTextColor">#585858</color>
+    <color name="falseColor">#00FFFFFF</color>
 
     <color name="appBackGround">#1D1D1D</color>
     <color name="StatusBarColor">#4A4C4D</color>

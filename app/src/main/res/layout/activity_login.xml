@@ -46,9 +46,10 @@
         android:onClick="backButtonClick"
         android:scaleType="centerCrop"
         android:src="@drawable/backarroybutton"
-        android:visibility="gone"
+        android:visibility="visible"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="@color/falseColor"/>
 
     <ImageView
         android:id="@+id/activityLogin_logo"
@@ -94,14 +95,7 @@
         app:layout_constraintStart_toStartOf="@id/ActivityLogin_vertical_guidelineLeft"/>
 
 
-         <Button
-             style="@style/button_style"
-            android:id="@+id/ActivityLogin_register_button"
-            android:text="@string/register_button_text"
-             app:layout_constraintTop_toBottomOf="@id/ActivityLogin_login_button"
-             app:layout_constraintBottom_toBottomOf="parent"
-             app:layout_constraintStart_toStartOf="parent"
-             app:layout_constraintEnd_toEndOf="parent"/>
+
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/ActivityLogin_guideline"
