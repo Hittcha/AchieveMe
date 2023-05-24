@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="#1D1D1D"
     android:theme="@style/AppTheme"
-    tools:context=".MainActivity2">
+    tools:context=".AchieveCategoryListActivity">
 
   <androidx.appcompat.widget.Toolbar
       android:id="@+id/toolbar"
@@ -75,7 +75,7 @@
 
   <ScrollView
       android:id="@+id/scrollView"
-      android:layout_width="match_parent"
+      android:layout_width="wrap_content"
       android:layout_height="0dp"
       android:layout_marginStart="8dp"
       android:layout_marginEnd="8dp"
@@ -95,7 +95,7 @@
   <androidx.constraintlayout.widget.ConstraintLayout
       android:id="@+id/top_constraint_layout"
       android:layout_width="0dp"
-      android:layout_height="190dp"
+      android:layout_height="114dp"
       android:layout_marginStart="8dp"
       android:layout_marginTop="8dp"
       android:layout_marginEnd="8dp"
@@ -112,7 +112,7 @@
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="124dp"
+        android:layout_marginTop="28dp"
         android:text="Общий прогресс"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -131,21 +131,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.96" />
-
-    <TextView
-        android:id="@+id/categoryNameTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="40dp"
-        android:height="20dp"
-        android:fontFamily="sans-serif-condensed"
-        android:text="TextView"
-        android:textSize="34sp"
-        app:layout_constraintBottom_toTopOf="@+id/textView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.19" />
 
   </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -20,6 +20,15 @@
         android:theme="@style/Theme.AppCompat.Light.NoActionBar"
         tools:targetApi="31">
         <activity
+            android:name=".OtherUserAchievements"
+            android:exported="false" />
+        <activity
+            android:name=".OtherUserFriends"
+            android:exported="false" />
+        <activity
+            android:name=".OtherUserSubs"
+            android:exported="false" />
+        <activity
             android:name=".StartActivity"
             android:exported="true">
             <intent-filter>
@@ -80,7 +89,7 @@
             android:name=".AchievementDescriptionActivity"
             android:exported="false" />
         <activity
-            android:name=".MainActivity2"
+            android:name=".AchieveCategoryListActivity"
             android:exported="false" />
         <activity
             android:name=".MainActivity"

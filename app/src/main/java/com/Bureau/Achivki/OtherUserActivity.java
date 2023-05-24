@@ -79,6 +79,8 @@ public class OtherUserActivity extends AppCompatActivity {
 
     private TextView subsCountText;
 
+    private TextView subscriptionsListTextView;
+
     private ImageButton favoritesButton;
 
     private ImageButton achieveListButton;
@@ -134,6 +136,7 @@ public class OtherUserActivity extends AppCompatActivity {
         userScoreText = findViewById(R.id.scoreText);
         friendsCountText = findViewById(R.id.friendsCount);
         subsCountText = findViewById(R.id.subsTextView);
+        subscriptionsListTextView = findViewById(R.id.subscriptionsList2);
 
         mAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = mAuth.getCurrentUser();
@@ -169,10 +172,6 @@ public class OtherUserActivity extends AppCompatActivity {
                                                                    friendsCountText.setText("" + userFriends);
 
                                                                    subsCountText.setText("" + userSubs);
-
-
-
-                                                                   //System.out.println("keykeykeykeykey: " + userKey);
 
                                                                    setSubscribeButton(otherUserName, myID, userKey, profileImageUrl, mAuthDocRef, userName, mAuthDocRefOther, myprofileImageUrl);
 
@@ -221,6 +220,37 @@ public class OtherUserActivity extends AppCompatActivity {
         favoritesButton = findViewById(R.id.imageButtonFavorites);
 
         achieveListButton = findViewById(R.id.imageButtonAchieveList);
+
+        TextView achieveListTextView = findViewById(R.id.scoreTextView2);
+
+        achieveListTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(OtherUserActivity.this, OtherUserAchievements.class);
+                intent.putExtra("User_token", userToken);
+                startActivity(intent);
+            }
+        });
+
+        TextView friendsListTextView = findViewById(R.id.friendsList2);
+
+        friendsListTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(OtherUserActivity.this, OtherUserFriends.class);
+                intent.putExtra("User_token", userToken);
+                startActivity(intent);
+            }
+        });
+
+        subscriptionsListTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(OtherUserActivity.this, OtherUserSubs.class);
+                intent.putExtra("User_token", userToken);
+                startActivity(intent);
+            }
+        });
         leaderListButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

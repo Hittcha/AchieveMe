@@ -3,17 +3,17 @@ package com.Bureau.Achivki;
 import static android.content.ContentValues.TAG;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapShader;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Shader;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -21,8 +21,10 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -35,6 +37,9 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,10 +47,6 @@ public class MainActivity extends AppCompatActivity {
 
     private String userName;
     private String profileImageUrl;
-    private TextView welcomeMessage;
-    private TextView userScoreText;
-    private TextView userSubsText;
-    private TextView userFriendsText;
     private Long userScore;
     private Long userSubs;
     private Long userFriends;
@@ -56,6 +57,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        SharedPreferences sharedPreferences = getSharedPreferences("User_Data", this.MODE_PRIVATE);
+
+        String savedName = sharedPreferences.getString("Name", "");
+        userScore = sharedPreferences.getLong("Score", 0);
+        userSubs = sharedPreferences.getLong("Subs", 0);
+        userFriends = sharedPreferences.getLong("Friends", 0);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = getWindow();
@@ -73,15 +81,30 @@ public class MainActivity extends AppCompatActivity {
         FirebaseUser currentUser = mAuth.getCurrentUser();
 
         assert currentUser != null;
-        welcomeMessage = findViewById(R.id.welcome_message);
+        TextView welcomeMessage = findViewById(R.id.welcome_message);
+
+        welcomeMessage.setText(savedName);
+
 
         TextView friendsListText = findViewById(R.id.friendsList);
         TextView subscriptionsListText = findViewById(R.id.subscriptionsList);
         TextView scoreText = findViewById(R.id.scoreTextView);
 
-        userScoreText = findViewById(R.id.userScore);
-        userSubsText = findViewById(R.id.subsCountTextView);
-        userFriendsText = findViewById(R.id.friendsCountTextView);
+        TextView userScoreText = findViewById(R.id.userScore);
+        TextView userSubsText = findViewById(R.id.subsCountTextView);
+        TextView userFriendsText = findViewById(R.id.friendsCountTextView);
+
+        userScoreText.setText("" + userScore);
+        userFriendsText.setText("" + userFriends);
+        userSubsText.setText("" + userSubs);
+
+        //Грузим аватар из локальных файлов, если нет то стандартный
+        //loadAvatarFromLocalFiles("UserAvatar", "/users/StandartUser/UserAvatar.png");
+
+        File file = new File(this.getFilesDir(), "UserAvatar");
+                    if (file.exists()) {
+                        loadAvatarFromLocalFiles("UserAvatar", "/users/StandartUser/UserAvatar.png");
+                    }
 
         DocumentReference mAuthDocRef = db.collection("Users").document(currentUser.getUid());
 
@@ -97,20 +120,23 @@ public class MainActivity extends AppCompatActivity {
 
                 profileImageUrl = documentSnapshot.getString("profileImageUrl");
 
-                welcomeMessage.setText(userName);
-
-                userFriendsText.setText("" + userFriends);
-
                 userScoreText.setText("" + userScore);
-
+                userFriendsText.setText("" + userFriends);
                 userSubsText.setText("" + userSubs);
 
-                listoffavorites(userName);
-                setImage(profileImageUrl);
 
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putString("Name", userName);
+                editor.putLong("Score", userScore);
+                editor.putLong("Subs", userSubs);
+                editor.putLong("Friends", userFriends);
+                editor.apply();
+
+                listOfFavorites(userName);
+                loadAvatarFromLocalFiles("UserAvatar", profileImageUrl);
 
             } else {
-                // документ не найден
+                //Toast.makeText(this, "Ошибка соеднинения", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -132,20 +158,14 @@ public class MainActivity extends AppCompatActivity {
 
         achievementsRef.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
-                //List<String> achievementNames = new ArrayList<>();
                 for (QueryDocumentSnapshot document : task.getResult()) {
                     String category = document.getString("category");
-
-                    System.out.println("category " + category);
 
                     if (category != null && !categories.contains(category)) {
                         categories.add(category);
                     }
-
-                    //String achievementName = document.getId();
-                    //achievementNames.add(achievementName);
                 }
-                createButtons(categories, 500, 500, "scrollView1");
+                createCategoryBlock(categories);
             } else {
                 Log.d(TAG, "Error getting achievements: ", task.getException());
             }
@@ -159,16 +179,10 @@ public class MainActivity extends AppCompatActivity {
         });
 
         ImageButton userButton = findViewById(R.id.userButton);
-
         ImageButton leaderListButton = findViewById(R.id.imageButtonLeaderList);
-
         ImageButton menuButton = findViewById(R.id.imageButtonMenu);
-
-
         ImageButton achieveListButton = findViewById(R.id.imageButtonAchieveList);
-
         ImageButton buttonSeasonAchieve = findViewById(R.id.imageButtonSeasonAchieve);
-
         ImageButton usersListButton = findViewById(R.id.imageButtonUsersList);
 
         buttonSeasonAchieve.setOnClickListener(v -> {
@@ -202,68 +216,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void createButtons(List<String> achievementNames, int w, int h, String layoutid) {
-        for (String name : achievementNames) {
-
-            //String test = name;
-
-            Button button = new Button(MainActivity.this);
-            button.setText(name);
-            button.setBackgroundColor(Color.BLUE);
-
-            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT
-            );
-
-            layoutParams.setMargins(20, 20, 20, 20);
-
-            if (name.equals("Красноярск")){
-                button.setBackgroundResource(R.drawable.template_kras);
-                System.out.println("template_kras  " + name);
-            }else{
-                button.setBackgroundResource(R.drawable.template);
-                System.out.println("template_kras  " + name);
-            }
-            //button.setBackgroundResource(R.drawable.template);
-            button.setLayoutParams(layoutParams);
-            button.setTag(name);
-            //button.setGravity(Gravity.TOP);
-
-
-            button.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    // Обработка нажатия кнопки
-                    System.out.println("Category_key  " + name);
-                    Intent intent = new Intent(MainActivity.this, MainActivity2.class);
-                    intent.putExtra("Category_key", name);
-                    startActivity(intent);
-
-                }
-            });
-
-
-           /* button.setOnClickListener(v -> {
-                // Обработка нажатия кнопки
-                System.out.println("Category_key  " + name);
-                Intent intent = new Intent(MainActivity.this, MainActivity2.class);
-                intent.putExtra("Category_key", name);
-                startActivity(intent);
-            });*/
-
-            if (layoutid == "scrollView1") {
-                LinearLayout scrollView = findViewById(R.id.scrollView1);
-                scrollView.addView(button);
-            }
-            if (layoutid == "favoritesLinearLayout") {
-                LinearLayout scrollView = findViewById(R.id.favoritesLinearLayout);
-                scrollView.addView(button);
-            }
-        }
-    }
-
-    private void listoffavorites(String name) {
+    private void listOfFavorites(String name) {
         CollectionReference favoritesRef = db.collection("Users");
         favoritesRef.whereEqualTo("name", name).get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
@@ -280,8 +233,6 @@ public class MainActivity extends AppCompatActivity {
                     Button button = new Button(MainActivity.this);
                     button.setText(achievement);
                     button.setTextSize(10);
-                    //button.setGravity(Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL);
-
 
                     LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
                             LinearLayout.LayoutParams.MATCH_PARENT,
@@ -338,6 +289,59 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private void createCategoryBlock(List<String> achievementNames){
+        LinearLayout parentLayout = findViewById(R.id.scrollView1);
+
+        for (String name : achievementNames) {
+
+            ConstraintLayout blockLayout = (ConstraintLayout) LayoutInflater.from(MainActivity.this)
+                    .inflate(R.layout.block_category, parentLayout, false);
+
+            TextView CategoryNameTextView = blockLayout.findViewById(R.id.categoryNameTextView);
+
+            CategoryNameTextView.setText(name);
+
+            parentLayout.addView(blockLayout);
+
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+            );
+
+            layoutParams.setMargins(20, 20, 20, 20);
+
+            switch (name) {
+                case "Красноярск":
+                    blockLayout.setBackgroundResource(R.drawable.template_kras);
+                    break;
+                case "Еда и напитки":
+                    blockLayout.setBackgroundResource(R.drawable.template_food);
+                    break;
+                case "Путешествия":
+                    blockLayout.setBackgroundResource(R.drawable.template_travel);
+                    break;
+                case "Кулинар":
+                    blockLayout.setBackgroundResource(R.drawable.template_cooking);
+                    break;
+                default:
+                    blockLayout.setBackgroundResource(R.drawable.template);
+                    break;
+            }
+
+            blockLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // Обработка нажатия кнопки
+                    System.out.println("Category_key  " + name);
+                    Intent intent = new Intent(MainActivity.this, AchieveCategoryListActivity.class);
+                    intent.putExtra("Category_key", name);
+                    startActivity(intent);
+
+                }
+            });
+        }
+    }
+
     public void setImage(String imageRef) {
 
         StorageReference storageRef = FirebaseStorage.getInstance().getReference();
@@ -364,12 +368,67 @@ public class MainActivity extends AppCompatActivity {
                     }else{
                         canvas.drawCircle(bitmap.getWidth() / 2f, bitmap.getHeight() / 2f, bitmap.getHeight() / 2f, paint);
                     }
+                    /*File file = new File(this.getFilesDir(), "UserAvatar");
+                    if (!file.exists()) {
+                        saveAvatarToLocalFiles(bitmap, "UserAvatar");
+                    }*/
                     userButton.setImageBitmap(circleBitmap);
                 }).addOnFailureListener(exception -> {
                     // Handle any errors
                 });
             }
         });
+    }
+
+    private void loadAvatarFromLocalFiles(String fileName, String profileImageUrl) {
+        ImageButton userButton = findViewById(R.id.userButton);
+
+        try {
+            // Создание файла с указанным именем в локальной директории приложения
+            File file = new File(this.getFilesDir(), fileName);
+
+            // Чтение файла в виде Bitmap
+            Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
+
+            // Преобразование Bitmap в круговой вид
+            Bitmap circleBitmap = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+            BitmapShader shader = new BitmapShader(bitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
+            Paint paint = new Paint();
+            paint.setShader(shader);
+
+            Canvas canvas = new Canvas(circleBitmap);
+            if (bitmap.getHeight() > bitmap.getWidth()){
+                canvas.drawCircle(bitmap.getWidth() / 2f, bitmap.getHeight() / 2f, bitmap.getWidth() / 2f, paint);
+            }else{
+                canvas.drawCircle(bitmap.getWidth() / 2f, bitmap.getHeight() / 2f, bitmap.getHeight() / 2f, paint);
+            }
+
+            // Установка кругового Bitmap в качестве изображения для кнопки
+            userButton.setImageBitmap(circleBitmap);
+        } catch (Exception e) {
+            e.printStackTrace();
+            setImage(profileImageUrl);
+        }
+    }
+
+    private void saveAvatarToLocalFiles(Bitmap bitmap, String name){
+        //final long MAX_DOWNLOAD_SIZE = 1024 * 1024; // Максимальный размер файла для загрузки
+        try {
+            // Создание локального файла для сохранения изображения
+            File file = new File(this.getFilesDir(), name);
+
+            // Сохранение Bitmap в файл
+            FileOutputStream fos = new FileOutputStream(file);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+            fos.close();
+
+            // Обновление информации о пути к локальному файлу в приложении (если необходимо)
+
+            // Уведомление об успешном сохранении
+            //Toast.makeText(this, "Аватар сохранен локально.", Toast.LENGTH_SHORT).show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
     public void onBackPressed() {
         // Пустая реализация, чтобы ничего не происходило при нажатии кнопки "Назад"
