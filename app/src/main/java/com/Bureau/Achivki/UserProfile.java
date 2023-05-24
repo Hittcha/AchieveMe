@@ -1,10 +1,8 @@
 package com.Bureau.Achivki;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.Manifest;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -20,6 +18,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.LayoutInflater;
@@ -30,41 +29,39 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+import android.widget.ToggleButton;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-
-import android.provider.MediaStore;
-import android.widget.Toast;
-import android.widget.ToggleButton;
-
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.content.ContextCompat;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
-
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -72,10 +69,6 @@ import java.util.Map;
 
 
 public class UserProfile extends AppCompatActivity {
-    private Button suggestAchieveButton;
-
-    private Button myAchievementsButton;
-
     private String userName;
     private String profileImageUrl;
 
@@ -87,18 +80,6 @@ public class UserProfile extends AppCompatActivity {
 
     private boolean liked;
 
-
-    private TextView userNameText;
-    private TextView userScoreText;
-
-    private TextView userFriendsText;
-
-    private TextView userSubsText;
-
-    private TextView friendsListText;
-
-    private TextView subscriptionsListText;
-
     private int value = 0;
 
     private ImageView mImageView;
@@ -109,21 +90,9 @@ public class UserProfile extends AppCompatActivity {
     private static final int REQUEST_CODE_SELECT_IMAGE = 100;
 
     private ImageView profileImageView;
-
     private FirebaseStorage storage;
-
-    private ImageButton favoritesButton;
-
-    private ImageButton achieveListButton;
-
-    private ImageButton leaderListButton;
-
-    private ImageButton menuButton;
-
-    private ImageButton btnOpenMenu;
     private DrawerLayout drawerLayout;
 
-    private TextView scoreText;
     Intent intent;
 
 
@@ -149,16 +118,14 @@ public class UserProfile extends AppCompatActivity {
         backButton.setOnTouchListener((v, event) -> {
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
                 v.startAnimation(anim);
-
             }
-
             onBackPressed();
             return false;
         });
 
 
         drawerLayout = findViewById(R.id.drawer_layout);
-        btnOpenMenu = findViewById(R.id.btn_open_menu);
+        ImageButton btnOpenMenu = findViewById(R.id.btn_open_menu);
         btnOpenMenu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -173,15 +140,7 @@ public class UserProfile extends AppCompatActivity {
                 switch (item.getItemId()) {
                     case R.id.nav_item1:
                         // Действие при выборе настройки 1
-                        /*try {
-                            Thread.sleep(100); // Здесь указывается продолжительность паузы в миллисекундах
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }*/
                         intent = new Intent(UserProfile.this, SuggestAchieveActivity.class);
-
-                        //startActivity(intent);
-                        //setContentView(R.layout.activity_main);
                         break;
                     case R.id.nav_item2:
                         // Действие при выборе настройки 2
@@ -190,42 +149,47 @@ public class UserProfile extends AppCompatActivity {
                 }
 
                 // Закрытие меню после выбора пункта
-                //startActivity(intent);
                 drawerLayout.closeDrawer(GravityCompat.END);
-                /*try {
-                    Thread.sleep(100); // Здесь указывается продолжительность паузы в миллисекундах
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }*/
                 startActivity(intent);
                 return true;
             }
         });
 
         mAuth = FirebaseAuth.getInstance();
-
         storage = FirebaseStorage.getInstance();
 
-        userSubsText = findViewById(R.id.subsCountTextView);
+        TextView userSubsText = findViewById(R.id.subsCountTextView);
+        TextView userNameText = findViewById(R.id.userName);
+        TextView userFriendsText = findViewById(R.id.friendsCountTextView);
+        TextView userScoreText = findViewById(R.id.userScore);
+        TextView friendsListText = findViewById(R.id.friendsList);
+        TextView subscriptionsListText = findViewById(R.id.subscriptionsList);
 
-        userNameText = findViewById(R.id.userName);
+        SharedPreferences sharedPreferences = getSharedPreferences("User_Data", this.MODE_PRIVATE);
 
-        userFriendsText = findViewById(R.id.friendsCountTextView);
+        String savedName = sharedPreferences.getString("Name", "");
+        userScore = sharedPreferences.getLong("Score", 0);
+        userSubs = sharedPreferences.getLong("Subs", 0);
+        userFriends = sharedPreferences.getLong("Friends", 0);
 
-        userScoreText = findViewById(R.id.userScore);
-
-        friendsListText = findViewById(R.id.friendsList);
-
-        subscriptionsListText = findViewById(R.id.subscriptionsList);
+        userNameText.setText(savedName);
+        userFriendsText.setText("" + userFriends);
+        userScoreText.setText("" + userScore);
+        userSubsText.setText("" + userSubs);
 
         StorageReference storageRef = FirebaseStorage.getInstance().getReference();
-        StorageReference imageRef = storageRef.child("users").child(mAuth.getCurrentUser().getUid()).child("UserAvatar");
+        //StorageReference imageRef = storageRef.child("users").child(mAuth.getCurrentUser().getUid()).child("UserAvatar");
 
-        mImageView = findViewById(R.id.image_view);
+        //mImageView = findViewById(R.id.image_view);
         db = FirebaseFirestore.getInstance();
-        //FirebaseAuth mAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = mAuth.getCurrentUser();
-        String userID = currentUser.getUid();
+        //String userID = currentUser.getUid();
+
+        //Грузим аватар из локальных файлов, если нет то стандартный
+        File file = new File(this.getFilesDir(), "UserAvatar");
+        if (file.exists()) {
+            loadAvatarFromLocalFiles("UserAvatar", "/users/StandartUser/UserAvatar.png");
+        }
 
 
         DocumentReference mAuthDocRef = db.collection("Users").document(currentUser.getUid());
@@ -233,28 +197,20 @@ public class UserProfile extends AppCompatActivity {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 if (documentSnapshot.exists()) {
-                    userName = documentSnapshot.getString("name");
-
-                    userScore = documentSnapshot.getLong("score");
-
-                    userSubs = documentSnapshot.getLong("subs");
-
-                    userFriends = documentSnapshot.getLong("friendscount");
-
-                    System.out.println("score " + userScore);
 
                     profileImageUrl = documentSnapshot.getString("profileImageUrl");
 
+                    /*userName = documentSnapshot.getString("name");
+                    userScore = documentSnapshot.getLong("score");
+                    userSubs = documentSnapshot.getLong("subs");
+                    userFriends = documentSnapshot.getLong("friendscount");
                     userNameText.setText(userName);
-
                     userFriendsText.setText("" + userFriends);
-
                     userScoreText.setText("" + userScore);
+                    userSubsText.setText("" + userSubs);*/
 
-                    userSubsText.setText("" + userSubs);
                     // использовать имя пользователя
-                    setImage(profileImageUrl);
-
+                    loadAvatarFromLocalFiles("UserAvatar", profileImageUrl);
 
                     Map<String, Object> userData = documentSnapshot.getData();
                     Map<String, Object> achievements = (Map<String, Object>) userData.get("userPhotos");
@@ -293,36 +249,33 @@ public class UserProfile extends AppCompatActivity {
         profileImageView = findViewById(R.id.image_view);
         ImageButton selectImageButton = findViewById(R.id.button_choose_image);
 
-        selectImageButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        selectImageButton.setOnClickListener(v -> {
 
+            selectImageFromLibrary();
+
+            //loadPhotosFromGallery();
+            //pickImages();
+            /*if (ContextCompat.checkSelfPermission(UserProfile.this,
+                    Manifest.permission.READ_MEDIA_IMAGES)
+                    != PackageManager.PERMISSION_GRANTED) {
+
+                // Если разрешения нет, запрашиваем его у пользователя
+                ActivityCompat.requestPermissions(UserProfile.this,
+                new String[]{Manifest.permission.READ_MEDIA_IMAGES},
+                PERMISSION_REQUEST_CODE);
+
+                ActivityCompat.requestPermissions(UserProfile.this,
+                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                        PERMISSION_REQUEST_CODE);
+
+            } else {
+                // Если разрешение есть, вызываем окно выбора фотографий
                 selectImageFromLibrary();
 
-                //loadPhotosFromGallery();
-                //pickImages();
-                /*if (ContextCompat.checkSelfPermission(UserProfile.this,
-                        Manifest.permission.READ_MEDIA_IMAGES)
-                        != PackageManager.PERMISSION_GRANTED) {
-
-                    // Если разрешения нет, запрашиваем его у пользователя
-                    ActivityCompat.requestPermissions(UserProfile.this,
-                    new String[]{Manifest.permission.READ_MEDIA_IMAGES},
-                    PERMISSION_REQUEST_CODE);
-
-                    ActivityCompat.requestPermissions(UserProfile.this,
-                            new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                            PERMISSION_REQUEST_CODE);
-
-                } else {
-                    // Если разрешение есть, вызываем окно выбора фотографий
-                    selectImageFromLibrary();
-
-                }*/
-            }
+            }*/
         });
 
-        scoreText = findViewById(R.id.scoreTextView);
+        TextView scoreText = findViewById(R.id.scoreTextView);
 
         friendsListText.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -348,54 +301,40 @@ public class UserProfile extends AppCompatActivity {
             }
         });
 
-        leaderListButton = findViewById(R.id.imageButtonLeaderList);
+        //ImageButton leaderListButton = findViewById(R.id.imageButtonLeaderList);
+        //ImageButton menuButton = findViewById(R.id.imageButtonMenu);
+        //ImageButton favoritesButton = findViewById(R.id.imageButtonFavorites);
+        //ImageButton achieveListButton = findViewById(R.id.imageButtonAchieveList);
 
-        menuButton = findViewById(R.id.imageButtonMenu);
 
-        favoritesButton = findViewById(R.id.imageButtonFavorites);
-
-        achieveListButton = findViewById(R.id.imageButtonAchieveList);
-
-        leaderListButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(UserProfile.this, LeaderBoardActivity.class);
-                startActivity(intent);
-            }
+        ImageButton leaderListButton = findViewById(R.id.imageButtonLeaderList);
+        leaderListButton.setOnClickListener(v -> {
+            Intent intent = new Intent(UserProfile.this, LeaderBoardActivity.class);
+            startActivity(intent);
         });
 
-        menuButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(UserProfile.this, MainActivity.class);
-                startActivity(intent);
-            }
+        ImageButton menuButton = findViewById(R.id.imageButtonMenu);
+        menuButton.setOnClickListener(v -> {
+            Intent intent = new Intent(UserProfile.this, MainActivity.class);
+            startActivity(intent);
         });
 
-        achieveListButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(UserProfile.this, AchieveListActivity.class);
-                startActivity(intent);
-            }
+        ImageButton achieveListButton = findViewById(R.id.imageButtonAchieveList);
+        achieveListButton.setOnClickListener(v -> {
+            Intent intent = new Intent(UserProfile.this, AchieveListActivity.class);
+            startActivity(intent);
         });
-        favoritesButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(UserProfile.this, ListOfFavoritesActivity.class);
-                startActivity(intent);
-            }
+
+        ImageButton favoritesButton = findViewById(R.id.imageButtonFavorites);
+        favoritesButton.setOnClickListener(v -> {
+            Intent intent = new Intent(UserProfile.this, ListOfFavoritesActivity.class);
+            startActivity(intent);
         });
 
         ImageButton usersListButton = findViewById(R.id.imageButtonUsersList);
-        usersListButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(UserProfile.this, UsersListActivity.class);
-                //User user = new User("Имя пользователя", 1);
-                //intent.putExtra("user", user);
-                startActivity(intent);
-            }
+        usersListButton.setOnClickListener(v -> {
+            Intent intent = new Intent(UserProfile.this, UsersListActivity.class);
+            startActivity(intent);
         });
     }
 
@@ -417,8 +356,8 @@ public class UserProfile extends AppCompatActivity {
                     Bitmap circleBitmap = getCircleBitmap(bitmap);
                     profileImageView.setImageBitmap(circleBitmap);
 
-                    //uploadImageToStorage(circleBitmap, "UserAvatarCircle");
                     uploadImageToStorage(bitmap, "UserAvatar");
+                    saveAvatarToLocalFiles(bitmap, "UserAvatar");
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }
@@ -442,7 +381,6 @@ public class UserProfile extends AppCompatActivity {
         }else{
             canvas.drawCircle(bitmap.getWidth() / 2f, bitmap.getHeight() / 2f, bitmap.getHeight() / 2f, paint);
         }
-        //canvas.drawCircle(bitmap.getWidth() / 2f, bitmap.getHeight() / 2f, bitmap.getHeight() / 2f, paint);
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
         canvas.drawBitmap(bitmap, rect, rect, paint);
 
@@ -482,47 +420,92 @@ public class UserProfile extends AppCompatActivity {
         });
     }
 
+    private void saveAvatarToLocalFiles(Bitmap bitmap, String name){
+        //final long MAX_DOWNLOAD_SIZE = 1024 * 1024; // Максимальный размер файла для загрузки
+        try {
+            // Создание локального файла для сохранения изображения
+            File file = new File(UserProfile.this.getFilesDir(), name);
+
+            // Сохранение Bitmap в файл
+            FileOutputStream fos = new FileOutputStream(file);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+            fos.close();
+
+            // Обновление информации о пути к локальному файлу в приложении (если необходимо)
+
+            // Уведомление об успешном сохранении
+            Toast.makeText(UserProfile.this, "Аватар сохранен локально.", Toast.LENGTH_SHORT).show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void setImage(String imageRef) {
 
         StorageReference storageRef = FirebaseStorage.getInstance().getReference();
-
         StorageReference imageRef1 = storageRef.child(imageRef);
 
-        System.out.println("URL " + imageRef1);
-
         ImageView userButton = findViewById(R.id.image_view);
-        imageRef1.getMetadata().addOnSuccessListener(new OnSuccessListener<StorageMetadata>() {
-            @Override
-            public void onSuccess(StorageMetadata storageMetadata) {
-                String mimeType = storageMetadata.getName();
-                System.out.println("mimeType " + mimeType);
-                if (mimeType != null && mimeType.startsWith("User")) {
-                    imageRef1.getBytes(Long.MAX_VALUE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-                        @Override
-                        public void onSuccess(byte[] bytes) {
-                            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                            Bitmap circleBitmap = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
-                            BitmapShader shader = new BitmapShader(bitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
-                            Paint paint = new Paint();
-                            paint.setShader(shader);
+        imageRef1.getMetadata().addOnSuccessListener(storageMetadata -> {
+            String mimeType = storageMetadata.getName();
+            System.out.println("mimeType " + mimeType);
+            if (mimeType != null && mimeType.startsWith("User")) {
+                imageRef1.getBytes(Long.MAX_VALUE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                    @Override
+                    public void onSuccess(byte[] bytes) {
+                        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                        Bitmap circleBitmap = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+                        BitmapShader shader = new BitmapShader(bitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
+                        Paint paint = new Paint();
+                        paint.setShader(shader);
 
-                            Canvas canvas = new Canvas(circleBitmap);
-                            if (bitmap.getHeight() > bitmap.getWidth()){
-                                canvas.drawCircle(bitmap.getWidth() / 2f, bitmap.getHeight() / 2f, bitmap.getWidth() / 2f, paint);
-                            }else{
-                                canvas.drawCircle(bitmap.getWidth() / 2f, bitmap.getHeight() / 2f, bitmap.getHeight() / 2f, paint);
-                            }
-                            userButton.setImageBitmap(circleBitmap);
+                        Canvas canvas = new Canvas(circleBitmap);
+                        if (bitmap.getHeight() > bitmap.getWidth()){
+                            canvas.drawCircle(bitmap.getWidth() / 2f, bitmap.getHeight() / 2f, bitmap.getWidth() / 2f, paint);
+                        }else{
+                            canvas.drawCircle(bitmap.getWidth() / 2f, bitmap.getHeight() / 2f, bitmap.getHeight() / 2f, paint);
                         }
-                    }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception exception) {
-                            // Handle any errors
-                        }
-                    });
-                }
+                        userButton.setImageBitmap(circleBitmap);
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                        // Handle any errors
+                    }
+                });
             }
         });
+    }
+
+    private void loadAvatarFromLocalFiles(String fileName, String profileImageUrl) {
+        ImageView userButton = findViewById(R.id.image_view);
+
+        try {
+            // Создание файла с указанным именем в локальной директории приложения
+            File file = new File(this.getFilesDir(), fileName);
+
+            // Чтение файла в виде Bitmap
+            Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
+
+            // Преобразование Bitmap в круговой вид (если необходимо)
+            Bitmap circleBitmap = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+            BitmapShader shader = new BitmapShader(bitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
+            Paint paint = new Paint();
+            paint.setShader(shader);
+
+            Canvas canvas = new Canvas(circleBitmap);
+            if (bitmap.getHeight() > bitmap.getWidth()){
+                canvas.drawCircle(bitmap.getWidth() / 2f, bitmap.getHeight() / 2f, bitmap.getWidth() / 2f, paint);
+            }else{
+                canvas.drawCircle(bitmap.getWidth() / 2f, bitmap.getHeight() / 2f, bitmap.getHeight() / 2f, paint);
+            }
+
+            // Установка кругового Bitmap в качестве изображения для кнопки
+            userButton.setImageBitmap(circleBitmap);
+        } catch (Exception e) {
+            e.printStackTrace();
+            setImage(profileImageUrl);
+        }
     }
 
     private void pickImages() {
@@ -740,5 +723,4 @@ public class UserProfile extends AppCompatActivity {
         super.onResume();
         overridePendingTransition(0, 0);
     }
-
 }
