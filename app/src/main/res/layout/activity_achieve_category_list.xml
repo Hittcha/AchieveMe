@@ -83,7 +83,7 @@
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintHorizontal_bias="0.492"
       app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toBottomOf="@+id/top_constraint_layout">
+      app:layout_constraintTop_toBottomOf="@+id/progressBar">
 
     <LinearLayout
         android:id="@+id/scrollView1"
@@ -95,13 +95,10 @@
   <androidx.constraintlayout.widget.ConstraintLayout
       android:id="@+id/top_constraint_layout"
       android:layout_width="0dp"
-      android:layout_height="114dp"
-      android:layout_marginStart="8dp"
-      android:layout_marginTop="8dp"
-      android:layout_marginEnd="8dp"
-      android:layout_marginBottom="8dp"
-      android:background="@drawable/achievelisttoplayout"
-      app:layout_constraintBottom_toTopOf="@+id/scrollView"
+      android:layout_height="140dp"
+
+      android:background="@drawable/kalina"
+      app:layout_constraintBottom_toTopOf="@+id/progressBar"
       app:layout_constraintEnd_toEndOf="parent"
       app:layout_constraintHorizontal_bias="0.428"
       app:layout_constraintStart_toStartOf="parent"
@@ -109,30 +106,59 @@
       app:layout_constraintVertical_bias="0.158">
 
     <TextView
+        android:textColor="@color/white"
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="28dp"
         android:text="Общий прогресс"
-        android:textSize="20sp"
+        android:textSize="25sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <ProgressBar
-        android:id="@+id/progressBar"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="312dp"
-        android:layout_height="43dp"
-        android:progress="0"
         app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="6dp"
+        android:shadowColor="#000000"
+        android:shadowDx="1"
+        android:shadowDy="1"
+        android:shadowRadius="2"/>
+
+
+
+    <TextView
+        android:id="@+id/categoryNameTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:height="20dp"
+        android:text="TextView"
+        tools:text="Калининград"
+        android:textStyle="bold"
+        android:textSize="34sp"
+        android:textColor="@color/_bg__android_large___1_ek2_color"
+        app:layout_constraintBottom_toTopOf="@+id/textView"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.492"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.96" />
+        app:layout_constraintVertical_bias="0.19"
+        android:shadowColor="#000000"
+        android:shadowDx="1"
+        android:shadowDy="1"
+        android:shadowRadius="2"
+
+        />
 
   </androidx.constraintlayout.widget.ConstraintLayout>
-
+  <ProgressBar
+      android:id="@+id/progressBar"
+      style="?android:attr/progressBarStyleHorizontal"
+      android:progressDrawable="@drawable/progressbar_background"
+      android:layout_width="match_parent"
+      android:layout_height="15dp"
+      android:progress="50"
+      app:layout_constraintBottom_toTopOf="@id/scrollView"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintHorizontal_bias="0.492"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@id/top_constraint_layout"
+      app:layout_constraintVertical_bias="0.96" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

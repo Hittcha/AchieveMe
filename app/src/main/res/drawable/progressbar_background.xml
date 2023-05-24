@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/bar_background">
+        <color android:color="@color/white"></color>
+    </item>
+    <item android:id="@+id/bar_value">
+        <clip>
+            <color android:color="@color/button"></color>
+        </clip>
+    </item>
+</layer-list>
