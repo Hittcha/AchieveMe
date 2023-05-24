@@ -2,6 +2,7 @@ package com.Bureau.Achivki;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -32,7 +33,6 @@ import java.util.Set;
 public class AchieveCategoryListActivity extends AppCompatActivity {
     private String userName;
     private ProgressBar progressBar;
-    private FirebaseFirestore db;
     private int count = 0;
     private int achievedone = 0;
 
@@ -42,17 +42,43 @@ public class AchieveCategoryListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_achieve_category_list);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Window window = getWindow();
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.setStatusBarColor(ContextCompat.getColor(this, R.color.StatusBarColor));
-        }
+        Window window = getWindow();
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.setStatusBarColor(ContextCompat.getColor(this, R.color.StatusBarColor));
 
         androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         Intent intentMain = getIntent();
         String categoryName = intentMain.getStringExtra("Category_key");
+
+
+        TextView categoryNameTextView = findViewById(R.id.categoryNameTextView);
+        categoryNameTextView.setText(categoryName);
+        ConstraintLayout topConstraintLayout = findViewById(R.id.top_constraint_layout);
+        Drawable drawableKalina = ContextCompat.getDrawable(this, R.drawable.kalina);
+
+        switch (categoryName) {
+            case "Красноярск":
+                topConstraintLayout.setBackground(null);
+                break;
+            case "Еда и напитки":
+                topConstraintLayout.setBackground(null);
+                break;
+            case "Путешествия":
+                topConstraintLayout.setBackground(null);
+                break;
+            case "Кулинар":
+                topConstraintLayout.setBackground(null);
+                break;
+            case "Калининград":
+                topConstraintLayout.setBackground(drawableKalina);
+                break;
+            default:
+                topConstraintLayout.setBackground(null);
+                break;
+        }
+        //topConstraintLayout.setBackground(drawableKalina);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_back_arrow);
@@ -61,7 +87,7 @@ public class AchieveCategoryListActivity extends AppCompatActivity {
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = mAuth.getCurrentUser();
 
-        db = FirebaseFirestore.getInstance();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference mAuthDocRef = db.collection("Users").document(currentUser.getUid());
 
         mAuthDocRef.get().addOnSuccessListener(documentSnapshot -> {
@@ -180,10 +206,10 @@ public class AchieveCategoryListActivity extends AppCompatActivity {
                 if (achievement.get("name").equals(achievementName)) {
                     Boolean confirmed = (Boolean) achievement.get("confirmed");
                     Boolean proofsended = (Boolean) achievement.get("proofsended");
-                    if(confirmed == true){
+                    if(Boolean.TRUE.equals(confirmed) == true){
                         System.out.println("confirmed");
                         createAchieveBlock(achievementName,"green", categoryName, name, proof);
-                    }else if (proofsended == true) {
+                    }else if (Boolean.TRUE.equals(proofsended) == true) {
                         createAchieveBlock(achievementName,"yellow", categoryName, name, proof);
                         System.out.println("proofsended");
                     }else{
@@ -233,10 +259,6 @@ public class AchieveCategoryListActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-        );
     }
 
     protected void onPause() {

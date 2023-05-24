@@ -79,16 +79,6 @@ public class OtherUserActivity extends AppCompatActivity {
 
     private TextView subsCountText;
 
-    private TextView subscriptionsListTextView;
-
-    private ImageButton favoritesButton;
-
-    private ImageButton achieveListButton;
-
-    private ImageButton leaderListButton;
-
-    private ImageButton menuButton;
-
     //private Button subscribeButton;
 
     private boolean liked;
@@ -136,91 +126,84 @@ public class OtherUserActivity extends AppCompatActivity {
         userScoreText = findViewById(R.id.scoreText);
         friendsCountText = findViewById(R.id.friendsCount);
         subsCountText = findViewById(R.id.subsTextView);
-        subscriptionsListTextView = findViewById(R.id.subscriptionsList2);
+        TextView subscriptionsListTextView = findViewById(R.id.subscriptionsList2);
 
         mAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = mAuth.getCurrentUser();
         String myID = currentUser.getUid();
         DocumentReference mAuthDocRef = db.collection("Users").document(currentUser.getUid());
 
-        mAuthDocRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                                   @Override
-                                                   public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                                       if (documentSnapshot.exists()) {
-                                                           userName = documentSnapshot.getString("name");
-                                                       }
+        mAuthDocRef.get().addOnSuccessListener(documentSnapshot -> {
+            if (documentSnapshot.exists()) {
+                userName = documentSnapshot.getString("name");
+            }
 
-                                                       myprofileImageUrl = documentSnapshot.getString("profileImageUrl");
+            myprofileImageUrl = documentSnapshot.getString("profileImageUrl");
 
 
-                                                       mAuthDocRefOther.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                                           @Override
-                                                           public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                                               if (documentSnapshot.exists()) {
-                                                                   otherUserName = documentSnapshot.getString("name");
+            mAuthDocRefOther.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                @Override
+                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                    if (documentSnapshot.exists()) {
+                        otherUserName = documentSnapshot.getString("name");
 
-                                                                   profileImageUrl = documentSnapshot.getString("profileImageUrl");
+                        profileImageUrl = documentSnapshot.getString("profileImageUrl");
 
-                                                                   userScore = documentSnapshot.getLong("score");
+                        userScore = documentSnapshot.getLong("score");
 
-                                                                   userSubs = documentSnapshot.getLong("subs");
+                        userSubs = documentSnapshot.getLong("subs");
 
-                                                                   String userKey = mAuthDocRefOther.getId();
+                        String userKey = mAuthDocRefOther.getId();
 
-                                                                   userFriends = documentSnapshot.getLong("friendscount");
+                        userFriends = documentSnapshot.getLong("friendscount");
 
-                                                                   friendsCountText.setText("" + userFriends);
+                        friendsCountText.setText("" + userFriends);
 
-                                                                   subsCountText.setText("" + userSubs);
+                        subsCountText.setText("" + userSubs);
 
-                                                                   setSubscribeButton(otherUserName, myID, userKey, profileImageUrl, mAuthDocRef, userName, mAuthDocRefOther, myprofileImageUrl);
+                        setSubscribeButton(otherUserName, myID, userKey, profileImageUrl, mAuthDocRef, userName, mAuthDocRefOther, myprofileImageUrl);
 
-                                                                   welcomeMessage.setText(otherUserName);
-                                                                   userScoreText.setText("" + userScore);
-                                                                   //userScore.
-                                                                   // использовать имя пользователя
-                                                                   listoffavorites(otherUserName, userToken);
-                                                                   setImage(profileImageUrl);
+                        welcomeMessage.setText(otherUserName);
+                        userScoreText.setText("" + userScore);
+                        //userScore.
+                        // использовать имя пользователя
+                        listoffavorites(otherUserName, userToken);
+                        setImage(profileImageUrl);
 
 
 
-                                                                   Map<String, Object> userData = documentSnapshot.getData();
-                                                                   Map<String, Object> achievements = (Map<String, Object>) userData.get("userPhotos");
-                                                                   for (Map.Entry<String, Object> entry : achievements.entrySet()) {
-                                                                       Map<String, Object> achievement = (Map<String, Object>) entry.getValue();
-                                                                       String key = entry.getKey();
-                                                                       System.out.println("key: " + key);
-                                                                       Long likes = (Long) achievement.get("likes");
-                                                                       String url = (String) achievement.get("url");
-                                                                       String time = (String) achievement.get("time");
-                                                                       String achname = (String) achievement.get("name");
+                        Map<String, Object> userData = documentSnapshot.getData();
+                        Map<String, Object> achievements = (Map<String, Object>) userData.get("userPhotos");
+                        for (Map.Entry<String, Object> entry : achievements.entrySet()) {
+                            Map<String, Object> achievement = (Map<String, Object>) entry.getValue();
+                            String key = entry.getKey();
+                            System.out.println("key: " + key);
+                            Long likes = (Long) achievement.get("likes");
+                            String url = (String) achievement.get("url");
+                            String time = (String) achievement.get("time");
+                            String achname = (String) achievement.get("name");
 
-                                                                       ArrayList<String> people = (ArrayList<String>) achievement.get("like");
+                            ArrayList<String> people = (ArrayList<String>) achievement.get("like");
 
-                                                                       // Выводим данные достижения на экран
-                                                                       System.out.println("likes: " + likes);
-                                                                       System.out.println("url: " + url);
+                            // Выводим данные достижения на экран
+                            System.out.println("likes: " + likes);
+                            System.out.println("url: " + url);
 
-                                                                       createImageBlock(url, likes, people, userToken, key ,userName, time, achname);
-                                                                   }
+                            createImageBlock(url, likes, people, userToken, key ,userName, time, achname);
+                        }
 
 
-                                                               } else {
-                                                                   // документ не найден
-                                                               }
-                                                           }
-                                                       });
-                                                   }
+                    } else {
+                        // документ не найден
+                    }
+                }
+            });
         });
 
-        leaderListButton = findViewById(R.id.imageButtonLeaderList);
-
-        menuButton = findViewById(R.id.imageButtonMenu);
-
-        favoritesButton = findViewById(R.id.imageButtonFavorites);
-
-        achieveListButton = findViewById(R.id.imageButtonAchieveList);
-
+        ImageButton leaderListButton = findViewById(R.id.imageButtonLeaderList);
+        ImageButton menuButton = findViewById(R.id.imageButtonMenu);
+        ImageButton favoritesButton = findViewById(R.id.imageButtonFavorites);
+        ImageButton achieveListButton = findViewById(R.id.imageButtonAchieveList);
         TextView achieveListTextView = findViewById(R.id.scoreTextView2);
 
         achieveListTextView.setOnClickListener(new View.OnClickListener() {

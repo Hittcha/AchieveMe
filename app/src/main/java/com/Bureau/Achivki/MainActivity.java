@@ -125,12 +125,12 @@ public class MainActivity extends AppCompatActivity {
                 userSubsText.setText("" + userSubs);
 
 
-                SharedPreferences.Editor editor = sharedPreferences.edit();
+               /* SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.putString("Name", userName);
                 editor.putLong("Score", userScore);
                 editor.putLong("Subs", userSubs);
                 editor.putLong("Friends", userFriends);
-                editor.apply();
+                editor.apply();*/
 
                 listOfFavorites(userName);
                 loadAvatarFromLocalFiles("UserAvatar", profileImageUrl);
