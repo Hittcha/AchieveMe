@@ -95,29 +95,26 @@ public class AchieveConfirmation extends AppCompatActivity {
         Button selectImageButton = findViewById(R.id.button_choose_image);
 
 
-        selectImageButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        selectImageButton.setOnClickListener(v -> {
 
-                if (ContextCompat.checkSelfPermission(AchieveConfirmation.this,
-                        android.Manifest.permission.READ_MEDIA_IMAGES)
-                        != PackageManager.PERMISSION_GRANTED) {
+            if (ContextCompat.checkSelfPermission(AchieveConfirmation.this,
+                    Manifest.permission.READ_MEDIA_IMAGES)
+                    != PackageManager.PERMISSION_GRANTED) {
 
-                    // Если разрешения нет, запрашиваем его у пользователя
-                    ActivityCompat.requestPermissions(AchieveConfirmation.this,
-                            new String[]{Manifest.permission.READ_MEDIA_IMAGES},
-                            PERMISSION_REQUEST_CODE);
+                // Если разрешения нет, запрашиваем его у пользователя
+                ActivityCompat.requestPermissions(AchieveConfirmation.this,
+                        new String[]{Manifest.permission.READ_MEDIA_IMAGES},
+                        PERMISSION_REQUEST_CODE);
 
-                   /* ActivityCompat.requestPermissions(UserProfile.this,
-                            new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                            PERMISSION_REQUEST_CODE);*/
+               /* ActivityCompat.requestPermissions(UserProfile.this,
+                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                        PERMISSION_REQUEST_CODE);*/
 
-                } else {
-                    // Если разрешение есть, вызываем окно выбора фотографий
-                    //selectImageFromLibrary();
-                }
-                selectImageFromLibrary();
+            } else {
+                // Если разрешение есть, вызываем окно выбора фотографий
+                //selectImageFromLibrary();
             }
+            selectImageFromLibrary();
         });
 
 
@@ -128,12 +125,7 @@ public class AchieveConfirmation extends AppCompatActivity {
 
         setPublic = findViewById(R.id.button2);
 
-        setPublic.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setImagePublic(achieveName);
-            }
-        });
+        setPublic.setOnClickListener(v -> setImagePublic(achieveName));
 
         leaderListButton = findViewById(R.id.imageButtonLeaderList);
 
@@ -220,7 +212,7 @@ public class AchieveConfirmation extends AppCompatActivity {
         StorageReference imagesRef = storageRef.child("users/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/proof/" + name);
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 25, baos);
         byte[] data = baos.toByteArray();
 
         UploadTask uploadTask = imagesRef.putBytes(data);

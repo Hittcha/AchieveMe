@@ -48,8 +48,6 @@ import java.util.Map;
 
 public class MyFriendsList extends AppCompatActivity {
 
-    private ImageButton favoritesButton;
-
     private ImageButton achieveListButton;
 
     private ImageButton leaderListButton;
@@ -136,7 +134,7 @@ public class MyFriendsList extends AppCompatActivity {
 
         menuButton = findViewById(R.id.imageButtonMenu);
 
-        favoritesButton = findViewById(R.id.imageButtonFavorites);
+        ImageButton favoritesButton = findViewById(R.id.imageButtonFavorites);
 
         achieveListButton = findViewById(R.id.imageButtonAchieveList);
 

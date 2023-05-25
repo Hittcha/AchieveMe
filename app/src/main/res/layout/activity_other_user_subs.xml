@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="#1D1D1D"
     android:theme="@style/AppTheme"
-    tools:context=".MySubscriptionsActivity">
+    tools:context=".OtherUserSubs">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
