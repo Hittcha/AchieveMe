@@ -65,6 +65,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 
 
@@ -193,49 +196,53 @@ public class UserProfile extends AppCompatActivity {
 
 
         DocumentReference mAuthDocRef = db.collection("Users").document(currentUser.getUid());
-        mAuthDocRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                if (documentSnapshot.exists()) {
 
-                    profileImageUrl = documentSnapshot.getString("profileImageUrl");
+        mAuthDocRef.get().addOnSuccessListener(documentSnapshot -> {
+            if (documentSnapshot.exists()) {
 
-                    /*userName = documentSnapshot.getString("name");
-                    userScore = documentSnapshot.getLong("score");
-                    userSubs = documentSnapshot.getLong("subs");
-                    userFriends = documentSnapshot.getLong("friendscount");
-                    userNameText.setText(userName);
-                    userFriendsText.setText("" + userFriends);
-                    userScoreText.setText("" + userScore);
-                    userSubsText.setText("" + userSubs);*/
+                Map<String, Object> userData = documentSnapshot.getData();
+                Map<String, Object> achievements = (Map<String, Object>) userData.get("userPhotos");
 
-                    // использовать имя пользователя
-                    loadAvatarFromLocalFiles("UserAvatar", profileImageUrl);
+                List<Map.Entry<String, Object>> sortedAchievements = new ArrayList<>(achievements.entrySet());
 
-                    Map<String, Object> userData = documentSnapshot.getData();
-                    Map<String, Object> achievements = (Map<String, Object>) userData.get("userPhotos");
-                    for (Map.Entry<String, Object> entry : achievements.entrySet()) {
-                        Map<String, Object> achievement = (Map<String, Object>) entry.getValue();
-                        String key = entry.getKey();
-                        System.out.println("key: " + key);
-                        Long likes = (Long) achievement.get("likes");
-                        String url = (String) achievement.get("url");
-                        String achname = (String) achievement.get("name");
-                        String time = (String) achievement.get("time");
-
-                        ArrayList<String> people = (ArrayList<String>) achievement.get("like");
-
-                        // Выводим данные достижения на экран
-                        System.out.println("likes: " + likes);
-                        System.out.println("url: " + url);
-
-                        createImageBlock(url, likes, people, userName, key, achname, time);
+                // Sort the achievements by time
+                Collections.sort(sortedAchievements, (entry1, entry2) -> {
+                    Map<String, Object> achievement1 = (Map<String, Object>) entry1.getValue();
+                    Map<String, Object> achievement2 = (Map<String, Object>) entry2.getValue();
+                    String time1 = (String) achievement1.get("time");
+                    String time2 = (String) achievement2.get("time");
+                    if (time1 == null && time2 == null) {
+                        return 0; // Both times are null, consider them equal
+                    } else if (time1 == null) {
+                        return -1; // time1 is null, consider it smaller than time2
+                    } else if (time2 == null) {
+                        return 1; // time2 is null, consider it smaller than time1
+                    } else {
+                        return time1.compareTo(time1);
                     }
+                });
 
+                for (Map.Entry<String, Object> entry : sortedAchievements) {
+                    Map<String, Object> achievement = (Map<String, Object>) entry.getValue();
+                    String key = entry.getKey();
+                    System.out.println("key: " + key);
 
-                } else {
-                    // документ не найден
+                    Long likes = (Long) achievement.get("likes");
+                    String url = (String) achievement.get("url");
+                    String achname = (String) achievement.get("name");
+                    String time = (String) achievement.get("time");
+
+                    ArrayList<String> people = (ArrayList<String>) achievement.get("like");
+
+                    // Выводим данные достижения на экран
+                    System.out.println("likes: " + likes);
+                    System.out.println("url: " + url);
+
+                    createImageBlock(url, likes, people, userName, key, achname, time);
                 }
+
+            } else {
+                // документ не найден
             }
         });
 

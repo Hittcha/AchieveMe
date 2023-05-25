@@ -10,7 +10,6 @@ import android.graphics.BitmapShader;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Shader;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,7 +20,6 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -58,18 +56,16 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        SharedPreferences sharedPreferences = getSharedPreferences("User_Data", this.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = getSharedPreferences("User_Data", MODE_PRIVATE);
 
         String savedName = sharedPreferences.getString("Name", "");
         userScore = sharedPreferences.getLong("Score", 0);
         userSubs = sharedPreferences.getLong("Subs", 0);
         userFriends = sharedPreferences.getLong("Friends", 0);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Window window = getWindow();
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.setStatusBarColor(ContextCompat.getColor(this, R.color.appBackGround));
-        }
+        Window window = getWindow();
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.setStatusBarColor(ContextCompat.getColor(this, R.color.appBackGround));
 
         db = FirebaseFirestore.getInstance();
         CollectionReference achievementsRef = db.collection("Achievements");
@@ -80,7 +76,14 @@ public class MainActivity extends AppCompatActivity {
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = mAuth.getCurrentUser();
 
-        assert currentUser != null;
+        String userId = currentUser.getUid();
+
+        //Проверка айди админа
+        if (userId.equals("mC32I9D6xPSnQfd65wzdskqVTph2")){
+            Button adminButton = findViewById(R.id.adminButton);
+            adminButton.setVisibility(View.VISIBLE);
+        }
+
         TextView welcomeMessage = findViewById(R.id.welcome_message);
 
         welcomeMessage.setText(savedName);
@@ -107,6 +110,7 @@ public class MainActivity extends AppCompatActivity {
                     }
 
         DocumentReference mAuthDocRef = db.collection("Users").document(currentUser.getUid());
+
 
         mAuthDocRef.get().addOnSuccessListener(documentSnapshot -> {
             if (documentSnapshot.exists()) {
@@ -184,6 +188,13 @@ public class MainActivity extends AppCompatActivity {
         ImageButton achieveListButton = findViewById(R.id.imageButtonAchieveList);
         ImageButton buttonSeasonAchieve = findViewById(R.id.imageButtonSeasonAchieve);
         ImageButton usersListButton = findViewById(R.id.imageButtonUsersList);
+
+        Button adminButton = findViewById(R.id.adminButton);
+
+        adminButton.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, AdminActivity.class);
+            startActivity(intent);
+        });
 
         buttonSeasonAchieve.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, SeasonsAchievements.class);
