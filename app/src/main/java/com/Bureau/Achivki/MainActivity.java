@@ -79,13 +79,12 @@ public class MainActivity extends AppCompatActivity {
         String userId = currentUser.getUid();
 
         //Проверка айди админа
-        if (userId.equals("mC32I9D6xPSnQfd65wzdskqVTph2")){
+        if (userId.equals("S5S9nb7f0qheRWwlDu1CyCG4QxO2")){
             Button adminButton = findViewById(R.id.adminButton);
             adminButton.setVisibility(View.VISIBLE);
         }
 
         TextView welcomeMessage = findViewById(R.id.welcome_message);
-
         welcomeMessage.setText(savedName);
 
 
@@ -106,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
 
         File file = new File(this.getFilesDir(), "UserAvatar");
                     if (file.exists()) {
-                        loadAvatarFromLocalFiles("UserAvatar", "/users/StandartUser/UserAvatar.png");
+                        loadAvatarFromLocalFiles("UserAvatar");
                     }
 
         DocumentReference mAuthDocRef = db.collection("Users").document(currentUser.getUid());
@@ -115,13 +114,9 @@ public class MainActivity extends AppCompatActivity {
         mAuthDocRef.get().addOnSuccessListener(documentSnapshot -> {
             if (documentSnapshot.exists()) {
                 userName = documentSnapshot.getString("name");
-
                 userScore = documentSnapshot.getLong("score");
-
                 userSubs = documentSnapshot.getLong("subs");
-
                 userFriends = documentSnapshot.getLong("friendscount");
-
                 profileImageUrl = documentSnapshot.getString("profileImageUrl");
 
                 userScoreText.setText("" + userScore);
@@ -129,15 +124,20 @@ public class MainActivity extends AppCompatActivity {
                 userSubsText.setText("" + userSubs);
 
 
-               /* SharedPreferences.Editor editor = sharedPreferences.edit();
+                SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.putString("Name", userName);
                 editor.putLong("Score", userScore);
                 editor.putLong("Subs", userSubs);
                 editor.putLong("Friends", userFriends);
-                editor.apply();*/
+                editor.apply();
 
                 listOfFavorites(userName);
-                loadAvatarFromLocalFiles("UserAvatar", profileImageUrl);
+                setImage(profileImageUrl);
+
+                if (!file.exists()) {
+                    setImage(profileImageUrl);
+                }
+                //loadAvatarFromLocalFiles("UserAvatar", profileImageUrl);
 
             } else {
                 //Toast.makeText(this, "Ошибка соеднинения", Toast.LENGTH_SHORT).show();
@@ -379,10 +379,10 @@ public class MainActivity extends AppCompatActivity {
                     }else{
                         canvas.drawCircle(bitmap.getWidth() / 2f, bitmap.getHeight() / 2f, bitmap.getHeight() / 2f, paint);
                     }
-                    /*File file = new File(this.getFilesDir(), "UserAvatar");
+                    File file = new File(this.getFilesDir(), "UserAvatar");
                     if (!file.exists()) {
                         saveAvatarToLocalFiles(bitmap, "UserAvatar");
-                    }*/
+                    }
                     userButton.setImageBitmap(circleBitmap);
                 }).addOnFailureListener(exception -> {
                     // Handle any errors
@@ -391,7 +391,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void loadAvatarFromLocalFiles(String fileName, String profileImageUrl) {
+    private void loadAvatarFromLocalFiles(String fileName) {
         ImageButton userButton = findViewById(R.id.userButton);
 
         try {
@@ -418,7 +418,7 @@ public class MainActivity extends AppCompatActivity {
             userButton.setImageBitmap(circleBitmap);
         } catch (Exception e) {
             e.printStackTrace();
-            setImage(profileImageUrl);
+            //setImage(profileImageUrl);
         }
     }
 

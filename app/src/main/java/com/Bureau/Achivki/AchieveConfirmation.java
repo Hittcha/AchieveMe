@@ -233,6 +233,7 @@ public class AchieveConfirmation extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = mAuth.getCurrentUser();
+        String userID = currentUser.getUid();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference usersRef = db.collection("Users").document(currentUser.getUid());
 
@@ -242,7 +243,7 @@ public class AchieveConfirmation extends AppCompatActivity {
         usersRef.get().addOnSuccessListener(documentSnapshot -> {
             Map<String, Object> userAchievements = documentSnapshot.getData();
             if (userAchievements == null) {
-                // Если пользователь не существует, создаем новый документ
+                // Если не существует, создаем новый документ
                 userAchievements = new HashMap<>();
                 userAchievements.put("userAchievements", new HashMap<>());
             } else if (!userAchievements.containsKey("userAchievements")) {
@@ -271,6 +272,42 @@ public class AchieveConfirmation extends AppCompatActivity {
             userAchievements.put("userAchievements", achieveMap);
             usersRef.set(userAchievements);
             Toast.makeText(AchieveConfirmation.this, "Достижение добавлено на проверку", Toast.LENGTH_SHORT).show();
+            showPublicButton();
+        });
+
+        //Добавляем достижение в UsersLogs ProofList для модерации
+
+            DocumentReference usersLogsRef = db.collection("UsersLogs").document("ProofList");
+        usersLogsRef.get().addOnSuccessListener(documentSnapshot -> {
+            Map<String, Object> userAchievements = documentSnapshot.getData();
+            if (userAchievements == null) {
+                // Если не существует, создаем новый документ
+                userAchievements = new HashMap<>();
+                userAchievements.put(userID, new HashMap<>());
+            } else if (!userAchievements.containsKey(userID)) {
+                // Если Map achieve не существует, создаем его
+                userAchievements.put(userID, new HashMap<>());
+            }
+
+            // Получаем текущий Map achieve из документа пользователя
+            Map<String, Object> achieveMap = (Map<String, Object>) userAchievements.get(userID);
+
+            // Создаем новый Map с информацией о новом достижении
+            Map<String, Object> newAchieveMap = new HashMap<>();
+            newAchieveMap.put("name", achieveName);
+            newAchieveMap.put("url", "users/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/proof/" + name);
+            Calendar calendar = Calendar.getInstance();
+            SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss", Locale.getDefault());
+            String time = sdf.format(calendar.getTime());
+            newAchieveMap.put("time", time);
+
+            // Добавляем новое достижение в Map achieve пользователя
+            achieveMap.put(achieveName, newAchieveMap);
+
+            // Сохраняем обновленный Map achieve в Firestore
+            userAchievements.put(userID, achieveMap);
+            usersLogsRef.set(userAchievements);
+            Toast.makeText(AchieveConfirmation.this, "test", Toast.LENGTH_SHORT).show();
             showPublicButton();
         });
     }

@@ -15,6 +15,7 @@ import android.graphics.BitmapShader;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Shader;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -49,16 +50,20 @@ import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
+import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class OtherUserActivity extends AppCompatActivity {
     private FirebaseFirestore db;
+
+    private FirebaseFirestore firestore;
     private String userName;
     private String otherUserName;
 
@@ -174,7 +179,46 @@ public class OtherUserActivity extends AppCompatActivity {
 
                         Map<String, Object> userData = documentSnapshot.getData();
                         Map<String, Object> achievements = (Map<String, Object>) userData.get("userPhotos");
-                        for (Map.Entry<String, Object> entry : achievements.entrySet()) {
+
+                        List<Map.Entry<String, Object>> sortedAchievements = new ArrayList<>(achievements.entrySet());
+
+                        // Sort the achievements by time
+                        Collections.sort(sortedAchievements, (entry1, entry2) -> {
+                            Map<String, Object> achievement1 = (Map<String, Object>) entry1.getValue();
+                            Map<String, Object> achievement2 = (Map<String, Object>) entry2.getValue();
+                            String time1 = (String) achievement1.get("time");
+                            String time2 = (String) achievement2.get("time");
+                            if (time1 == null && time2 == null) {
+                                return 0; // Both times are null, consider them equal
+                            } else if (time1 == null) {
+                                return -1; // time1 is null, consider it smaller than time2
+                            } else if (time2 == null) {
+                                return 1; // time2 is null, consider it smaller than time1
+                            } else {
+                                return time2.compareTo(time1);
+                            }
+                        });
+
+                        for (Map.Entry<String, Object> entry : sortedAchievements) {
+                            Map<String, Object> achievement = (Map<String, Object>) entry.getValue();
+                            String key = entry.getKey();
+                            System.out.println("key: " + key);
+
+                            Long likes = (Long) achievement.get("likes");
+                            String url = (String) achievement.get("url");
+                            String achname = (String) achievement.get("name");
+                            String time = (String) achievement.get("time");
+
+                            ArrayList<String> people = (ArrayList<String>) achievement.get("like");
+
+                            // Выводим данные достижения на экран
+                            System.out.println("likes: " + likes);
+                            System.out.println("url: " + url);
+
+                            createImageBlock(url, likes, people, userToken, key ,userName, time, achname);
+                        }
+
+                        /*for (Map.Entry<String, Object> entry : achievements.entrySet()) {
                             Map<String, Object> achievement = (Map<String, Object>) entry.getValue();
                             String key = entry.getKey();
                             System.out.println("key: " + key);
@@ -190,7 +234,7 @@ public class OtherUserActivity extends AppCompatActivity {
                             System.out.println("url: " + url);
 
                             createImageBlock(url, likes, people, userToken, key ,userName, time, achname);
-                        }
+                        }*/
 
 
                     } else {
@@ -570,7 +614,7 @@ public class OtherUserActivity extends AppCompatActivity {
 
         ImageView imageView = blockLayout.findViewById(R.id.imageView3);
 
-        StorageReference storageRef = FirebaseStorage.getInstance().getReference();
+        /*StorageReference storageRef = FirebaseStorage.getInstance().getReference();
         StorageReference userImageRef = storageRef.child(url);
         try {
             final File localFile = File.createTempFile("images", "jpg");
@@ -587,7 +631,34 @@ public class OtherUserActivity extends AppCompatActivity {
             });
         } catch (IOException e) {
             e.printStackTrace();
-        }
+        }*/
+
+        firestore = FirebaseFirestore.getInstance();
+
+        // Загрузка изображения в Firebase Storage
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageRef = storage.getReference();
+        StorageReference imageRef = storageRef.child(url);
+        // Получение URL изображения
+        imageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                // URL изображения
+                String imageUrl = uri.toString();
+
+                // Отображение изображения с использованием Picasso
+                //ImageView imageView = findViewById(R.id.imageView3);
+                Picasso.get()
+                        .load(imageUrl)
+                        .into(imageView);
+                imageView.setAdjustViewBounds(true);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                // Обработка ошибки загрузки изображения
+            }
+        });
     }
 
     public void addLike(String userName, String key, String userToken){

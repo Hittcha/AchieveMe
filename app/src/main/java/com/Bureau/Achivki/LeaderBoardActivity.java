@@ -24,6 +24,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -88,6 +89,11 @@ public class LeaderBoardActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
+        File file = new File(this.getFilesDir(), "UserAvatar");
+        if (file.exists()) {
+            loadAvatarFromLocalFiles("UserAvatar");
+        }
+
         db = FirebaseFirestore.getInstance();
         FirebaseUser currentUser = mAuth.getCurrentUser();
         DocumentReference mAuthDocRef = db.collection("Users").document(currentUser.getUid());
@@ -102,7 +108,11 @@ public class LeaderBoardActivity extends AppCompatActivity {
                 userNameText.setText(userName);
                 userScoreText.setText("Счет: " + userScore);
 
-                setUserImage(profileImageUrl);
+                if (!file.exists()) {
+                    setUserImage(profileImageUrl);
+                }
+
+                //setUserImage(profileImageUrl);
             } else {
                 // документ не найден
             }
@@ -254,6 +264,37 @@ public class LeaderBoardActivity extends AppCompatActivity {
                 });
             }
         });
+    }
+
+    private void loadAvatarFromLocalFiles(String fileName) {
+        ImageButton userButton = findViewById(R.id.userAvatar);
+
+        try {
+            // Создание файла с указанным именем в локальной директории приложения
+            File file = new File(this.getFilesDir(), fileName);
+
+            // Чтение файла в виде Bitmap
+            Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
+
+            // Преобразование Bitmap в круговой вид
+            Bitmap circleBitmap = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+            BitmapShader shader = new BitmapShader(bitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
+            Paint paint = new Paint();
+            paint.setShader(shader);
+
+            Canvas canvas = new Canvas(circleBitmap);
+            if (bitmap.getHeight() > bitmap.getWidth()){
+                canvas.drawCircle(bitmap.getWidth() / 2f, bitmap.getHeight() / 2f, bitmap.getWidth() / 2f, paint);
+            }else{
+                canvas.drawCircle(bitmap.getWidth() / 2f, bitmap.getHeight() / 2f, bitmap.getHeight() / 2f, paint);
+            }
+
+            // Установка кругового Bitmap в качестве изображения для кнопки
+            userButton.setImageBitmap(circleBitmap);
+        } catch (Exception e) {
+            e.printStackTrace();
+            //setImage(profileImageUrl);
+        }
     }
 
     public void setUserImage(String imageRef) {

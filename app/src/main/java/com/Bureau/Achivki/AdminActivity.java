@@ -44,8 +44,9 @@ public class AdminActivity extends AppCompatActivity {
         leaderListUpdate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Получение ссылки на коллекцию "Users" в базе данных
-                FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+                updateLeaderList();
+                /*FirebaseFirestore db = FirebaseFirestore.getInstance();
                 CollectionReference usersRef = db.collection("Users");
 
                 DocumentReference leadersRef = db.collection("Leaders").document("IiSkYx3cqYvapeN6W8wc");
@@ -81,7 +82,46 @@ public class AdminActivity extends AppCompatActivity {
                         // Обработка ошибок при получении данных
                         Toast.makeText(AdminActivity.this, "Что то пошло не так.", Toast.LENGTH_SHORT).show();
                     }
-                });
+                });*/
+            }
+        });
+    }
+    private void updateLeaderList(){
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference usersRef = db.collection("Users");
+
+        DocumentReference leadersRef = db.collection("Leaders").document("IiSkYx3cqYvapeN6W8wc");
+
+        // Создание запроса для сортировки пользователей по полю "score"
+        Query scoreQuery = usersRef.orderBy("score", Query.Direction.DESCENDING).limit(6);
+
+        // Получение отсортированных данных
+        scoreQuery.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                // Обработка полученных данных
+                Map<String, Object> leaders = new HashMap<>();
+                for (QueryDocumentSnapshot document : task.getResult()) {
+                    // Получение данных пользователя
+                    String name = document.getString("name");
+                    String profileImageUrl = document.getString("profileImageUrl");
+                    String token = document.getId();
+                    int score = Objects.requireNonNull(document.getLong("score")).intValue();
+
+                    // Дальнейшая обработка данных...
+                    System.out.println("name " + name + " profileImageUrl " + profileImageUrl + " token " + token + " score " + score);
+
+                    Map<String, Object> newLeader = new HashMap<>();
+                    newLeader.put("name", name);
+                    newLeader.put("profileImageUrl", profileImageUrl);
+                    newLeader.put("token", token);
+                    newLeader.put("score", score);
+
+                    leaders.put(name, newLeader);
+                }
+                addLeader(leadersRef, leaders);
+            } else {
+                // Обработка ошибок при получении данных
+                Toast.makeText(AdminActivity.this, "Что то пошло не так.", Toast.LENGTH_SHORT).show();
             }
         });
     }
