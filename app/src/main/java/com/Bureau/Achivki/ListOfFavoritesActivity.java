@@ -2,13 +2,7 @@ package com.Bureau.Achivki;
 
 import static android.content.ContentValues.TAG;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.content.ContextCompat;
-
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,10 +11,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -33,21 +31,12 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ListOfFavoritesActivity extends AppCompatActivity {
-
-    private ImageButton favoritesButton;
-
-    private ImageButton achieveListButton;
-
-    private ImageButton leaderListButton;
-
-    private ImageButton menuButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,13 +65,13 @@ public class ListOfFavoritesActivity extends AppCompatActivity {
 
         List<String> achievementNames = new ArrayList<>();
 
-        leaderListButton = findViewById(R.id.imageButtonLeaderList);
+        ImageButton leaderListButton = findViewById(R.id.imageButtonLeaderList);
 
-        menuButton = findViewById(R.id.imageButtonMenu);
+        ImageButton menuButton = findViewById(R.id.imageButtonMenu);
 
-        favoritesButton = findViewById(R.id.imageButtonFavorites);
+        ImageButton favoritesButton = findViewById(R.id.imageButtonFavorites);
 
-        achieveListButton = findViewById(R.id.imageButtonAchieveList);
+        ImageButton achieveListButton = findViewById(R.id.imageButtonAchieveList);
 
         leaderListButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -242,7 +231,6 @@ public class ListOfFavoritesActivity extends AppCompatActivity {
         super.onResume();
         overridePendingTransition(0, 0);
     }
-
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             onBackPressed();

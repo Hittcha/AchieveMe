@@ -10,7 +10,6 @@ import android.graphics.BitmapShader;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Shader;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,7 +20,6 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -58,18 +56,16 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        SharedPreferences sharedPreferences = getSharedPreferences("User_Data", this.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = getSharedPreferences("User_Data", MODE_PRIVATE);
 
         String savedName = sharedPreferences.getString("Name", "");
         userScore = sharedPreferences.getLong("Score", 0);
         userSubs = sharedPreferences.getLong("Subs", 0);
         userFriends = sharedPreferences.getLong("Friends", 0);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Window window = getWindow();
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.setStatusBarColor(ContextCompat.getColor(this, R.color.appBackGround));
-        }
+        Window window = getWindow();
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.setStatusBarColor(ContextCompat.getColor(this, R.color.appBackGround));
 
         db = FirebaseFirestore.getInstance();
         CollectionReference achievementsRef = db.collection("Achievements");
@@ -80,9 +76,15 @@ public class MainActivity extends AppCompatActivity {
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = mAuth.getCurrentUser();
 
-        assert currentUser != null;
-        TextView welcomeMessage = findViewById(R.id.welcome_message);
+        String userId = currentUser.getUid();
 
+        //Проверка айди админа
+        if (userId.equals("S5S9nb7f0qheRWwlDu1CyCG4QxO2")){
+            Button adminButton = findViewById(R.id.adminButton);
+            adminButton.setVisibility(View.VISIBLE);
+        }
+
+        TextView welcomeMessage = findViewById(R.id.welcome_message);
         welcomeMessage.setText(savedName);
 
 
@@ -103,21 +105,18 @@ public class MainActivity extends AppCompatActivity {
 
         File file = new File(this.getFilesDir(), "UserAvatar");
                     if (file.exists()) {
-                        loadAvatarFromLocalFiles("UserAvatar", "/users/StandartUser/UserAvatar.png");
+                        loadAvatarFromLocalFiles("UserAvatar");
                     }
 
         DocumentReference mAuthDocRef = db.collection("Users").document(currentUser.getUid());
 
+
         mAuthDocRef.get().addOnSuccessListener(documentSnapshot -> {
             if (documentSnapshot.exists()) {
                 userName = documentSnapshot.getString("name");
-
                 userScore = documentSnapshot.getLong("score");
-
                 userSubs = documentSnapshot.getLong("subs");
-
                 userFriends = documentSnapshot.getLong("friendscount");
-
                 profileImageUrl = documentSnapshot.getString("profileImageUrl");
 
                 userScoreText.setText("" + userScore);
@@ -125,15 +124,20 @@ public class MainActivity extends AppCompatActivity {
                 userSubsText.setText("" + userSubs);
 
 
-               /* SharedPreferences.Editor editor = sharedPreferences.edit();
+                SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.putString("Name", userName);
                 editor.putLong("Score", userScore);
                 editor.putLong("Subs", userSubs);
                 editor.putLong("Friends", userFriends);
-                editor.apply();*/
+                editor.apply();
 
                 listOfFavorites(userName);
-                loadAvatarFromLocalFiles("UserAvatar", profileImageUrl);
+                setImage(profileImageUrl);
+
+                if (!file.exists()) {
+                    setImage(profileImageUrl);
+                }
+                //loadAvatarFromLocalFiles("UserAvatar", profileImageUrl);
 
             } else {
                 //Toast.makeText(this, "Ошибка соеднинения", Toast.LENGTH_SHORT).show();
@@ -184,6 +188,13 @@ public class MainActivity extends AppCompatActivity {
         ImageButton achieveListButton = findViewById(R.id.imageButtonAchieveList);
         ImageButton buttonSeasonAchieve = findViewById(R.id.imageButtonSeasonAchieve);
         ImageButton usersListButton = findViewById(R.id.imageButtonUsersList);
+
+        Button adminButton = findViewById(R.id.adminButton);
+
+        adminButton.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, AdminActivity.class);
+            startActivity(intent);
+        });
 
         buttonSeasonAchieve.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, SeasonsAchievements.class);
@@ -368,10 +379,10 @@ public class MainActivity extends AppCompatActivity {
                     }else{
                         canvas.drawCircle(bitmap.getWidth() / 2f, bitmap.getHeight() / 2f, bitmap.getHeight() / 2f, paint);
                     }
-                    /*File file = new File(this.getFilesDir(), "UserAvatar");
+                    File file = new File(this.getFilesDir(), "UserAvatar");
                     if (!file.exists()) {
                         saveAvatarToLocalFiles(bitmap, "UserAvatar");
-                    }*/
+                    }
                     userButton.setImageBitmap(circleBitmap);
                 }).addOnFailureListener(exception -> {
                     // Handle any errors
@@ -380,7 +391,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void loadAvatarFromLocalFiles(String fileName, String profileImageUrl) {
+    private void loadAvatarFromLocalFiles(String fileName) {
         ImageButton userButton = findViewById(R.id.userButton);
 
         try {
@@ -407,7 +418,7 @@ public class MainActivity extends AppCompatActivity {
             userButton.setImageBitmap(circleBitmap);
         } catch (Exception e) {
             e.printStackTrace();
-            setImage(profileImageUrl);
+            //setImage(profileImageUrl);
         }
     }
 

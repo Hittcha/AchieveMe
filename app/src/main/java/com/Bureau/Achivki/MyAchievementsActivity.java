@@ -1,50 +1,37 @@
 package com.Bureau.Achivki;
 
-import static android.content.ContentValues.TAG;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
-
-import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
+
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class MyAchievementsActivity extends AppCompatActivity {
-
-    private ImageButton favoritesButton;
-
-    private ImageButton achieveListButton;
-
-    private ImageButton leaderListButton;
-
-    private ImageButton menuButton;
 
     private FirebaseAuth mAuth;
 
@@ -55,6 +42,20 @@ public class MyAchievementsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_achievements);
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Window window = getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(ContextCompat.getColor(this, R.color.StatusBarColor));
+        }
+
+        androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.toolbar);
+
+        setSupportActionBar(toolbar);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_back_arrow);
+        getSupportActionBar().setTitle("Созданные достижения");
+
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = mAuth.getCurrentUser();
 
@@ -64,31 +65,28 @@ public class MyAchievementsActivity extends AppCompatActivity {
         List<String> achievementNames = new ArrayList<>();
 
 
-        userRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                Map<String, Object> userData = documentSnapshot.getData();
-                Map<String, Object> achievements = (Map<String, Object>) userData.get("achieve");
-                for (Map.Entry<String, Object> entry : achievements.entrySet()) {
-                    Map<String, String> achievement = (Map<String, String>) entry.getValue();
-                    String name = achievement.get("name");
-                    String desc = achievement.get("desc");
-                    // Выводим данные достижения на экран
-                    System.out.println("Achievement name: " + name);
-                    System.out.println("Achievement description: " + desc);
-                    createAchieveButton(name, desc);
-                }
-                // Здесь можно продолжить работу с полученным Map достижений
+        userRef.get().addOnSuccessListener(documentSnapshot -> {
+            Map<String, Object> userData = documentSnapshot.getData();
+            Map<String, Object> achievements = (Map<String, Object>) userData.get("achieve");
+            for (Map.Entry<String, Object> entry : achievements.entrySet()) {
+                Map<String, String> achievement = (Map<String, String>) entry.getValue();
+                String name = achievement.get("name");
+                String desc = achievement.get("desc");
+                // Выводим данные достижения на экран
+                System.out.println("Achievement name: " + name);
+                System.out.println("Achievement description: " + desc);
+                createAchieveButton(name, desc);
             }
+            // Здесь можно продолжить работу с полученным Map достижений
         });
 
-        leaderListButton = findViewById(R.id.imageButtonLeaderList);
+        ImageButton leaderListButton = findViewById(R.id.imageButtonLeaderList);
 
-        menuButton = findViewById(R.id.imageButtonMenu);
+        ImageButton menuButton = findViewById(R.id.imageButtonMenu);
 
-        favoritesButton = findViewById(R.id.imageButtonFavorites);
+        ImageButton favoritesButton = findViewById(R.id.imageButtonFavorites);
 
-        achieveListButton = findViewById(R.id.imageButtonAchieveList);
+        ImageButton achieveListButton = findViewById(R.id.imageButtonAchieveList);
 
         leaderListButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -234,5 +232,13 @@ public class MyAchievementsActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         overridePendingTransition(0, 0);
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

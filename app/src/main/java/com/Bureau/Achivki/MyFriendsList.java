@@ -48,14 +48,7 @@ import java.util.Map;
 
 public class MyFriendsList extends AppCompatActivity {
 
-    private ImageButton achieveListButton;
-
-    private ImageButton leaderListButton;
-
-    private ImageButton menuButton;
-
     private FirebaseFirestore db;
-    private FirebaseAuth mAuth;
 
     private String userName;
 
@@ -64,11 +57,9 @@ public class MyFriendsList extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_friends_list);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Window window = getWindow();
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.setStatusBarColor(ContextCompat.getColor(this, R.color.StatusBarColor));
-        }
+        Window window = getWindow();
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.setStatusBarColor(ContextCompat.getColor(this, R.color.StatusBarColor));
 
         androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.toolbar);
 
@@ -78,7 +69,7 @@ public class MyFriendsList extends AppCompatActivity {
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_back_arrow);
         getSupportActionBar().setTitle("Мои подписки");
 
-        mAuth = FirebaseAuth.getInstance();
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
         db = FirebaseFirestore.getInstance();
 
@@ -130,13 +121,13 @@ public class MyFriendsList extends AppCompatActivity {
             }
         });
 
-        leaderListButton = findViewById(R.id.imageButtonLeaderList);
+        ImageButton leaderListButton = findViewById(R.id.imageButtonLeaderList);
 
-        menuButton = findViewById(R.id.imageButtonMenu);
+        ImageButton menuButton = findViewById(R.id.imageButtonMenu);
 
         ImageButton favoritesButton = findViewById(R.id.imageButtonFavorites);
 
-        achieveListButton = findViewById(R.id.imageButtonAchieveList);
+        ImageButton achieveListButton = findViewById(R.id.imageButtonAchieveList);
 
         leaderListButton.setOnClickListener(new View.OnClickListener() {
             @Override

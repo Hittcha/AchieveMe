@@ -13,18 +13,12 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.Shader;
-import android.hardware.display.DisplayManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.util.DisplayMetrics;
-import android.view.Display;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.MotionEvent;
-import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.Animation;
@@ -37,26 +31,22 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -65,52 +55,37 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 
 public class UserProfile extends AppCompatActivity {
     private String userName;
     private String profileImageUrl;
+    private FirebaseFirestore firestore;
 
-    private Long userScore;
-
-    private Long userSubs;
-
-    private Long userFriends;
-
-    private boolean liked;
-
-    private int value = 0;
-
-    private ImageView mImageView;
-    private StorageReference mStorageRef;
-    private FirebaseFirestore db;
+    //private ImageView mImageView;
     private FirebaseAuth mAuth;
-
     private static final int REQUEST_CODE_SELECT_IMAGE = 100;
-
     private ImageView profileImageView;
     private FirebaseStorage storage;
     private DrawerLayout drawerLayout;
-
     Intent intent;
-
 
     private static final int PERMISSION_REQUEST_CODE = 100;
 
 
-    private String[] permissions = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+    private final String[] permissions = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_profile);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Window window = getWindow();
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.setStatusBarColor(ContextCompat.getColor(this, R.color.appBackGround));
-        }
+        Window window = getWindow();
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.setStatusBarColor(ContextCompat.getColor(this, R.color.appBackGround));
 
         ImageButton backButton = findViewById(R.id.imageButtonBack);
 
@@ -123,36 +98,28 @@ public class UserProfile extends AppCompatActivity {
             return false;
         });
 
-
+        //Выкидное меню
         drawerLayout = findViewById(R.id.drawer_layout);
         ImageButton btnOpenMenu = findViewById(R.id.btn_open_menu);
-        btnOpenMenu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                drawerLayout.openDrawer(GravityCompat.END);
-            }
-        });
+        btnOpenMenu.setOnClickListener(v -> drawerLayout.openDrawer(GravityCompat.END));
         NavigationView navigationView = findViewById(R.id.navigation_view);
-        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                // Обработка выбранного пункта меню
-                switch (item.getItemId()) {
-                    case R.id.nav_item1:
-                        // Действие при выборе настройки 1
-                        intent = new Intent(UserProfile.this, SuggestAchieveActivity.class);
-                        break;
-                    case R.id.nav_item2:
-                        // Действие при выборе настройки 2
-                        intent = new Intent(UserProfile.this, MyAchievementsActivity.class);
-                        break;
-                }
 
-                // Закрытие меню после выбора пункта
-                drawerLayout.closeDrawer(GravityCompat.END);
-                startActivity(intent);
-                return true;
+        navigationView.setNavigationItemSelectedListener(item -> {
+            // Обработка выбранного пункта меню
+            switch (item.getItemId()) {
+                case R.id.nav_item1:
+                    // Действие при выборе настройки 1
+                    intent = new Intent(UserProfile.this, SuggestAchieveActivity.class);
+                    break;
+                case R.id.nav_item2:
+                    // Действие при выборе настройки 2
+                    intent = new Intent(UserProfile.this, MyAchievementsActivity.class);
+                    break;
             }
+            // Закрытие меню после выбора пункта
+            drawerLayout.closeDrawer(GravityCompat.END);
+            startActivity(intent);
+            return true;
         });
 
         mAuth = FirebaseAuth.getInstance();
@@ -168,79 +135,90 @@ public class UserProfile extends AppCompatActivity {
         SharedPreferences sharedPreferences = getSharedPreferences("User_Data", this.MODE_PRIVATE);
 
         String savedName = sharedPreferences.getString("Name", "");
-        userScore = sharedPreferences.getLong("Score", 0);
-        userSubs = sharedPreferences.getLong("Subs", 0);
-        userFriends = sharedPreferences.getLong("Friends", 0);
+        long userScore = sharedPreferences.getLong("Score", 0);
+        long userSubs = sharedPreferences.getLong("Subs", 0);
+        long userFriends = sharedPreferences.getLong("Friends", 0);
 
         userNameText.setText(savedName);
         userFriendsText.setText("" + userFriends);
         userScoreText.setText("" + userScore);
         userSubsText.setText("" + userSubs);
 
-        StorageReference storageRef = FirebaseStorage.getInstance().getReference();
+        //StorageReference storageRef = FirebaseStorage.getInstance().getReference();
         //StorageReference imageRef = storageRef.child("users").child(mAuth.getCurrentUser().getUid()).child("UserAvatar");
 
         //mImageView = findViewById(R.id.image_view);
-        db = FirebaseFirestore.getInstance();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
         FirebaseUser currentUser = mAuth.getCurrentUser();
         //String userID = currentUser.getUid();
 
         //Грузим аватар из локальных файлов, если нет то стандартный
         File file = new File(this.getFilesDir(), "UserAvatar");
         if (file.exists()) {
-            loadAvatarFromLocalFiles("UserAvatar", "/users/StandartUser/UserAvatar.png");
+            loadAvatarFromLocalFiles();
         }
 
 
         DocumentReference mAuthDocRef = db.collection("Users").document(currentUser.getUid());
-        mAuthDocRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                if (documentSnapshot.exists()) {
 
-                    profileImageUrl = documentSnapshot.getString("profileImageUrl");
+        mAuthDocRef.get().addOnSuccessListener(documentSnapshot -> {
+            if (documentSnapshot.exists()) {
 
-                    /*userName = documentSnapshot.getString("name");
-                    userScore = documentSnapshot.getLong("score");
-                    userSubs = documentSnapshot.getLong("subs");
-                    userFriends = documentSnapshot.getLong("friendscount");
-                    userNameText.setText(userName);
-                    userFriendsText.setText("" + userFriends);
-                    userScoreText.setText("" + userScore);
-                    userSubsText.setText("" + userSubs);*/
-
-                    // использовать имя пользователя
-                    loadAvatarFromLocalFiles("UserAvatar", profileImageUrl);
-
-                    Map<String, Object> userData = documentSnapshot.getData();
-                    Map<String, Object> achievements = (Map<String, Object>) userData.get("userPhotos");
-                    for (Map.Entry<String, Object> entry : achievements.entrySet()) {
-                        Map<String, Object> achievement = (Map<String, Object>) entry.getValue();
-                        String key = entry.getKey();
-                        System.out.println("key: " + key);
-                        Long likes = (Long) achievement.get("likes");
-                        String url = (String) achievement.get("url");
-                        String achname = (String) achievement.get("name");
-                        String time = (String) achievement.get("time");
-
-                        ArrayList<String> people = (ArrayList<String>) achievement.get("like");
-
-                        // Выводим данные достижения на экран
-                        System.out.println("likes: " + likes);
-                        System.out.println("url: " + url);
-
-                        createImageBlock(url, likes, people, userName, key, achname, time);
-                    }
-
-
-                } else {
-                    // документ не найден
+                profileImageUrl = documentSnapshot.getString("profileImageUrl");
+                if (!file.exists()) {
+                    setImage(profileImageUrl);
                 }
+                //pic(profileImageUrl);
+
+                Map<String, Object> userData = documentSnapshot.getData();
+                Map<String, Object> achievements = (Map<String, Object>) userData.get("userPhotos");
+
+                List<Map.Entry<String, Object>> sortedAchievements = new ArrayList<>(achievements.entrySet());
+
+                // Sort the achievements by time
+                Collections.sort(sortedAchievements, (entry1, entry2) -> {
+                    Map<String, Object> achievement1 = (Map<String, Object>) entry1.getValue();
+                    Map<String, Object> achievement2 = (Map<String, Object>) entry2.getValue();
+                    String time1 = (String) achievement1.get("time");
+                    String time2 = (String) achievement2.get("time");
+                    if (time1 == null && time2 == null) {
+                        return 0; // Both times are null, consider them equal
+                    } else if (time1 == null) {
+                        return -1; // time1 is null, consider it smaller than time2
+                    } else if (time2 == null) {
+                        return 1; // time2 is null, consider it smaller than time1
+                    } else {
+                        return time2.compareTo(time1);
+                    }
+                });
+
+                for (Map.Entry<String, Object> entry : sortedAchievements) {
+                    Map<String, Object> achievement = (Map<String, Object>) entry.getValue();
+                    String key = entry.getKey();
+                    System.out.println("key: " + key);
+
+                    Long likes = (Long) achievement.get("likes");
+                    String url = (String) achievement.get("url");
+                    String achname = (String) achievement.get("name");
+                    String time = (String) achievement.get("time");
+
+                    ArrayList<String> people = (ArrayList<String>) achievement.get("like");
+
+                    // Выводим данные достижения на экран
+                    System.out.println("likes: " + likes);
+                    System.out.println("url: " + url);
+
+                    createImageBlock(url, likes, people, userName, key, achname, time);
+                }
+
+            } else {
+                // документ не найден
             }
         });
 
-        mStorageRef = FirebaseStorage.getInstance().getReference("users").child(mAuth.getCurrentUser().getUid());
+        //StorageReference mStorageRef = FirebaseStorage.getInstance().getReference("users").child(mAuth.getCurrentUser().getUid());
 
+        int value = 0;
         System.out.println("value = " + value);
 
         System.out.println("value = " + value);
@@ -277,35 +255,20 @@ public class UserProfile extends AppCompatActivity {
 
         TextView scoreText = findViewById(R.id.scoreTextView);
 
-        friendsListText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(UserProfile.this, MyFriendsList.class);
-                startActivity(intent);
-            }
+        friendsListText.setOnClickListener(v -> {
+            Intent intent = new Intent(UserProfile.this, MyFriendsList.class);
+            startActivity(intent);
         });
 
-        scoreText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(UserProfile.this, MyCompletedAchievements.class);
-                startActivity(intent);
-            }
+        scoreText.setOnClickListener(v -> {
+            Intent intent = new Intent(UserProfile.this, MyCompletedAchievements.class);
+            startActivity(intent);
         });
 
-        subscriptionsListText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(UserProfile.this, MySubscriptionsActivity.class);
-                startActivity(intent);
-            }
+        subscriptionsListText.setOnClickListener(v -> {
+            Intent intent = new Intent(UserProfile.this, MySubscriptionsActivity.class);
+            startActivity(intent);
         });
-
-        //ImageButton leaderListButton = findViewById(R.id.imageButtonLeaderList);
-        //ImageButton menuButton = findViewById(R.id.imageButtonMenu);
-        //ImageButton favoritesButton = findViewById(R.id.imageButtonFavorites);
-        //ImageButton achieveListButton = findViewById(R.id.imageButtonAchieveList);
-
 
         ImageButton leaderListButton = findViewById(R.id.imageButtonLeaderList);
         leaderListButton.setOnClickListener(v -> {
@@ -357,7 +320,7 @@ public class UserProfile extends AppCompatActivity {
                     profileImageView.setImageBitmap(circleBitmap);
 
                     uploadImageToStorage(bitmap, "UserAvatar");
-                    saveAvatarToLocalFiles(bitmap, "UserAvatar");
+                    saveAvatarToLocalFiles(bitmap);
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }
@@ -405,26 +368,20 @@ public class UserProfile extends AppCompatActivity {
 
         UploadTask uploadTask = imagesRef.putBytes(data);
 
-        uploadTask.addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                // Handle unsuccessful uploads
-                Toast.makeText(UserProfile.this, "Failed to upload image", Toast.LENGTH_SHORT).show();
-            }
-        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-            @Override
-            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                // Handle successful uploads
-                Toast.makeText(UserProfile.this, "Image uploaded successfully", Toast.LENGTH_SHORT).show();
-            }
+        uploadTask.addOnFailureListener(exception -> {
+            // Handle unsuccessful uploads
+            Toast.makeText(UserProfile.this, "Failed to upload image", Toast.LENGTH_SHORT).show();
+        }).addOnSuccessListener(taskSnapshot -> {
+            // Handle successful uploads
+            Toast.makeText(UserProfile.this, "Image uploaded successfully", Toast.LENGTH_SHORT).show();
         });
     }
 
-    private void saveAvatarToLocalFiles(Bitmap bitmap, String name){
+    private void saveAvatarToLocalFiles(Bitmap bitmap){
         //final long MAX_DOWNLOAD_SIZE = 1024 * 1024; // Максимальный размер файла для загрузки
         try {
             // Создание локального файла для сохранения изображения
-            File file = new File(UserProfile.this.getFilesDir(), name);
+            File file = new File(UserProfile.this.getFilesDir(), "UserAvatar");
 
             // Сохранение Bitmap в файл
             FileOutputStream fos = new FileOutputStream(file);
@@ -450,39 +407,33 @@ public class UserProfile extends AppCompatActivity {
             String mimeType = storageMetadata.getName();
             System.out.println("mimeType " + mimeType);
             if (mimeType != null && mimeType.startsWith("User")) {
-                imageRef1.getBytes(Long.MAX_VALUE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-                    @Override
-                    public void onSuccess(byte[] bytes) {
-                        Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                        Bitmap circleBitmap = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
-                        BitmapShader shader = new BitmapShader(bitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
-                        Paint paint = new Paint();
-                        paint.setShader(shader);
+                imageRef1.getBytes(Long.MAX_VALUE).addOnSuccessListener(bytes -> {
+                    Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                    Bitmap circleBitmap = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+                    BitmapShader shader = new BitmapShader(bitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
+                    Paint paint = new Paint();
+                    paint.setShader(shader);
 
-                        Canvas canvas = new Canvas(circleBitmap);
-                        if (bitmap.getHeight() > bitmap.getWidth()){
-                            canvas.drawCircle(bitmap.getWidth() / 2f, bitmap.getHeight() / 2f, bitmap.getWidth() / 2f, paint);
-                        }else{
-                            canvas.drawCircle(bitmap.getWidth() / 2f, bitmap.getHeight() / 2f, bitmap.getHeight() / 2f, paint);
-                        }
-                        userButton.setImageBitmap(circleBitmap);
+                    Canvas canvas = new Canvas(circleBitmap);
+                    if (bitmap.getHeight() > bitmap.getWidth()){
+                        canvas.drawCircle(bitmap.getWidth() / 2f, bitmap.getHeight() / 2f, bitmap.getWidth() / 2f, paint);
+                    }else{
+                        canvas.drawCircle(bitmap.getWidth() / 2f, bitmap.getHeight() / 2f, bitmap.getHeight() / 2f, paint);
                     }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception exception) {
-                        // Handle any errors
-                    }
+                    userButton.setImageBitmap(circleBitmap);
+                }).addOnFailureListener(exception -> {
+                    // Handle any errors
                 });
             }
         });
     }
 
-    private void loadAvatarFromLocalFiles(String fileName, String profileImageUrl) {
+    private void loadAvatarFromLocalFiles() {
         ImageView userButton = findViewById(R.id.image_view);
 
         try {
             // Создание файла с указанным именем в локальной директории приложения
-            File file = new File(this.getFilesDir(), fileName);
+            File file = new File(this.getFilesDir(), "UserAvatar");
 
             // Чтение файла в виде Bitmap
             Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
@@ -504,7 +455,6 @@ public class UserProfile extends AppCompatActivity {
             userButton.setImageBitmap(circleBitmap);
         } catch (Exception e) {
             e.printStackTrace();
-            setImage(profileImageUrl);
         }
     }
 
@@ -540,7 +490,6 @@ public class UserProfile extends AppCompatActivity {
         String sortOrder = MediaStore.Images.Media.DATE_TAKEN + " DESC";
         Cursor cursor = getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, null, null, sortOrder);
 
-        // Сохранение последних 5 фотографий в Firebase Storage
         int count = 0;
         while (cursor.moveToNext() && count < 1) {
             String imagePath = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA));
@@ -568,7 +517,7 @@ public class UserProfile extends AppCompatActivity {
         DateTextView.setText(time);
 
         parentLayout.addView(blockLayout);
-        liked = false;
+        boolean liked = false;
 
         AchieveNameTextView.setText(achname);
 
@@ -604,18 +553,14 @@ public class UserProfile extends AppCompatActivity {
 
         if (people.contains(userName)) {
             // Если Map achieve не существует, создаем его
-            liked = true;
             //likeButton.setBackgroundResource(R.drawable.likeimageclicked);
             likeButton.setChecked(true);
             likesTextView.setText(likes.toString());
-        }else{
-            liked = false;
-
         }
 
         ImageView imageView = blockLayout.findViewById(R.id.imageView3);
 
-        StorageReference storageRef = FirebaseStorage.getInstance().getReference();
+        /*StorageReference storageRef = FirebaseStorage.getInstance().getReference();
         StorageReference userImageRef = storageRef.child(url);
         try {
             final File localFile = File.createTempFile("images", "jpg");
@@ -643,7 +588,28 @@ public class UserProfile extends AppCompatActivity {
             });
         } catch (IOException e) {
             e.printStackTrace();
-        }
+        }*/
+
+        firestore = FirebaseFirestore.getInstance();
+
+        // Загрузка изображения в Firebase Storage
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageRef = storage.getReference();
+        StorageReference imageRef = storageRef.child(url);
+        // Получение URL изображения
+        imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+            // URL изображения
+            String imageUrl = uri.toString();
+
+            // Отображение изображения с использованием Picasso
+            //ImageView imageView = findViewById(R.id.imageView3);
+            Picasso.get()
+                    .load(imageUrl)
+                    .into(imageView);
+            imageView.setAdjustViewBounds(true);
+        }).addOnFailureListener(e -> {
+            // Обработка ошибки загрузки изображения
+        });
     }
 
     public void addLike(String userName, String key){
