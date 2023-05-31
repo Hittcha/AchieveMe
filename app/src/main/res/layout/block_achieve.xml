@@ -40,4 +40,16 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/achieve_galka" />
+
+    <ProgressBar
+        android:id="@+id/achieveProgressBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="173dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.502"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/achieveName_blockTextView"
+        tools:visibility="visible" />
 </androidx.constraintlayout.widget.ConstraintLayout>
