@@ -3,6 +3,10 @@ package com.Bureau.Achivki;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+
+import android.net.Uri;
+import android.os.Build;
+
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -10,6 +14,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -26,6 +31,9 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
+import java.io.IOError;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -56,23 +64,56 @@ public class AchieveCategoryListActivity extends AppCompatActivity {
         TextView categoryNameTextView = findViewById(R.id.categoryNameTextView);
         categoryNameTextView.setText(categoryName);
         ConstraintLayout topConstraintLayout = findViewById(R.id.top_constraint_layout);
-        Drawable drawableKalina = ContextCompat.getDrawable(this, R.drawable.kalina);
+        ImageView backgroundImage = findViewById(R.id.category_background);
+//        Drawable drawableKalina = ContextCompat.getDrawable(this, R.drawable.kalina);
+
+
 
         switch (categoryName) {
             case "Красноярск":
-                topConstraintLayout.setBackground(null);
+                try {
+                  InputStream ims = getAssets().open("category_background/city_krsk.png");
+                    Drawable drawableBackground = Drawable.createFromStream(ims, null);
+                    backgroundImage.setBackground(drawableBackground);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
                 break;
             case "Еда и напитки":
-                topConstraintLayout.setBackground(null);
+                try {
+                    InputStream ims = getAssets().open("food_and_drink.png");
+                    Drawable drawableBackground = Drawable.createFromStream(ims, null);
+                    backgroundImage.setBackground(drawableBackground);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
                 break;
             case "Путешествия":
-                topConstraintLayout.setBackground(null);
+                try {
+                    InputStream ims = getAssets().open("trips.png");
+                    Drawable drawableBackground = Drawable.createFromStream(ims, null);
+                    topConstraintLayout.setBackground(drawableBackground);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
                 break;
             case "Кулинар":
-                topConstraintLayout.setBackground(null);
+                try {
+                    InputStream ims = getAssets().open("chef.png");
+                    Drawable drawableBackground = Drawable.createFromStream(ims, null);
+                    backgroundImage.setBackground(drawableBackground);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
                 break;
             case "Калининград":
-                topConstraintLayout.setBackground(drawableKalina);
+                try {
+                    InputStream ims = getAssets().open("category_background/city_kalina.png");
+                    Drawable drawableBackground = Drawable.createFromStream(ims, null);
+                    backgroundImage.setBackground(drawableBackground);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
                 break;
             default:
                 topConstraintLayout.setBackground(null);
