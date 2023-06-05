@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Build;
 
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,11 +17,14 @@ import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
+import android.widget.PopupWindow;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.core.content.ContextCompat;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -74,7 +78,7 @@ public class AchieveCategoryListActivity extends AppCompatActivity {
                 try {
                   InputStream ims = getAssets().open("category_background/city_krsk.png");
                     Drawable drawableBackground = Drawable.createFromStream(ims, null);
-                    backgroundImage.setBackground(drawableBackground);
+                    backgroundImage.setImageDrawable(drawableBackground);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -83,7 +87,7 @@ public class AchieveCategoryListActivity extends AppCompatActivity {
                 try {
                     InputStream ims = getAssets().open("food_and_drink.png");
                     Drawable drawableBackground = Drawable.createFromStream(ims, null);
-                    backgroundImage.setBackground(drawableBackground);
+                    backgroundImage.setImageDrawable(drawableBackground);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -92,7 +96,7 @@ public class AchieveCategoryListActivity extends AppCompatActivity {
                 try {
                     InputStream ims = getAssets().open("trips.png");
                     Drawable drawableBackground = Drawable.createFromStream(ims, null);
-                    topConstraintLayout.setBackground(drawableBackground);
+                    backgroundImage.setImageDrawable(drawableBackground);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -101,7 +105,7 @@ public class AchieveCategoryListActivity extends AppCompatActivity {
                 try {
                     InputStream ims = getAssets().open("chef.png");
                     Drawable drawableBackground = Drawable.createFromStream(ims, null);
-                    backgroundImage.setBackground(drawableBackground);
+                    backgroundImage.setImageDrawable(drawableBackground);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -110,7 +114,7 @@ public class AchieveCategoryListActivity extends AppCompatActivity {
                 try {
                     InputStream ims = getAssets().open("category_background/city_kalina.png");
                     Drawable drawableBackground = Drawable.createFromStream(ims, null);
-                    backgroundImage.setBackground(drawableBackground);
+                    backgroundImage.setImageDrawable(drawableBackground);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -278,6 +282,14 @@ public class AchieveCategoryListActivity extends AppCompatActivity {
         });
     }
 
+    private void ShowAchievementDescription() {
+        PopupWindow popupWindow = new PopupWindow(this);
+        View popupView = LayoutInflater.from(this).inflate(R.layout.activity_achievement_description, null);
+        popupWindow.setContentView(popupView);
+        popupWindow.setHeight(WindowManager.LayoutParams.WRAP_CONTENT);
+        popupWindow.setWidth(WindowManager.LayoutParams.WRAP_CONTENT);
+        popupWindow.showAtLocation(getWindow().getDecorView(), Gravity.CENTER, 0, 0);
+    }
     private void createAchieveBlock(String achieveName, String color, String categoryName, String username, boolean proof, boolean collectable, long achieveCount, long doneCount){
         LinearLayout parentLayout = findViewById(R.id.scrollView1);
 
@@ -320,12 +332,13 @@ public class AchieveCategoryListActivity extends AppCompatActivity {
             }
             //Intent intent = new Intent(AchieveCategoryListActivity.this, AchievementDescriptionActivity.class);
             intent.putExtra("Achieve_key", achieveName);
-            intent.putExtra("Category_key", categoryName);
+            //intent.putExtra("Category_key", categoryName);
             intent.putExtra("Is_Received", received);
             intent.putExtra("User_name", username);
             intent.putExtra("ProofNeeded", proof);
             intent.putExtra("collectable", collectable);
             intent.putExtra("achieveCount", achieveCount);
+//            ShowAchievementDescription();
             startActivity(intent);
         });
 

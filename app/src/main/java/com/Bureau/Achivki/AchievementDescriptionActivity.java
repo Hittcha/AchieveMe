@@ -12,6 +12,7 @@ import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
@@ -36,9 +37,10 @@ import java.util.Map;
 public class AchievementDescriptionActivity extends AppCompatActivity {
 
     private TextView descMessage;
-    private ImageButton addButton;
-    private ImageButton delButton;
-    private ImageButton confirmButton;
+    private TextView achieveText;
+    private Button addButton;
+    private Button delButton;
+    private Button confirmButton;
     private FirebaseAuth mAuth;
 
 
@@ -58,9 +60,6 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         window.setStatusBarColor(ContextCompat.getColor(this, R.color.StatusBarColor));
 
-        androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle(achieveName);
 
         addButton = findViewById(R.id.submit_button);
         delButton = findViewById(R.id.delete_button);
@@ -68,7 +67,9 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
         ImageButton addFavorites = findViewById(R.id.addFavorites);
         descMessage = findViewById(R.id.desc_message);
         confirmButton = findViewById(R.id.confirmButton);
+        achieveText = findViewById(R.id.AchieveName);
 
+        achieveText.setText(achieveName);
 
         boolean received = getIntent().getBooleanExtra("Is_Received", false);
         boolean proof = getIntent().getBooleanExtra("ProofNeeded", false);
@@ -108,9 +109,10 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
                     }
                 });
         backButton.setOnClickListener(v -> {
-            Intent intent = new Intent(AchievementDescriptionActivity.this, AchieveCategoryListActivity.class);
-            intent.putExtra("Category_key", categoryName);
-            startActivity(intent);
+//              Intent intent = new Intent(AchievementDescriptionActivity.this, AchieveCategoryListActivity.class);
+//            intent.putExtra("Category_key", categoryName);
+//            startActivity(intent);
+            finish();
         });
 
         confirmButton.setOnClickListener(v -> {
