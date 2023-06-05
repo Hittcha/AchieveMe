@@ -95,6 +95,7 @@
             android:exported="false" />
         <activity
             android:name=".AchievementDescriptionActivity"
+            android:theme="@style/AchievementDialog"
             android:exported="false" />
         <activity
             android:name=".AchieveCategoryListActivity"
