@@ -2,7 +2,9 @@ package com.Bureau.Achivki;
 
 import static android.content.ContentValues.TAG;
 
-import android.annotation.SuppressLint;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,9 +14,6 @@ import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -33,26 +32,22 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-public class AchievementDescriptionActivity extends AppCompatActivity {
-
+public class AchievementWithProgressActivity extends AppCompatActivity {
     private TextView descMessage;
-    private ImageButton addButton;
     private ImageButton delButton;
     private ImageButton confirmButton;
+    private ImageButton addButton;
     private FirebaseAuth mAuth;
 
-
-    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_achievement_description);
-
+        setContentView(R.layout.activity_achievement_with_progress);
         Intent intentFromMain = getIntent();
         String achieveName = intentFromMain.getStringExtra("Achieve_key");
         String categoryName = intentFromMain.getStringExtra("Category_key");
         String userName = intentFromMain.getStringExtra("User_name");
-        Long achieveCount = intentFromMain.getLongExtra("achieveCount", 0);
+        long achieveCount = intentFromMain.getLongExtra("achieveCount", 0);
 
         Window window = getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
@@ -60,7 +55,7 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
 
         androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle(achieveName);
+        getSupportActionBar().setTitle("fdsf");
 
         addButton = findViewById(R.id.submit_button);
         delButton = findViewById(R.id.delete_button);
@@ -75,13 +70,13 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
         boolean collectable = getIntent().getBooleanExtra("collectable", false);
 
 
-        if (received) {
+        /*if (received) {
             addButton.setVisibility(View.GONE); // скрываем кнопку
             delButton.setVisibility(View.VISIBLE); // отображаем кнопку
         } else {
             delButton.setVisibility(View.GONE); // скрываем кнопку
             addButton.setVisibility(View.VISIBLE); // отображаем кнопку
-        }
+        }*/
 
         if (proof) {
             showProofButton();
@@ -98,7 +93,6 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         for (QueryDocumentSnapshot document : task.getResult()) {
-                            String name = document.getString("name");
                             String description = document.getString("desc");
 
                             descMessage.setText(description);
@@ -108,13 +102,13 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
                     }
                 });
         backButton.setOnClickListener(v -> {
-            Intent intent = new Intent(AchievementDescriptionActivity.this, AchieveCategoryListActivity.class);
+            Intent intent = new Intent(AchievementWithProgressActivity.this, AchieveCategoryListActivity.class);
             intent.putExtra("Category_key", categoryName);
             startActivity(intent);
         });
 
         confirmButton.setOnClickListener(v -> {
-            Intent intent = new Intent(AchievementDescriptionActivity.this, AchieveConfirmation.class);
+            Intent intent = new Intent(AchievementWithProgressActivity.this, AchieveConfirmation.class);
             intent.putExtra("Achieve_key", achieveName);
             startActivity(intent);
         });
@@ -122,54 +116,69 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
 
         addButton.setOnClickListener(v -> {
 
-            if (proof) {
-                showProofButton();
+            mAuth = FirebaseAuth.getInstance();
+            FirebaseUser currentUser = mAuth.getCurrentUser();
+            FirebaseFirestore db1 = FirebaseFirestore.getInstance();
+            DocumentReference usersRef = db1.collection("Users").document(currentUser.getUid());
 
-            }else {
-                mAuth = FirebaseAuth.getInstance();
-                FirebaseUser currentUser = mAuth.getCurrentUser();
-                FirebaseFirestore db1 = FirebaseFirestore.getInstance();
-                DocumentReference usersRef = db1.collection("Users").document(currentUser.getUid());
+            Calendar calendar = Calendar.getInstance();
+            SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss", Locale.getDefault());
+            String time = sdf.format(calendar.getTime());
 
-                Calendar calendar = Calendar.getInstance();
-                SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss", Locale.getDefault());
-                String time = sdf.format(calendar.getTime());
+            usersRef.get().addOnSuccessListener(documentSnapshot -> {
+                Map<String, Object> userAchievements = documentSnapshot.getData();
+                if (userAchievements == null) {
+                    // Если пользователь не существует, создаем новый документ
+                    userAchievements = new HashMap<>();
+                    userAchievements.put("userAchievements", new HashMap<>());
+                } else if (!userAchievements.containsKey("userAchievements")) {
+                    // Если Map achieve не существует, создаем его
+                    userAchievements.put("userAchievements", new HashMap<>());
+                }
 
-                usersRef.get().addOnSuccessListener(documentSnapshot -> {
-                    Map<String, Object> userAchievements = documentSnapshot.getData();
+                // Получаем текущий Map achieve из документа пользователя
+                Map<String, Object> achieveMap = (Map<String, Object>) userAchievements.get("userAchievements");
+                // Проверяем, существует ли уже мап с именем achieveName
+                if (achieveMap.containsKey(achieveName)) {
+                    // Если мап существует, получаем его
+                    Map<String, Object> existingAchieveMap = (Map<String, Object>) achieveMap.get(achieveName);
 
-                    if (userAchievements == null) {
-                        // Если пользователь не существует, создаем новый документ
-                        userAchievements = new HashMap<>();
-                        userAchievements.put("userAchievements", new HashMap<>());
-
-                    } else if (!userAchievements.containsKey("userAchievements")) {
-                        // Если Map achieve не существует, создаем его
-                        userAchievements.put("userAchievements", new HashMap<>());
+                    // Увеличиваем значение doneCount на 1
+                    long doneCount = (long) existingAchieveMap.get("doneCount");
+                    if(doneCount == achieveCount){
+                        hideButtonAdd();
+                    }else{
+                        existingAchieveMap.put("doneCount", doneCount + 1);
                     }
-
-                    // Получаем текущий Map achieve из документа пользователя
-                    Map<String, Object> achieveMap = (Map<String, Object>) userAchievements.get("userAchievements");
-
-                    // Создаем новый Map с информацией о новом достижении
+                    //existingAchieveMap.put("doneCount", doneCount + 1);
+                } else {
+                    // Если мап не существует, создаем новый Map с информацией о новом достижении
                     Map<String, Object> newAchieveMap = new HashMap<>();
                     newAchieveMap.put("name", achieveName);
                     newAchieveMap.put("confirmed", true);
                     newAchieveMap.put("proofsended", true);
                     newAchieveMap.put("time", time);
+                    if (collectable) {
+                        newAchieveMap.put("collectable", collectable);
+                        newAchieveMap.put("targetCount", achieveCount);
+                        newAchieveMap.put("doneCount", 1);
+                    }
 
                     // Добавляем новое достижение в Map achieve пользователя
                     achieveMap.put(achieveName, newAchieveMap);
+                }
 
-                    // Сохраняем обновленный Map achieve в Firestore
-                    userAchievements.put("userAchievements", achieveMap);
-                    usersRef.set(userAchievements);
-                    addScore(currentUser.getUid());
-                    Toast.makeText(AchievementDescriptionActivity.this, "Достижение добавлено", Toast.LENGTH_SHORT).show();
-                });
-                showButtonDel();
-            }
+                // Сохраняем обновленный Map achieve в Firestore
+                userAchievements.put("userAchievements", achieveMap);
+                usersRef.set(userAchievements);
+                addScore(currentUser.getUid());
+
+                Toast.makeText(AchievementWithProgressActivity.this, "Достижение добавлено", Toast.LENGTH_SHORT).show();
+            });
+            //showButtonDel();
+
         });
+
         delButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -192,9 +201,9 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
 
                     delScore(currentUser.getUid());
 
-                    Toast.makeText(AchievementDescriptionActivity.this, "Достижение удалено", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(AchievementWithProgressActivity.this, "Достижение удалено", Toast.LENGTH_SHORT).show();
                 });
-                showButtonAdd();
+                //showButtonAdd();
             }
         });
 
@@ -232,16 +241,12 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
         });
     }
 
-    private void showButtonDel(){
-        addButton.setVisibility(View.GONE); // скрываем кнопку
-        delButton.setVisibility(View.VISIBLE); // отображаем кнопку
+    private void hideButtonAdd(){
+        addButton.setVisibility(View.GONE); // отображаем кнопку
     }
 
-    private void showButtonAdd(){
-        delButton.setVisibility(View.GONE); // скрываем кнопку
-        addButton.setVisibility(View.VISIBLE); // отображаем кнопку
-    }
     public void addScore(String uid) {
+
         // Получаем ссылку на коллекцию пользователей
         CollectionReference usersRef = FirebaseFirestore.getInstance().collection("Users");
 
@@ -255,10 +260,10 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
                     // Обработка ошибки обновления
                     System.out.println("Ошибка обновления счета: " + e.getMessage());
                 });
-
     }
     public void delScore(String uid){
 
+        // Получаем ссылку на коллекцию пользователей
         CollectionReference usersRef = FirebaseFirestore.getInstance().collection("Users");
 
         DocumentReference userDocRef = usersRef.document(uid);
@@ -277,5 +282,4 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
         confirmButton.setVisibility(View.VISIBLE); // отображаем кнопку
         delButton.setVisibility(View.GONE);
     }
-
 }

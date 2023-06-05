@@ -58,14 +58,6 @@ public class AchieveConfirmation extends AppCompatActivity {
     private ImageView profileImageView;
 
     private FirebaseStorage storage;
-
-    private ImageButton favoritesButton;
-
-    private ImageButton achieveListButton;
-
-    private ImageButton leaderListButton;
-
-    private ImageButton menuButton;
     private String achieveName;
 
     private static final int PERMISSION_REQUEST_CODE = 100;
@@ -127,13 +119,13 @@ public class AchieveConfirmation extends AppCompatActivity {
 
         setPublic.setOnClickListener(v -> setImagePublic(achieveName));
 
-        leaderListButton = findViewById(R.id.imageButtonLeaderList);
+        ImageButton leaderListButton = findViewById(R.id.imageButtonLeaderList);
 
-        menuButton = findViewById(R.id.imageButtonMenu);
+        ImageButton menuButton = findViewById(R.id.imageButtonMenu);
 
-        favoritesButton = findViewById(R.id.imageButtonFavorites);
+        ImageButton favoritesButton = findViewById(R.id.imageButtonFavorites);
 
-        achieveListButton = findViewById(R.id.imageButtonAchieveList);
+        ImageButton achieveListButton = findViewById(R.id.imageButtonAchieveList);
 
         StorageReference imageProofRef = storageRef.child("users").child(mAuth.getCurrentUser().getUid()).child("UserAvatar");
 
@@ -179,10 +171,6 @@ public class AchieveConfirmation extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
-
-
-
     }
     public void selectImageFromLibrary() {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
@@ -300,6 +288,7 @@ public class AchieveConfirmation extends AppCompatActivity {
             SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss", Locale.getDefault());
             String time = sdf.format(calendar.getTime());
             newAchieveMap.put("time", time);
+            newAchieveMap.put("token", userID);
 
             // Добавляем новое достижение в Map achieve пользователя
             achieveMap.put(achieveName, newAchieveMap);
@@ -395,6 +384,4 @@ public class AchieveConfirmation extends AppCompatActivity {
         super.onResume();
         overridePendingTransition(0, 0);
     }
-
-
 }

@@ -1,10 +1,5 @@
 package com.Bureau.Achivki;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.content.ContextCompat;
-
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -12,7 +7,6 @@ import android.graphics.BitmapShader;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Shader;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -21,21 +15,19 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 
 import java.io.File;
@@ -43,17 +35,6 @@ import java.io.IOException;
 import java.util.Map;
 
 public class MySubscriptionsActivity extends AppCompatActivity {
-
-    private ImageButton favoritesButton;
-
-    private ImageButton achieveListButton;
-
-    private ImageButton leaderListButton;
-
-    private ImageButton menuButton;
-
-    private FirebaseFirestore db;
-    private FirebaseAuth mAuth;
     private String userName;
 
     @Override
@@ -61,217 +42,138 @@ public class MySubscriptionsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_subscriptions);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Window window = getWindow();
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.setStatusBarColor(ContextCompat.getColor(this, R.color.StatusBarColor));
-        }
+        Window window = getWindow();
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.setStatusBarColor(ContextCompat.getColor(this, R.color.StatusBarColor));
 
         androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.toolbar);
-
         setSupportActionBar(toolbar);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_back_arrow);
         getSupportActionBar().setTitle("Мои подписчики");
 
-        mAuth = FirebaseAuth.getInstance();
-
-        db = FirebaseFirestore.getInstance();
-
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
         FirebaseUser currentUser = mAuth.getCurrentUser();
 
         DocumentReference mAuthDocRef = db.collection("Users").document(currentUser.getUid());
 
-        mAuthDocRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                if (documentSnapshot.exists()) {
-                    userName = documentSnapshot.getString("name");
+        mAuthDocRef.get().addOnSuccessListener(documentSnapshot -> {
+            if (documentSnapshot.exists()) {
+                userName = documentSnapshot.getString("name");
 
-                    //userScore = documentSnapshot.getLong("score");
+                Map<String, Object> userData = documentSnapshot.getData();
+                Map<String, Object> friends = (Map<String, Object>) userData.get("subscribers");
+                for (Map.Entry<String, Object> entry : friends.entrySet()) {
+                    Map<String, Object> friend = (Map<String, Object>) entry.getValue();
+                    String key = entry.getKey();
+                    System.out.println("key: " + key);
 
-                    //System.out.println("score " + userScore);
+                    String friendName = (String) friend.get("name");
+                    String friendAvatar = (String) friend.get("avatar");
 
-                    //profileImageUrl = documentSnapshot.getString("profileImageUrl");
+                    System.out.println("friendName: " + friendName);
+                    System.out.println("friendAvatar: " + friendAvatar);
 
-                    //userNameText.setText(userName);
-
-                    //userScoreText.setText("" + userScore);
-                    // использовать имя пользователя
-                    //setImage(profileImageUrl);
-
-
-                    Map<String, Object> userData = documentSnapshot.getData();
-                    Map<String, Object> friends = (Map<String, Object>) userData.get("subscribers");
-                    for (Map.Entry<String, Object> entry : friends.entrySet()) {
-                        Map<String, Object> friend = (Map<String, Object>) entry.getValue();
-                        String key = entry.getKey();
-                        System.out.println("key: " + key);
-
-                        String friendName = (String) friend.get("name");
-                        String friendAvatar = (String) friend.get("avatar");
-
-                        System.out.println("friendName: " + friendName);
-                        System.out.println("friendAvatar: " + friendAvatar);
-
-                        createFriendBlock(friendName, friendAvatar, mAuthDocRef, key);
-
-                    }
-
-                } else {
-                    // документ не найден
+                    createFriendBlock(friendName, friendAvatar, mAuthDocRef, key);
                 }
+            } else {
+                // документ не найден
             }
         });
 
-        leaderListButton = findViewById(R.id.imageButtonLeaderList);
-
-        menuButton = findViewById(R.id.imageButtonMenu);
-
-        favoritesButton = findViewById(R.id.imageButtonFavorites);
-
-        achieveListButton = findViewById(R.id.imageButtonAchieveList);
-
-        leaderListButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MySubscriptionsActivity.this, LeaderBoardActivity.class);
-                startActivity(intent);
-            }
+        ImageButton leaderListButton = findViewById(R.id.imageButtonLeaderList);
+        leaderListButton.setOnClickListener(v -> {
+            Intent intent = new Intent(MySubscriptionsActivity.this, LeaderBoardActivity.class);
+            startActivity(intent);
         });
 
-        menuButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MySubscriptionsActivity.this, MainActivity.class);
-                startActivity(intent);
-            }
+        ImageButton menuButton = findViewById(R.id.imageButtonMenu);
+        menuButton.setOnClickListener(v -> {
+            Intent intent = new Intent(MySubscriptionsActivity.this, MainActivity.class);
+            startActivity(intent);
         });
 
-        favoritesButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MySubscriptionsActivity.this, ListOfFavoritesActivity.class);
-                startActivity(intent);
-            }
+        ImageButton favoritesButton = findViewById(R.id.imageButtonFavorites);
+        favoritesButton.setOnClickListener(v -> {
+            Intent intent = new Intent(MySubscriptionsActivity.this, ListOfFavoritesActivity.class);
+            startActivity(intent);
         });
 
-        achieveListButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MySubscriptionsActivity.this, AchieveListActivity.class);
-                startActivity(intent);
-            }
+        ImageButton achieveListButton = findViewById(R.id.imageButtonAchieveList);
+        achieveListButton.setOnClickListener(v -> {
+            Intent intent = new Intent(MySubscriptionsActivity.this, AchieveListActivity.class);
+            startActivity(intent);
         });
 
         ImageButton usersListButton = findViewById(R.id.imageButtonUsersList);
-        usersListButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MySubscriptionsActivity.this, UsersListActivity.class);
-                //User user = new User("Имя пользователя", 1);
-                //intent.putExtra("user", user);
-                startActivity(intent);
-            }
+        usersListButton.setOnClickListener(v -> {
+            Intent intent = new Intent(MySubscriptionsActivity.this, UsersListActivity.class);
+            startActivity(intent);
         });
     }
 
     public void createFriendBlock(String name, String avatarUrl, DocumentReference mAuthDocRef, String  key){
         LinearLayout parentLayout = findViewById(R.id.scrollView);
 
-
         ConstraintLayout blockFriends = (ConstraintLayout) LayoutInflater.from(MySubscriptionsActivity.this)
                 .inflate(R.layout.block_friends, parentLayout, false);
 
         TextView usernameTextView = blockFriends.findViewById(R.id.userName);
 
-
         usernameTextView.setText(name);
-
         parentLayout.addView(blockFriends);
 
         Button delButton = blockFriends.findViewById(R.id.delete_button);
         delButton.setVisibility(View.GONE);
 
+        delButton.setOnClickListener(v -> {
+            mAuthDocRef.get().addOnSuccessListener(documentSnapshot -> {
+                Map<String, Object> userFriends = documentSnapshot.getData();
+                Map<String, Object> friendMap = (Map<String, Object>) userFriends.get("subscribers");
 
-        delButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                System.out.println("del " + name);
-                mAuthDocRef.get().addOnSuccessListener(documentSnapshot -> {
-                    Map<String, Object> userFriends = documentSnapshot.getData();
+                friendMap.remove(key);
+                userFriends.put("subscribers", friendMap);
+                userFriends.put("subs", (long) friendMap.size());
 
-                    Map<String, Object> friendMap = (Map<String, Object>) userFriends.get("subscribers");
+                mAuthDocRef.set(userFriends);
+                parentLayout.removeView(blockFriends);
 
-                    friendMap.remove(key);
+                Toast.makeText(MySubscriptionsActivity.this, "Пользователь удален из подписок", Toast.LENGTH_SHORT).show();
+            });
 
-                    userFriends.put("subscribers", friendMap);
-
-                    userFriends.put("subs", Long.valueOf(friendMap.size()));
-
-                    mAuthDocRef.set(userFriends);
-
-                    parentLayout.removeView(blockFriends);
-
-                    //delScore(userName);
-
-                    Toast.makeText(MySubscriptionsActivity.this, "Пользователь удален из подписок", Toast.LENGTH_SHORT).show();
-                });
-
-            }
         });
 
         ImageButton imageUserButton = blockFriends.findViewById(R.id.imageUserButton);
 
-        imageUserButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MySubscriptionsActivity.this, OtherUserActivity.class);
-                intent.putExtra("User_token", key);
-                startActivity(intent);
-            }
+        imageUserButton.setOnClickListener(v -> {
+            Intent intent = new Intent(MySubscriptionsActivity.this, OtherUserActivity.class);
+            intent.putExtra("User_token", key);
+            startActivity(intent);
         });
 
         StorageReference storageRef = FirebaseStorage.getInstance().getReference();
         StorageReference userImageRef = storageRef.child(avatarUrl);
         try {
             final File localFile = File.createTempFile("images", "jpg");
-            userImageRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                    Bitmap bitmap = BitmapFactory.decodeFile(localFile.getAbsolutePath());
+            userImageRef.getFile(localFile).addOnSuccessListener(taskSnapshot -> {
 
-                    // определяем размеры экрана
-                    /*DisplayMetrics displayMetrics = new DisplayMetrics();
-                    Display display = ContextCompat.getSystemService(MyFriendsList.this, DisplayManager.class).getDisplay(Display.DEFAULT_DISPLAY);
+                Bitmap bitmap = BitmapFactory.decodeFile(localFile.getAbsolutePath());
+                Bitmap circleBitmap = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+                BitmapShader shader = new BitmapShader(bitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
+                Paint paint = new Paint();
+                paint.setShader(shader);
 
-
-                    int targetWidth = getResources().getDisplayMetrics().widthPixels / 3;
-
-
-                    int targetHeight = targetWidth;
-                    Bitmap resizedBitmap = Bitmap.createScaledBitmap(bitmap, targetWidth, targetHeight, true);
-*/
-
-                    // Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                    Bitmap circleBitmap = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
-                    BitmapShader shader = new BitmapShader(bitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
-                    Paint paint = new Paint();
-                    paint.setShader(shader);
-
-                    Canvas canvas = new Canvas(circleBitmap);
-                    if (bitmap.getHeight() > bitmap.getWidth()){
-                        canvas.drawCircle(bitmap.getWidth() / 2f, bitmap.getHeight() / 2f, bitmap.getWidth() / 2f, paint);
-                    }else{
-                        canvas.drawCircle(bitmap.getWidth() / 2f, bitmap.getHeight() / 2f, bitmap.getHeight() / 2f, paint);
-                    }
-
-
-                    imageUserButton.setImageBitmap(circleBitmap);
-
-                    //imageView.setAdjustViewBounds(true);
+                Canvas canvas = new Canvas(circleBitmap);
+                if (bitmap.getHeight() > bitmap.getWidth()){
+                    canvas.drawCircle(bitmap.getWidth() / 2f, bitmap.getHeight() / 2f, bitmap.getWidth() / 2f, paint);
+                }else{
+                    canvas.drawCircle(bitmap.getWidth() / 2f, bitmap.getHeight() / 2f, bitmap.getHeight() / 2f, paint);
                 }
+
+                imageUserButton.setImageBitmap(circleBitmap);
+
             });
         } catch (IOException e) {
             e.printStackTrace();

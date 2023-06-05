@@ -10,6 +10,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageButton;
@@ -34,12 +35,12 @@ import java.io.IOError;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 
 public class AchieveCategoryListActivity extends AppCompatActivity {
     private String userName;
-    private ProgressBar progressBar;
     private int count = 0;
     private int achievedone = 0;
 
@@ -142,7 +143,7 @@ public class AchieveCategoryListActivity extends AppCompatActivity {
     }
 
     public void p(int a, int count){
-        progressBar = findViewById(R.id.progressBar);
+        ProgressBar progressBar = findViewById(R.id.progressBar);
         progressBar.setMax(count);
         progressBar.setProgress(a);
     }
@@ -177,14 +178,30 @@ public class AchieveCategoryListActivity extends AppCompatActivity {
                                     // Получаем имя достижения из документа
                                     String achievementName = document.getString("name");
 
-                                    boolean proof = document.getBoolean("proof");
+                                    boolean proof = Boolean.TRUE.equals(document.getBoolean("proof"));
+                                    boolean collectable = false;
+                                    long achieveCount = 0L;
+                                    long doneCount = 0;
+
+                                    if (document.contains("collectable")) {
+                                        collectable = Boolean.TRUE.equals(document.getBoolean("collectable"));
+                                        achieveCount = document.getLong("count");
+
+                                    } else {
+                                        // Обработка ситуации, когда поле отсутствует
+                                    }
 
                                     if (userAchievements.contains(achievementName)) {
                                         System.out.println("Достижение \"" + achievementName + "\" есть и у пользователя, и в категории " + categoryName);
-                                        checkStatus(achievementName, categoryName, name, proof);
+                                        Map<String, Object> achievementMap = (Map<String, Object>) userAchieveMap.get(achievementName);
+                                        if (document.contains("collectable")) {
+                                            doneCount = (long) achievementMap.get("doneCount");
+                                        }
+                                        System.out.println("doneCount"+ doneCount);
+                                        checkStatus(achievementName, categoryName, name, proof, collectable, achieveCount, doneCount);
                                         achievedone++;
                                     }else{
-                                        createAchieveBlock(achievementName, "black", categoryName, name, proof);
+                                        createAchieveBlock(achievementName, "black", categoryName, name, proof, collectable, achieveCount, 0);
                                         System.out.println("Нет " + achievementName);
                                     }
                                 }
@@ -227,7 +244,7 @@ public class AchieveCategoryListActivity extends AppCompatActivity {
 
     }
 
-    private void checkStatus(String achievementName, String categoryName, String name, boolean proof){
+    private void checkStatus(String achievementName, String categoryName, String name, boolean proof, boolean collectable, long achieveCount, long doneCount){
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = mAuth.getCurrentUser();
 
@@ -246,34 +263,32 @@ public class AchieveCategoryListActivity extends AppCompatActivity {
                 if (achievement.get("name").equals(achievementName)) {
                     Boolean confirmed = (Boolean) achievement.get("confirmed");
                     Boolean proofsended = (Boolean) achievement.get("proofsended");
-                    if(Boolean.TRUE.equals(confirmed) == true){
+                    if(Boolean.TRUE.equals(confirmed)){
                         System.out.println("confirmed");
-                        createAchieveBlock(achievementName,"green", categoryName, name, proof);
-                    }else if (Boolean.TRUE.equals(proofsended) == true) {
-                        createAchieveBlock(achievementName,"yellow", categoryName, name, proof);
+                        createAchieveBlock(achievementName,"green", categoryName, name, proof, collectable, achieveCount, doneCount);
+                    }else if (Boolean.TRUE.equals(proofsended)) {
+                        createAchieveBlock(achievementName,"yellow", categoryName, name, proof, collectable, achieveCount, doneCount);
                         System.out.println("proofsended");
                     }else{
-                        createAchieveBlock(achievementName,"black", categoryName, name, proof);
+                        createAchieveBlock(achievementName,"black", categoryName, name, proof, collectable, achieveCount, doneCount);
                         System.out.println("not ");
                     }
                 }
-
             }
         });
     }
 
-
-    private void createAchieveBlock(String achname, String color, String categoryName, String username, boolean proof){
+    private void createAchieveBlock(String achieveName, String color, String categoryName, String username, boolean proof, boolean collectable, long achieveCount, long doneCount){
         LinearLayout parentLayout = findViewById(R.id.scrollView1);
 
         boolean received;
         ConstraintLayout blockLayout;
 
-        if (color == "green"){
+        if (Objects.equals(color, "green")){
             blockLayout = (ConstraintLayout) LayoutInflater.from(AchieveCategoryListActivity.this)
                     .inflate(R.layout.block_achieve_green, parentLayout, false);
             received = true;
-        }else if(color == "yellow"){
+        }else if(Objects.equals(color, "yellow")){
             blockLayout = (ConstraintLayout) LayoutInflater.from(AchieveCategoryListActivity.this)
                     .inflate(R.layout.block_achieve_yellow, parentLayout, false);
             received = true;
@@ -283,19 +298,34 @@ public class AchieveCategoryListActivity extends AppCompatActivity {
             received = false;
         }
 
+        if(collectable){
+            ProgressBar progess = blockLayout.findViewById(R.id.achieveProgressBar);
+            progess.setVisibility(View.VISIBLE);
+            progess.setMax((int)achieveCount);
+            progess.setProgress((int) doneCount);
+        }
+
         TextView AchieveNameTextView = blockLayout.findViewById(R.id.achieveName_blockTextView);
 
-        AchieveNameTextView.setText(achname);
+        AchieveNameTextView.setText(achieveName);
 
         parentLayout.addView(blockLayout);
         blockLayout.setOnClickListener(v -> {
+            Intent intent;
             // Обработка нажатия кнопки
-            Intent intent = new Intent(AchieveCategoryListActivity.this, AchievementDescriptionActivity.class);
-            intent.putExtra("Achieve_key", achname);
+            if(collectable){
+                intent = new Intent(AchieveCategoryListActivity.this, AchievementWithProgressActivity.class);
+            }else{
+                intent = new Intent(AchieveCategoryListActivity.this, AchievementDescriptionActivity.class);
+            }
+            //Intent intent = new Intent(AchieveCategoryListActivity.this, AchievementDescriptionActivity.class);
+            intent.putExtra("Achieve_key", achieveName);
             intent.putExtra("Category_key", categoryName);
             intent.putExtra("Is_Received", received);
             intent.putExtra("User_name", username);
             intent.putExtra("ProofNeeded", proof);
+            intent.putExtra("collectable", collectable);
+            intent.putExtra("achieveCount", achieveCount);
             startActivity(intent);
         });
 

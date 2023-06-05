@@ -540,6 +540,7 @@ public class OtherUserActivity extends AppCompatActivity {
                     if (achievements.isEmpty()) {
                         scroll.setVisibility(View.GONE);
                     }else{
+                        scroll.setVisibility(View.VISIBLE);
                     }
 
                 } else {

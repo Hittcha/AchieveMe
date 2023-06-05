@@ -100,12 +100,10 @@ public class MainActivity extends AppCompatActivity {
         userFriendsText.setText("" + userFriends);
         userSubsText.setText("" + userSubs);
 
-        //Грузим аватар из локальных файлов, если нет то стандартный
-        //loadAvatarFromLocalFiles("UserAvatar", "/users/StandartUser/UserAvatar.png");
-
+        //Грузим аватар из локальных файлов, а если нет... то нет хэх
         File file = new File(this.getFilesDir(), "UserAvatar");
                     if (file.exists()) {
-                        loadAvatarFromLocalFiles("UserAvatar");
+                        loadAvatarFromLocalFiles();
                     }
 
         DocumentReference mAuthDocRef = db.collection("Users").document(currentUser.getUid());
@@ -134,16 +132,15 @@ public class MainActivity extends AppCompatActivity {
                 listOfFavorites(userName);
                 setImage(profileImageUrl);
 
+                //Если аватар не сохранен локально - то грузим его с клауда и сохраняем
                 if (!file.exists()) {
                     setImage(profileImageUrl);
                 }
-                //loadAvatarFromLocalFiles("UserAvatar", profileImageUrl);
 
             } else {
                 //Toast.makeText(this, "Ошибка соеднинения", Toast.LENGTH_SHORT).show();
             }
         });
-
 
         friendsListText.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, MyFriendsList.class);
@@ -381,7 +378,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                     File file = new File(this.getFilesDir(), "UserAvatar");
                     if (!file.exists()) {
-                        saveAvatarToLocalFiles(bitmap, "UserAvatar");
+                        saveAvatarToLocalFiles(bitmap);
                     }
                     userButton.setImageBitmap(circleBitmap);
                 }).addOnFailureListener(exception -> {
@@ -391,12 +388,12 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void loadAvatarFromLocalFiles(String fileName) {
+    private void loadAvatarFromLocalFiles() {
         ImageButton userButton = findViewById(R.id.userButton);
 
         try {
             // Создание файла с указанным именем в локальной директории приложения
-            File file = new File(this.getFilesDir(), fileName);
+            File file = new File(this.getFilesDir(), "UserAvatar");
 
             // Чтение файла в виде Bitmap
             Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
@@ -422,21 +419,17 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void saveAvatarToLocalFiles(Bitmap bitmap, String name){
+    private void saveAvatarToLocalFiles(Bitmap bitmap){
         //final long MAX_DOWNLOAD_SIZE = 1024 * 1024; // Максимальный размер файла для загрузки
         try {
             // Создание локального файла для сохранения изображения
-            File file = new File(this.getFilesDir(), name);
+            File file = new File(this.getFilesDir(), "UserAvatar");
 
             // Сохранение Bitmap в файл
             FileOutputStream fos = new FileOutputStream(file);
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
             fos.close();
 
-            // Обновление информации о пути к локальному файлу в приложении (если необходимо)
-
-            // Уведомление об успешном сохранении
-            //Toast.makeText(this, "Аватар сохранен локально.", Toast.LENGTH_SHORT).show();
         } catch (IOException e) {
             e.printStackTrace();
         }

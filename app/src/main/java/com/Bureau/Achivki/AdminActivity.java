@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,15 +14,24 @@ import androidx.core.content.ContextCompat;
 
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 public class AdminActivity extends AppCompatActivity {
+
+    private FirebaseFirestore firestore;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,50 +50,258 @@ public class AdminActivity extends AppCompatActivity {
         getSupportActionBar().setTitle("Админка");
 
         Button leaderListUpdate = findViewById(R.id.leaderListUpdate);
+        Button loadImageButton = findViewById(R.id.load_image_button);
+
+        Button confirmUserAchieveButton = findViewById(R.id.confirm_user_achieve_button);
+        Button disproveUserAchieveButton = findViewById(R.id.disprove_user_achieve_button);
 
         leaderListUpdate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 updateLeaderList();
-                /*FirebaseFirestore db = FirebaseFirestore.getInstance();
-                CollectionReference usersRef = db.collection("Users");
-
-                DocumentReference leadersRef = db.collection("Leaders").document("IiSkYx3cqYvapeN6W8wc");
-
-                // Создание запроса для сортировки пользователей по полю "score"
-                Query scoreQuery = usersRef.orderBy("score", Query.Direction.DESCENDING).limit(6);
-
-                // Получение отсортированных данных
-                scoreQuery.get().addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        // Обработка полученных данных
-                        Map<String, Object> leaders = new HashMap<>();
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-                            // Получение данных пользователя
-                            String name = document.getString("name");
-                            String profileImageUrl = document.getString("profileImageUrl");
-                            String token = document.getId();
-                            int score = Objects.requireNonNull(document.getLong("score")).intValue();
-
-                            // Дальнейшая обработка данных...
-                            System.out.println("name " + name + " profileImageUrl " + profileImageUrl + " token " + token + " score " + score);
-
-                            Map<String, Object> newLeader = new HashMap<>();
-                            newLeader.put("name", name);
-                            newLeader.put("profileImageUrl", profileImageUrl);
-                            newLeader.put("token", token);
-                            newLeader.put("score", score);
-
-                            leaders.put(name, newLeader);
-                        }
-                        addLeader(leadersRef, leaders);
-                    } else {
-                        // Обработка ошибок при получении данных
-                        Toast.makeText(AdminActivity.this, "Что то пошло не так.", Toast.LENGTH_SHORT).show();
-                    }
-                });*/
             }
+        });
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference usersLogsRef = db.collection("UsersLogs");
+
+        /*loadImageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DocumentReference mAuthDocRef = db.collection("UsersLogs").document("ProofList");
+
+                mAuthDocRef.get().addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        Map<String, Object> userData = documentSnapshot.getData();
+
+                        for (Map.Entry<String, Object> entry : userData.entrySet()) {
+                            String userId = entry.getKey();
+                            Map<String, Object> achievements = (Map<String, Object>) entry.getValue();
+
+                            List<Map.Entry<String, Object>> sortedAchievements = new ArrayList<>(achievements.entrySet());
+
+                            // Sort the achievements by time
+                            Collections.sort(sortedAchievements, (entry1, entry2) -> {
+                                Map<String, Object> achievement1 = (Map<String, Object>) entry1.getValue();
+                                Map<String, Object> achievement2 = (Map<String, Object>) entry2.getValue();
+                                String time1 = (String) achievement1.get("time");
+                                String time2 = (String) achievement2.get("time");
+                                if (time1 == null && time2 == null) {
+                                    return 0; // Both times are null, consider them equal
+                                } else if (time1 == null) {
+                                    return -1; // time1 is null, consider it smaller than time2
+                                } else if (time2 == null) {
+                                    return 1; // time2 is null, consider it smaller than time1
+                                } else {
+                                    return time2.compareTo(time1);
+                                }
+                            });
+
+                            for (Map.Entry<String, Object> achievementEntry : sortedAchievements) {
+                                Map<String, Object> achievement = (Map<String, Object>) achievementEntry.getValue();
+                                String key = achievementEntry.getKey();
+                                System.out.println("key: " + key);
+
+                                String url = (String) achievement.get("url");
+                                String achname = (String) achievement.get("name");
+                                String time = (String) achievement.get("time");
+
+                                System.out.println("url: " + url);
+
+                                loadProof(url);
+
+                            }
+                        }
+
+                    } else {
+                        // document does not exist
+                    }
+                });
+            }
+        });*/
+
+        loadImageButton.setOnClickListener(new View.OnClickListener() {
+            private List<Map.Entry<String, Object>> sortedAchievements;
+            private int currentIndex = 0;
+
+            @Override
+            public void onClick(View v) {
+
+                confirmUserAchieveButton.setVisibility(View.VISIBLE);
+                disproveUserAchieveButton.setVisibility(View.VISIBLE);
+
+                DocumentReference mAuthDocRef = db.collection("UsersLogs").document("ProofList");
+
+                mAuthDocRef.get().addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        Map<String, Object> userData = documentSnapshot.getData();
+
+                        for (Map.Entry<String, Object> entry : userData.entrySet()) {
+                            String userId = entry.getKey();
+                            Map<String, Object> achievements = (Map<String, Object>) entry.getValue();
+
+                            sortedAchievements = new ArrayList<>(achievements.entrySet());
+
+                            // Sort the achievements by time
+                            Collections.sort(sortedAchievements, (entry1, entry2) -> {
+                                Map<String, Object> achievement1 = (Map<String, Object>) entry1.getValue();
+                                Map<String, Object> achievement2 = (Map<String, Object>) entry2.getValue();
+                                String time1 = (String) achievement1.get("time");
+                                String time2 = (String) achievement2.get("time");
+                                if (time1 == null && time2 == null) {
+                                    return 0; // Both times are null, consider them equal
+                                } else if (time1 == null) {
+                                    return -1; // time1 is null, consider it smaller than time2
+                                } else if (time2 == null) {
+                                    return 1; // time2 is null, consider it smaller than time1
+                                } else {
+                                    return time2.compareTo(time1);
+                                }
+                            });
+
+                            if (currentIndex < sortedAchievements.size()) {
+                                Map.Entry<String, Object> achievementEntry = sortedAchievements.get(currentIndex);
+                                Map<String, Object> achievement = (Map<String, Object>) achievementEntry.getValue();
+                                String key = achievementEntry.getKey();
+                                System.out.println("key: " + key);
+
+                                String url = (String) achievement.get("url");
+                                String achname = (String) achievement.get("name");
+                                String time = (String) achievement.get("time");
+                                String token = (String) achievement.get("token");
+
+                                System.out.println("url: " + url);
+
+                                loadProof(url);
+
+                                //currentIndex++;
+
+                                confirmUserAchieveButton.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        confirmUserAchieve(token, achname);
+
+                                        sortedAchievements.remove(currentIndex);
+                                        achievements.remove(key);
+                                        userData.put(userId, achievements);
+                                        mAuthDocRef.set(userData);
+
+                                        confirmUserAchieveButton.setVisibility(View.GONE);
+                                        disproveUserAchieveButton.setVisibility(View.GONE);
+                                    }
+                                });
+
+                                disproveUserAchieveButton.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        disproofUserAchieve(token, achname);
+                                        sortedAchievements.remove(currentIndex);
+                                        achievements.remove(key);
+                                        userData.put(userId, achievements);
+                                        mAuthDocRef.set(userData);
+
+                                        confirmUserAchieveButton.setVisibility(View.GONE);
+                                        disproveUserAchieveButton.setVisibility(View.GONE);
+                                    }
+                                });
+                            }
+                        }
+                    }else{
+                        // document does not exist
+                    }
+                });
+            }
+        });
+    }
+
+    private void disproofUserAchieve(String token, String achieveName){
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference usersRef = db.collection("Users").document(token);
+
+
+        usersRef.get().addOnSuccessListener(documentSnapshot -> {
+            Map<String, Object> userAchievements = documentSnapshot.getData();
+            if (userAchievements == null) {
+                // Если не существует, создаем новый документ
+                userAchievements = new HashMap<>();
+                userAchievements.put("userAchievements", new HashMap<>());
+            } else if (!userAchievements.containsKey("userAchievements")) {
+                // Если Map achieve не существует, создаем его
+                userAchievements.put("userAchievements", new HashMap<>());
+            }
+
+            // Получаем текущий Map achieve из документа пользователя
+            Map<String, Object> achieveMap = (Map<String, Object>) userAchievements.get("userAchievements");
+
+            achieveMap.remove(achieveName);
+
+            // Сохраняем обновленный Map achieve в Firestore
+            userAchievements.put("userAchievements", achieveMap);
+            usersRef.set(userAchievements);
+            Toast.makeText(AdminActivity.this, "Достижение удалено", Toast.LENGTH_SHORT).show();
+            //showPublicButton();
+        });
+    }
+
+    private void confirmUserAchieve(String token, String achieveName){
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference usersRef = db.collection("Users").document(token);
+
+        usersRef.update("score", FieldValue.increment(10));
+
+
+        usersRef.get().addOnSuccessListener(documentSnapshot -> {
+            Map<String, Object> userAchievements = documentSnapshot.getData();
+            if (userAchievements == null) {
+                // Если не существует, создаем новый документ
+                userAchievements = new HashMap<>();
+                userAchievements.put("userAchievements", new HashMap<>());
+            } else if (!userAchievements.containsKey("userAchievements")) {
+                // Если Map achieve не существует, создаем его
+                userAchievements.put("userAchievements", new HashMap<>());
+            }
+
+            // Получаем текущий Map achieve из документа пользователя
+            Map<String, Object> achieveMap = (Map<String, Object>) userAchievements.get("userAchievements");
+
+            // Изменяем значение confirmed для достижения с определенным именем
+            for (Map.Entry<String, Object> entry : achieveMap.entrySet()) {
+                String achieveKey = entry.getKey();
+                Map<String, Object> achieveData = (Map<String, Object>) entry.getValue();
+                if (achieveData.containsKey("name") && achieveData.get("name").equals(achieveName)) {
+                    achieveData.put("confirmed", true);
+                    break;  // Если вы хотите остановиться после первого соответствия
+                }
+            }
+            //Long userScore = documentSnapshot.getLong("score");
+            // Сохраняем обновленный Map achieve в Firestore
+            userAchievements.put("userAchievements", achieveMap);
+            usersRef.set(userAchievements);
+            Toast.makeText(AdminActivity.this, "Достижение добавлено на проверку", Toast.LENGTH_SHORT).show();
+            //showPublicButton();
+        });
+    }
+    private void loadProof(String url){
+        ImageView imageView = findViewById(R.id.imageView4);
+        //firestore = FirebaseFirestore.getInstance();
+
+        // Загрузка изображения в Firebase Storage
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageRef = storage.getReference();
+        StorageReference imageRef = storageRef.child(url);
+        // Получение URL изображения
+        imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+            // URL изображения
+            String imageUrl = uri.toString();
+
+            // Отображение изображения с использованием Picasso
+            //ImageView imageView = findViewById(R.id.imageView3);
+            Picasso.get()
+                    .load(imageUrl)
+                    .into(imageView);
+            imageView.setAdjustViewBounds(true);
+        }).addOnFailureListener(e -> {
+            // Обработка ошибки загрузки изображения
         });
     }
     private void updateLeaderList(){

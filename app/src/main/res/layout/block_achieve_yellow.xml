@@ -7,6 +7,18 @@
     android:layout_margin="4dp"
     android:background="@drawable/achieve_unproof">
 
+    <ProgressBar
+        android:id="@+id/achieveProgressBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="173dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.502"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/achieveName_blockTextView"
+        tools:visibility="visible" />
+
     <TextView
         android:id="@+id/achieveName_blockTextView"
         android:layout_width="0dp"
