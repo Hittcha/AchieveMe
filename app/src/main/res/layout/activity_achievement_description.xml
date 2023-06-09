@@ -4,12 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/Primary"
     android:theme="@style/AppTheme"
     tools:context=".AchievementDescriptionActivity">
-
-
-
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="270dp"
@@ -25,19 +21,21 @@
             android:id="@+id/addFavorites"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
+            android:layout_marginTop="16dp"
             android:background="@null"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.08"
+            app:layout_constraintHorizontal_bias="0.064"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.017"
             app:srcCompat="@drawable/achievefavotitesaddbuttonfull" />
 
         <Button
             style="@style/description_button"
             android:id="@+id/submit_button"
             android:text="Добавить ачивку"
-            android:background="@drawable/descriptions_button_yellow"
+            android:background="@drawable/description_button_green"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -48,7 +46,7 @@
             style="@style/description_button"
             android:id="@+id/delete_button"
             android:text="Удалить ачивку"
-            android:background="@drawable/descriptions_button_yellow"
+            android:background="@drawable/description_button_red"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -72,27 +70,49 @@
             android:id="@+id/AchieveName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textStyle="bold"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/desc_message"
+            app:layout_constraintBottom_toTopOf="@id/guidline"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:text="@null"
-            tools:text="Название ачивки" />
-        <TextView
-            android:id="@+id/desc_message"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginStart="40dp"
-            android:layout_marginTop="60dp"
-            android:layout_marginEnd="40dp"
-            android:text="TextView"
             android:textSize="20sp"
-            app:layout_constraintBottom_toTopOf="@+id/submit_button"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.331" />
+            android:textAlignment="center"
+            android:maxWidth="190dp"
+            tools:text="Название ачивки" />
 
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guidline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintGuide_percent="0.22"
+            android:orientation="horizontal"
+            android:background="@color/Primary"/>
+
+        <ScrollView
+            android:layout_width="200dp"
+            android:layout_height="170dp"
+            android:orientation="vertical"
+            app:layout_constraintVertical_chainStyle="spread"
+            app:layout_constraintTop_toTopOf="@id/guidline"
+            app:layout_constraintBottom_toTopOf="@id/confirmButton"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:scrollbars="none">
+
+            <TextView
+                android:id="@+id/desc_message"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="TextView"
+                android:textSize="20sp"
+                app:layout_constraintBottom_toTopOf="@+id/submit_button"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.331" />
+
+        </ScrollView>
         <Button
             android:id="@+id/confirmButton"
             style="@style/description_button"

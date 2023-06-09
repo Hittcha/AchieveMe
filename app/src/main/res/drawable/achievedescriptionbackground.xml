@@ -1,19 +1,22 @@
-<vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="271dp"
-    android:height="320dp"
-    android:viewportWidth="270"
-    android:viewportHeight="313">
-    <group>
-        <path
-            android:fillColor="#FF929292"
-            android:pathData="M4 20c0-11.05 8.95-20 20-20h223c11.05 0 20 8.95 20 20v272c0 11.05-8.95 20-20 20h-223c-11.05 0-20-8.95-20-20z"/>
-        <path
-            android:strokeColor="#FF606060"
-            android:strokeWidth="1"
-            android:pathData="M4.5 20c0-10.77 8.73-19.5 19.5-19.5h223c10.77 0 19.5 8.73 19.5 19.5v272c0 10.77-8.73 19.5-19.5 19.5h-223c-10.77 0-19.5-8.73-19.5-19.5z"/>
-    </group>
-    <path
-        android:strokeColor="#FF000000"
-        android:strokeWidth="1"
-        android:pathData="M23.5 56h222"/>
-</vector>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+     <item>
+        <shape android:shape="rectangle">
+            <gradient android:type="radial"
+                android:startColor="@color/editTextColor"
+                android:endColor="@color/Primary"
+                android:gradientRadius="450dp"/>
+            <corners android:radius="20dp"/>
+            <stroke android:color="@color/Primary"
+                android:width="1dp"/>
+        </shape>
+     </item>
+    <item android:height="145dp"
+        android:width="200dp"
+        android:gravity="center_horizontal">
+        <shape android:shape="line">
+            <stroke android:width="2dip" android:color="@color/Primary"/>
+            <size android:height="2dp"/>
+
+        </shape>
+    </item>
+</layer-list>

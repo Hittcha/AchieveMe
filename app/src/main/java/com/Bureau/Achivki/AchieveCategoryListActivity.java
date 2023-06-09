@@ -282,14 +282,7 @@ public class AchieveCategoryListActivity extends AppCompatActivity {
         });
     }
 
-    private void ShowAchievementDescription() {
-        PopupWindow popupWindow = new PopupWindow(this);
-        View popupView = LayoutInflater.from(this).inflate(R.layout.activity_achievement_description, null);
-        popupWindow.setContentView(popupView);
-        popupWindow.setHeight(WindowManager.LayoutParams.WRAP_CONTENT);
-        popupWindow.setWidth(WindowManager.LayoutParams.WRAP_CONTENT);
-        popupWindow.showAtLocation(getWindow().getDecorView(), Gravity.CENTER, 0, 0);
-    }
+
     private void createAchieveBlock(String achieveName, String color, String categoryName, String username, boolean proof, boolean collectable, long achieveCount, long doneCount){
         LinearLayout parentLayout = findViewById(R.id.scrollView1);
 
@@ -338,7 +331,6 @@ public class AchieveCategoryListActivity extends AppCompatActivity {
             intent.putExtra("ProofNeeded", proof);
             intent.putExtra("collectable", collectable);
             intent.putExtra("achieveCount", achieveCount);
-//            ShowAchievementDescription();
             startActivity(intent);
         });
 
