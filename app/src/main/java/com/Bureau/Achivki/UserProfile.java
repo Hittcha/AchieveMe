@@ -3,7 +3,7 @@ package com.Bureau.Achivki;
 import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapShader;
@@ -15,7 +15,6 @@ import android.graphics.Rect;
 import android.graphics.Shader;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -33,6 +32,7 @@ import android.widget.ToggleButton;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -144,13 +144,8 @@ public class UserProfile extends AppCompatActivity {
         userScoreText.setText("" + userScore);
         userSubsText.setText("" + userSubs);
 
-        //StorageReference storageRef = FirebaseStorage.getInstance().getReference();
-        //StorageReference imageRef = storageRef.child("users").child(mAuth.getCurrentUser().getUid()).child("UserAvatar");
-
-        //mImageView = findViewById(R.id.image_view);
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         FirebaseUser currentUser = mAuth.getCurrentUser();
-        //String userID = currentUser.getUid();
 
         //Грузим аватар из локальных файлов, если нет то стандартный
         File file = new File(this.getFilesDir(), "UserAvatar");
@@ -168,7 +163,6 @@ public class UserProfile extends AppCompatActivity {
                 if (!file.exists()) {
                     setImage(profileImageUrl);
                 }
-                //pic(profileImageUrl);
 
                 Map<String, Object> userData = documentSnapshot.getData();
                 Map<String, Object> achievements = (Map<String, Object>) userData.get("userPhotos");
@@ -202,21 +196,21 @@ public class UserProfile extends AppCompatActivity {
                     String achname = (String) achievement.get("name");
                     String time = (String) achievement.get("time");
 
+                    String status = (String) achievement.get("status");
+
                     ArrayList<String> people = (ArrayList<String>) achievement.get("like");
 
                     // Выводим данные достижения на экран
                     System.out.println("likes: " + likes);
                     System.out.println("url: " + url);
 
-                    createImageBlock(url, likes, people, userName, key, achname, time);
+                    createImageBlock(url, likes, people, userName, key, achname, time, status);
                 }
 
             } else {
                 // документ не найден
             }
         });
-
-        //StorageReference mStorageRef = FirebaseStorage.getInstance().getReference("users").child(mAuth.getCurrentUser().getUid());
 
         int value = 0;
         System.out.println("value = " + value);
@@ -229,11 +223,7 @@ public class UserProfile extends AppCompatActivity {
 
         selectImageButton.setOnClickListener(v -> {
 
-            selectImageFromLibrary();
-
-            //loadPhotosFromGallery();
-            //pickImages();
-            /*if (ContextCompat.checkSelfPermission(UserProfile.this,
+            if (ContextCompat.checkSelfPermission(UserProfile.this,
                     Manifest.permission.READ_MEDIA_IMAGES)
                     != PackageManager.PERMISSION_GRANTED) {
 
@@ -249,8 +239,7 @@ public class UserProfile extends AppCompatActivity {
             } else {
                 // Если разрешение есть, вызываем окно выбора фотографий
                 selectImageFromLibrary();
-
-            }*/
+            }
         });
 
         TextView scoreText = findViewById(R.id.scoreTextView);
@@ -458,50 +447,7 @@ public class UserProfile extends AppCompatActivity {
         }
     }
 
-    private void pickImages() {
-        FirebaseStorage storage = FirebaseStorage.getInstance();
-        StorageReference storageRef = storage.getReference();
-
-        // Создаем ссылку на папку, в которую будем загружать фотографии
-        StorageReference photosRef = storageRef.child("photos");
-
-        // Получаем доступ к файлам на телефоне
-        //File photosDirectory = new File(Environment.getExternalStorageDirectory() + "/Pictures");
-        File photosDirectory = new File(Environment.getExternalStorageDirectory() + "/DCIM");
-        File[] photos = photosDirectory.listFiles();
-
-        // Загружаем последние 5 фотографий
-        int photosToUpload = Math.min(photos.length, 2);
-        for (int i = 0; i < photosToUpload; i++) {
-            // Создаем ссылку на файл, который будем загружать
-            File photo = photos[photos.length - i - 1];
-            Uri fileUri = Uri.fromFile(photo);
-            StorageReference photoRef = photosRef.child(photo.getName());
-
-            // Загружаем файл в Firebase Storage
-            UploadTask uploadTask = photoRef.putFile(fileUri);
-        }
-
-    }
-
-    private void loadPhotosFromGallery() {
-        // Запрос фотографий из галереи
-        String[] projection = {MediaStore.Images.Media.DATA};
-        String sortOrder = MediaStore.Images.Media.DATE_TAKEN + " DESC";
-        Cursor cursor = getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, null, null, sortOrder);
-
-        int count = 0;
-        while (cursor.moveToNext() && count < 1) {
-            String imagePath = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA));
-            Uri imageUri = Uri.fromFile(new File(imagePath));
-            StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("photos/" + imageUri.getLastPathSegment());
-            UploadTask uploadTask = storageRef.putFile(imageUri);
-            count++;
-        }
-        cursor.close();
-    }
-
-    private void createImageBlock(String url, Long likes, ArrayList people, String userName, String key, String achname, String time){
+    private void createImageBlock(String url, Long likes, ArrayList people, String userName, String key, String achname, String time, String status){
         LinearLayout parentLayout = findViewById(R.id.scrollView);
 
 
@@ -552,43 +498,34 @@ public class UserProfile extends AppCompatActivity {
         });
 
         if (people.contains(userName)) {
-            // Если Map achieve не существует, создаем его
-            //likeButton.setBackgroundResource(R.drawable.likeimageclicked);
             likeButton.setChecked(true);
             likesTextView.setText(likes.toString());
         }
 
         ImageView imageView = blockLayout.findViewById(R.id.imageView3);
 
-        /*StorageReference storageRef = FirebaseStorage.getInstance().getReference();
-        StorageReference userImageRef = storageRef.child(url);
-        try {
-            final File localFile = File.createTempFile("images", "jpg");
-            userImageRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                    Bitmap bitmap = BitmapFactory.decodeFile(localFile.getAbsolutePath());
+        System.out.println("status " + status);
 
-                    // определяем размеры экрана
-                    DisplayMetrics displayMetrics = new DisplayMetrics();
-                    Display display = ContextCompat.getSystemService(UserProfile.this, DisplayManager.class).getDisplay(Display.DEFAULT_DISPLAY);
+        ImageView statusImageView = blockLayout.findViewById(R.id.statusImageView);
 
+        if(status == null){
+            status = "grey";
+        }
 
-                    int targetWidth = getResources().getDisplayMetrics().widthPixels / 3;
-
-
-                    int targetHeight = targetWidth;
-                    Bitmap resizedBitmap = Bitmap.createScaledBitmap(bitmap, targetWidth, targetHeight, true);
-
-
-                    imageView.setImageBitmap(bitmap);
-
-                    imageView.setAdjustViewBounds(true);
-                }
-            });
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/
+        switch (status) {
+            case "yellow":
+                statusImageView.setImageResource(R.drawable.galka_yellow);
+                break;
+            case "green":
+                statusImageView.setImageResource(R.drawable.galka_green);
+                break;
+            case "red":
+                statusImageView.setImageResource(R.drawable.galka_red);
+                break;
+            default:
+                statusImageView.setImageResource(R.drawable.galka_grey);
+                break;
+        }
 
         firestore = FirebaseFirestore.getInstance();
 
@@ -602,7 +539,6 @@ public class UserProfile extends AppCompatActivity {
             String imageUrl = uri.toString();
 
             // Отображение изображения с использованием Picasso
-            //ImageView imageView = findViewById(R.id.imageView3);
             Picasso.get()
                     .load(imageUrl)
                     .into(imageView);
@@ -645,9 +581,7 @@ public class UserProfile extends AppCompatActivity {
 
             usersRef.set(userAchievements);
 
-
         });
-
     }
     public void delLike(String userName, String key) {
 

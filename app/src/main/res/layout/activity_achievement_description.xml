@@ -10,7 +10,6 @@
 
 
 
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="270dp"
         android:layout_height="320dp"

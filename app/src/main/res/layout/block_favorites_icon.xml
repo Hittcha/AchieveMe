@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/favorites_name_TextView"
+        android:layout_width="91dp"
+        android:layout_height="71dp"
+        android:layout_marginTop="20dp"
+        android:autoSizeTextType="none"
+        android:autoText="false"
+        android:elevation="10dp"
+        android:fontFamily="sans-serif-medium"
+        android:shadowColor="#000000"
+        android:shadowDx="2"
+        android:shadowDy="2"
+        android:shadowRadius="1"
+        android:text="Невозможная ачивка"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="12sp"
+        android:typeface="normal"
+        app:layout_constraintEnd_toEndOf="@+id/favorites_icon_Button"
+        app:layout_constraintStart_toStartOf="@+id/favorites_icon_Button"
+        app:layout_constraintTop_toTopOf="@+id/favorites_icon_Button" />
+
+    <Button
+        android:id="@+id/favorites_icon_Button"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="4dp"
+        android:background="@drawable/image_1"
+        android:elevation="0dp"
+        android:scaleType="centerCrop"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -7,6 +7,19 @@
     android:layout_margin="4dp"
     android:background="@drawable/template">
 
+    <ImageView
+        android:id="@+id/block_category_imageview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"
+        app:srcCompat="@drawable/template" />
+
     <TextView
         android:id="@+id/categoryNameTextView"
         android:layout_width="wrap_content"
@@ -15,12 +28,15 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="8dp"
         android:shadowColor="#000000"
-        android:shadowDx="2"
-        android:shadowDy="2"
+        android:shadowDx="4"
+        android:shadowDy="4"
         android:shadowRadius="1"
         android:text="TextView"
         android:textColor="@color/white"
+        android:textSize="16sp"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.511"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

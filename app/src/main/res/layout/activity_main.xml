@@ -28,7 +28,7 @@
                 <HorizontalScrollView
                     android:id="@+id/horizontalScrollView"
                     android:layout_width="match_parent"
-                    android:layout_height="200dp"
+                    android:layout_height="150dp"
                     android:layout_marginStart="6dp"
                     android:layout_marginTop="24dp"
                     android:layout_marginEnd="6dp"
@@ -49,23 +49,23 @@
 
                 <ImageButton
                     android:id="@+id/imageButtonSeasonAchieve"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginTop="24dp"
-                    android:layout_marginEnd="10dp"
+                    android:layout_width="0dp"
+                    android:layout_height="128dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="8dp"
                     android:background="@null"
                     android:scaleType="fitXY"
                     app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/favoritesScrollView"
-                    app:srcCompat="@drawable/seasonachieveevent" />
+                    app:srcCompat="@drawable/summer_challenge" />
 
                 <HorizontalScrollView
                     android:id="@+id/favoritesScrollView"
                     android:layout_width="0dp"
-                    android:layout_height="106dp"
-                    android:layout_marginStart="4dp"
+                    android:layout_height="108dp"
                     android:layout_marginTop="24dp"
                     android:layout_marginEnd="4dp"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -248,6 +248,43 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/imageButtonSeasonAchieve"
                     app:layout_constraintVertical_bias="0.47" />
+
+                <TextView
+                    android:id="@+id/textView5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:shadowColor="#000000"
+                    android:shadowDx="2"
+                    android:shadowDy="2"
+                    android:shadowRadius="1"
+                    android:text="ЛЕТНИЙ ЧЕЛЛЕНДЖ"
+                    android:textColor="@color/white"
+                    android:textSize="20sp"
+                    android:textStyle="normal|bold"
+                    app:layout_constraintBottom_toBottomOf="@+id/imageButtonSeasonAchieve"
+                    app:layout_constraintEnd_toEndOf="@+id/imageButtonSeasonAchieve"
+                    app:layout_constraintHorizontal_bias="0.497"
+                    app:layout_constraintStart_toStartOf="@+id/imageButtonSeasonAchieve"
+                    app:layout_constraintTop_toTopOf="@+id/imageButtonSeasonAchieve"
+                    app:layout_constraintVertical_bias="0.376" />
+
+                <TextView
+                    android:id="@+id/textView6"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="0dp"
+                    android:shadowColor="#000000"
+                    android:shadowDx="2"
+                    android:shadowDy="2"
+                    android:shadowRadius="1"
+                    android:text="50 ачивок"
+                    android:textColor="@color/white"
+                    android:textSize="14sp"
+                    android:textStyle="normal|bold"
+                    app:layout_constraintEnd_toEndOf="@+id/textView5"
+                    app:layout_constraintHorizontal_bias="0.503"
+                    app:layout_constraintStart_toStartOf="@+id/textView5"
+                    app:layout_constraintTop_toBottomOf="@+id/textView5" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </LinearLayout>

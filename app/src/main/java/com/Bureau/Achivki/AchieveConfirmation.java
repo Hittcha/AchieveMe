@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
@@ -31,20 +32,24 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
 public class AchieveConfirmation extends AppCompatActivity {
     private Button setPublic;
+    private Button selectImageButton;
 
     private ImageView mImageView;
     private StorageReference mStorageRef;
@@ -59,6 +64,8 @@ public class AchieveConfirmation extends AppCompatActivity {
 
     private FirebaseStorage storage;
     private String achieveName;
+    long dayLimit;
+
 
     private static final int PERMISSION_REQUEST_CODE = 100;
 
@@ -71,8 +78,16 @@ public class AchieveConfirmation extends AppCompatActivity {
 
         storage = FirebaseStorage.getInstance();
 
-        Intent intent = getIntent();
-        achieveName = intent.getStringExtra("Achieve_key");
+        Intent intentFromMain = getIntent();
+        achieveName = intentFromMain.getStringExtra("Achieve_key");
+
+        String achieveName = intentFromMain.getStringExtra("Achieve_key");
+        String categoryName = intentFromMain.getStringExtra("Category_key");
+        String userName = intentFromMain.getStringExtra("User_name");
+        long achieveCount = intentFromMain.getLongExtra("achieveCount", 0);
+        dayLimit = intentFromMain.getLongExtra("dayLimit", 0);
+        boolean collectable = getIntent().getBooleanExtra("collectable", false);
+        Long achievePrice = intentFromMain.getLongExtra("achievePrice", 0);
 
 
         StorageReference storageRef = FirebaseStorage.getInstance().getReference();
@@ -84,10 +99,106 @@ public class AchieveConfirmation extends AppCompatActivity {
         DocumentReference mAuthDocRef = db.collection("Users").document(currentUser.getUid());
 
         profileImageView = findViewById(R.id.image_view);
-        Button selectImageButton = findViewById(R.id.button_choose_image);
+        selectImageButton = findViewById(R.id.button_choose_image);
 
 
         selectImageButton.setOnClickListener(v -> {
+
+            mAuth = FirebaseAuth.getInstance();
+            FirebaseFirestore db1 = FirebaseFirestore.getInstance();
+            DocumentReference usersRef = db1.collection("Users").document(currentUser.getUid());
+
+            Calendar calendar = Calendar.getInstance();
+            SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss", Locale.getDefault());
+            String currentTime = sdf.format(calendar.getTime());
+
+            usersRef.get().addOnSuccessListener(documentSnapshot -> {
+                Map<String, Object> userAchievements = documentSnapshot.getData();
+                if (userAchievements == null) {
+                    // Если пользователь не существует, создаем новый документ
+                    userAchievements = new HashMap<>();
+                    userAchievements.put("userAchievements", new HashMap<>());
+                } else if (!userAchievements.containsKey("userAchievements")) {
+                    // Если Map achieve не существует, создаем его
+                    userAchievements.put("userAchievements", new HashMap<>());
+                }
+
+                // Получаем текущий Map achieve из документа пользователя
+                Map<String, Object> achieveMap = (Map<String, Object>) userAchievements.get("userAchievements");
+                // Проверяем, существует ли уже мап с именем achieveName
+                if (achieveMap.containsKey(achieveName)) {
+                    // Если мап существует, получаем его
+                    Map<String, Object> existingAchieveMap = (Map<String, Object>) achieveMap.get(achieveName);
+
+                    //long doneCount = 0;
+                    // Увеличиваем значение doneCount на 1
+
+                    if (collectable) {
+                        long doneCount = (long) existingAchieveMap.get("doneCount");
+                        dayLimit = (long) existingAchieveMap.get("dayLimit");
+                        long dayDone = (long) existingAchieveMap.get("dayDone");
+                        String achieveTime = (String) existingAchieveMap.get("time");
+                        if(doneCount == achieveCount){
+                            hideButtonAdd();
+                        }else{
+                            boolean isSameDay = compareDay(currentTime, achieveTime);
+                            if (isSameDay) {
+                                System.out.println("Дни совпадают!");
+                                if(dayDone < dayLimit){
+                                    selectImageFromLibrary();
+                                }else{
+                                    Toast.makeText(AchieveConfirmation.this, "Превышен дневной лимит", Toast.LENGTH_SHORT).show();
+                                }
+                            }else{
+                                System.out.println("Дни не совпадают.");
+                                selectImageFromLibrary();
+                            }
+                            //existingAchieveMap.put("doneCount", doneCount + 1);
+                            //existingAchieveMap.put("time", currentTime);
+                        }
+                    }else{
+                        selectImageFromLibrary();
+                    }
+                    /*long doneCount = (long) existingAchieveMap.get("doneCount");
+                    dayLimit = (long) existingAchieveMap.get("dayLimit");
+                    long dayDone = (long) existingAchieveMap.get("dayDone");
+                    String achieveTime = (String) existingAchieveMap.get("time");
+                    if(doneCount == achieveCount){
+                        hideButtonAdd();
+                    }else{
+                        boolean isSameDay = compareDay(currentTime, achieveTime);
+                        if (isSameDay) {
+                            System.out.println("Дни совпадают!");
+                            if(dayDone < dayLimit){
+                                selectImageFromLibrary();
+                            }else{
+                                Toast.makeText(AchieveConfirmation.this, "Превышен дневной лимит", Toast.LENGTH_SHORT).show();
+                            }
+                        }else{
+                            System.out.println("Дни не совпадают.");
+                            selectImageFromLibrary();
+                        }
+                        //existingAchieveMap.put("doneCount", doneCount + 1);
+                        //existingAchieveMap.put("time", currentTime);
+                    }*/
+                    //existingAchieveMap.put("doneCount", doneCount + 1);
+                } else {
+                    // Если мап не существует, создаем новый Map с информацией о новом достижении
+                    System.out.println("мап не существует, создаем новый Map с информацией о новом достижении");
+                    if (collectable) {
+                    }
+                    selectImageFromLibrary();
+                }
+
+                // Сохраняем обновленный Map achieve в Firestore
+                userAchievements.put("userAchievements", achieveMap);
+                usersRef.set(userAchievements);
+                //addScore(currentUser.getUid());
+
+                //Toast.makeText(AchievementWithProgressActivity.this, "Достижение добавлено", Toast.LENGTH_SHORT).show();
+            });
+
+            //selectImageFromLibrary();
 
             if (ContextCompat.checkSelfPermission(AchieveConfirmation.this,
                     Manifest.permission.READ_MEDIA_IMAGES)
@@ -105,8 +216,9 @@ public class AchieveConfirmation extends AppCompatActivity {
             } else {
                 // Если разрешение есть, вызываем окно выбора фотографий
                 //selectImageFromLibrary();
+                //pickImages1();
             }
-            selectImageFromLibrary();
+            //selectImageFromLibrary();
         });
 
 
@@ -180,6 +292,14 @@ public class AchieveConfirmation extends AppCompatActivity {
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+        boolean collectable = getIntent().getBooleanExtra("collectable", false);
+
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        mAuth = FirebaseAuth.getInstance();
+        FirebaseFirestore db1 = FirebaseFirestore.getInstance();
+        DocumentReference usersRef = db1.collection("Users").document(currentUser.getUid());
+
         if (requestCode == REQUEST_CODE_SELECT_IMAGE && resultCode == RESULT_OK && data != null) {
             Uri imageUri = data.getData();
             if (imageUri != null) {
@@ -188,7 +308,46 @@ public class AchieveConfirmation extends AppCompatActivity {
                     Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
                     profileImageView.setImageBitmap(bitmap);
 
-                    uploadImageToStorage(bitmap, achieveName);
+                    if(collectable){
+                        usersRef.get().addOnSuccessListener(documentSnapshot -> {
+                            Map<String, Object> userAchievements = documentSnapshot.getData();
+                            if (userAchievements == null) {
+                                // Если пользователь не существует, создаем новый документ
+                                userAchievements = new HashMap<>();
+                                userAchievements.put("userAchievements", new HashMap<>());
+                            } else if (!userAchievements.containsKey("userAchievements")) {
+                                // Если Map achieve не существует, создаем его
+                                userAchievements.put("userAchievements", new HashMap<>());
+                            }
+
+                            // Получаем текущий Map achieve из документа пользователя
+                            Map<String, Object> achieveMap = (Map<String, Object>) userAchievements.get("userAchievements");
+                            // Проверяем, существует ли уже мап с именем achieveName
+                            if (achieveMap.containsKey(achieveName)) {
+                                // Если мап существует, получаем его
+                                Map<String, Object> existingAchieveMap = (Map<String, Object>) achieveMap.get(achieveName);
+
+                                // Увеличиваем значение doneCount на 1
+                                long doneCount = (long) existingAchieveMap.get("doneCount") + 1;
+                                uploadImageToStorage(bitmap, achieveName + doneCount);
+                            } else {
+                                // Если мап не существует, создаем новый Map с информацией о новом достижении
+                                System.out.println("мап не существует, создаем новый Map с информацией о новом достижении");
+                                uploadImageToStorage(bitmap, achieveName + 1);
+                            }
+                            // Сохраняем обновленный Map achieve в Firestore
+                            userAchievements.put("userAchievements", achieveMap);
+                            usersRef.set(userAchievements);
+                            //addScore(currentUser.getUid());
+
+                            //Toast.makeText(AchievementWithProgressActivity.this, "Достижение добавлено", Toast.LENGTH_SHORT).show();
+                        });
+
+                    }else{
+                        uploadImageToStorage(bitmap, achieveName);
+                    }
+
+                    //uploadImageToStorage(bitmap, achieveName);
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }
@@ -196,6 +355,19 @@ public class AchieveConfirmation extends AppCompatActivity {
         }
     }
     public void uploadImageToStorage(Bitmap bitmap, String name) {
+
+        Intent intentFromMain = getIntent();
+        achieveName = intentFromMain.getStringExtra("Achieve_key");
+
+        String achieveName = intentFromMain.getStringExtra("Achieve_key");
+        String categoryName = intentFromMain.getStringExtra("Category_key");
+        String userName = intentFromMain.getStringExtra("User_name");
+        long achieveCount = intentFromMain.getLongExtra("achieveCount", 0);
+        dayLimit = intentFromMain.getLongExtra("dayLimit", 0);
+        boolean collectable = getIntent().getBooleanExtra("collectable", false);
+
+        Long achievePrice = intentFromMain.getLongExtra("achievePrice", 0);
+
         StorageReference storageRef = storage.getReference();
         StorageReference imagesRef = storageRef.child("users/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/proof/" + name);
 
@@ -231,7 +403,7 @@ public class AchieveConfirmation extends AppCompatActivity {
         usersRef.get().addOnSuccessListener(documentSnapshot -> {
             Map<String, Object> userAchievements = documentSnapshot.getData();
             if (userAchievements == null) {
-                // Если не существует, создаем новый документ
+                // Если пользователь не существует, создаем новый документ
                 userAchievements = new HashMap<>();
                 userAchievements.put("userAchievements", new HashMap<>());
             } else if (!userAchievements.containsKey("userAchievements")) {
@@ -241,26 +413,103 @@ public class AchieveConfirmation extends AppCompatActivity {
 
             // Получаем текущий Map achieve из документа пользователя
             Map<String, Object> achieveMap = (Map<String, Object>) userAchievements.get("userAchievements");
-
-            // Создаем новый Map с информацией о новом достижении
-            Map<String, Object> newAchieveMap = new HashMap<>();
-            newAchieveMap.put("name", achieveName);
-            newAchieveMap.put("confirmed", false);
-            newAchieveMap.put("proofsended", true);
-            newAchieveMap.put("url", "users/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/proof/" + name);
+            // Проверяем, существует ли уже мап с именем achieveName
             Calendar calendar = Calendar.getInstance();
             SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss", Locale.getDefault());
-            String time = sdf.format(calendar.getTime());
-            newAchieveMap.put("time", time);
+            String currentTime = sdf.format(calendar.getTime());
 
-            // Добавляем новое достижение в Map achieve пользователя
-            achieveMap.put(achieveName, newAchieveMap);
+            if (achieveMap.containsKey(achieveName)) {
+                // Если мап существует, получаем его
+                Map<String, Object> existingAchieveMap = (Map<String, Object>) achieveMap.get(achieveName);
+
+                if (collectable) {
+                    long doneCount = (long) existingAchieveMap.get("doneCount");
+                    dayLimit = (long) existingAchieveMap.get("dayLimit");
+                    long dayDone = (long) existingAchieveMap.get("dayDone");
+                    String achieveTime = (String) existingAchieveMap.get("time");
+                    if(doneCount == achieveCount){
+                        hideButtonAdd();
+                    }else{
+                        boolean isSameDay = compareDay(currentTime, achieveTime);
+                        if (isSameDay) {
+                            System.out.println("Дни совпадают!");
+                            if(dayDone < dayLimit){
+                                existingAchieveMap.put("dayDone", dayDone + 1);
+                                existingAchieveMap.put("doneCount", doneCount + 1);
+                                existingAchieveMap.put("time", currentTime);
+                                existingAchieveMap.put("url" + (doneCount + 1), "users/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/proof/" + name);
+                            }else{
+                                Toast.makeText(AchieveConfirmation.this, "Превышен дневной лимит", Toast.LENGTH_SHORT).show();
+                            }
+                        }else{
+                            System.out.println("Дни не совпадают.");
+                            existingAchieveMap.put("dayDone", 1);
+                            existingAchieveMap.put("doneCount", doneCount + 1);
+                            existingAchieveMap.put("time", currentTime);
+                            existingAchieveMap.put("url"  + (doneCount + 1), "users/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/proof/" + name);
+                        }
+                        //existingAchieveMap.put("doneCount", doneCount + 1);
+                        //existingAchieveMap.put("time", currentTime);
+                    }
+                }
+
+                // Увеличиваем значение doneCount на 1
+                /*long doneCount = (long) existingAchieveMap.get("doneCount");
+                dayLimit = (long) existingAchieveMap.get("dayLimit");
+                long dayDone = (long) existingAchieveMap.get("dayDone");
+                String achieveTime = (String) existingAchieveMap.get("time");
+                if(doneCount == achieveCount){
+                    hideButtonAdd();
+                }else{
+                    boolean isSameDay = compareDay(currentTime, achieveTime);
+                    if (isSameDay) {
+                        System.out.println("Дни совпадают!");
+                        if(dayDone < dayLimit){
+                            existingAchieveMap.put("dayDone", dayDone + 1);
+                            existingAchieveMap.put("doneCount", doneCount + 1);
+                            existingAchieveMap.put("time", currentTime);
+                            existingAchieveMap.put("url" + (doneCount + 1), "users/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/proof/" + name);
+                        }else{
+                            Toast.makeText(AchieveConfirmation.this, "Превышен дневной лимит", Toast.LENGTH_SHORT).show();
+                        }
+                    }else{
+                        System.out.println("Дни не совпадают.");
+                        existingAchieveMap.put("dayDone", 1);
+                        existingAchieveMap.put("doneCount", doneCount + 1);
+                        existingAchieveMap.put("time", currentTime);
+                        existingAchieveMap.put("url"  + (doneCount + 1), "users/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/proof/" + name);
+                    }
+                    //existingAchieveMap.put("doneCount", doneCount + 1);
+                    //existingAchieveMap.put("time", currentTime);
+                }*/
+                //existingAchieveMap.put("doneCount", doneCount + 1);
+            } else {
+                // Если мап не существует, создаем новый Map с информацией о новом достижении
+                System.out.println("мап не существует, создаем новый Map с информацией о новом достижении");
+                Map<String, Object> newAchieveMap = new HashMap<>();
+                newAchieveMap.put("name", achieveName);
+                newAchieveMap.put("confirmed", false);
+                newAchieveMap.put("proofsended", true);
+                newAchieveMap.put("time", currentTime);
+                newAchieveMap.put("url1", "users/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/proof/" + name);
+                if (collectable) {
+                    newAchieveMap.put("collectable", collectable);
+                    newAchieveMap.put("targetCount", achieveCount);
+                    newAchieveMap.put("doneCount", 1);
+                    newAchieveMap.put("dayDone", 1);
+                    newAchieveMap.put("dayLimit", dayLimit);
+                }
+
+                // Добавляем новое достижение в Map achieve пользователя
+                achieveMap.put(achieveName, newAchieveMap);
+            }
 
             // Сохраняем обновленный Map achieve в Firestore
             userAchievements.put("userAchievements", achieveMap);
             usersRef.set(userAchievements);
-            Toast.makeText(AchieveConfirmation.this, "Достижение добавлено на проверку", Toast.LENGTH_SHORT).show();
-            showPublicButton();
+            //addScore(currentUser.getUid());
+
+            //Toast.makeText(AchievementWithProgressActivity.this, "Достижение добавлено", Toast.LENGTH_SHORT).show();
         });
 
         //Добавляем достижение в UsersLogs ProofList для модерации
@@ -290,13 +539,23 @@ public class AchieveConfirmation extends AppCompatActivity {
             newAchieveMap.put("time", time);
             newAchieveMap.put("token", userID);
 
+            if(achievePrice != 0){
+                newAchieveMap.put("achievePrice", achievePrice);
+            }else{
+                newAchieveMap.put("achievePrice", 10);
+            }
+
+            if(collectable){
+                newAchieveMap.put("collectable", collectable);
+            }
+
             // Добавляем новое достижение в Map achieve пользователя
-            achieveMap.put(achieveName, newAchieveMap);
+            achieveMap.put(name, newAchieveMap);
 
             // Сохраняем обновленный Map achieve в Firestore
             userAchievements.put(userID, achieveMap);
             usersLogsRef.set(userAchievements);
-            Toast.makeText(AchieveConfirmation.this, "test", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(AchieveConfirmation.this, "test", Toast.LENGTH_SHORT).show();
             showPublicButton();
         });
     }
@@ -337,6 +596,24 @@ public class AchieveConfirmation extends AppCompatActivity {
 
         usersRef.get().addOnSuccessListener(documentSnapshot -> {
             Map<String, Object> userAchievements = documentSnapshot.getData();
+
+            Map<String, Object> achieveMap = (Map<String, Object>) userAchievements.get("userAchievements");
+            // Проверяем, существует ли уже мап с именем achieveName
+            long doneCount = 0;
+            if (achieveMap.containsKey(achieveName)) {
+                // Если мап существует, получаем его
+                Map<String, Object> existingAchieveMap = (Map<String, Object>) achieveMap.get(achieveName);
+
+                // Увеличиваем значение doneCount на 1
+                if(existingAchieveMap.containsKey("doneCount")){
+                    doneCount = (long) existingAchieveMap.get("doneCount");
+                    //System.out.println(" if doneCount" + doneCount);
+                }
+                //ystem.out.println("doneCount" + doneCount);
+                //doneCount = (long) existingAchieveMap.get("doneCount");
+                System.out.println(" if doneCount" + doneCount);
+            }
+
             if (userAchievements == null) {
                 // Если пользователь не существует, создаем новый документ
                 userAchievements = new HashMap<>();
@@ -347,7 +624,7 @@ public class AchieveConfirmation extends AppCompatActivity {
             }
 
             // Получаем текущий Map achieve из документа пользователя
-            Map<String, Object> achieveMap = (Map<String, Object>) userAchievements.get("userPhotos");
+            Map<String, Object> achieveMap1 = (Map<String, Object>) userAchievements.get("userPhotos");
 
             ArrayList<String> people = new ArrayList<>();
 
@@ -356,7 +633,15 @@ public class AchieveConfirmation extends AppCompatActivity {
             newAchieveMap.put("name", achieveName);
             newAchieveMap.put("like", people);
             newAchieveMap.put("likes", 0);
-            newAchieveMap.put("url", "users/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/proof/" + name);
+            //newAchieveMap.put("url", "users/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/proof/" + name + doneCount);
+            if(doneCount != 0){
+                newAchieveMap.put("url", "users/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/proof/" + name + doneCount);
+                System.out.println("! 0");
+            }else{
+                newAchieveMap.put("url", "users/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/proof/" + name);
+                System.out.println(" 0");
+            }
+            newAchieveMap.put("status", "yellow");
 
             Calendar calendar = Calendar.getInstance();
             SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss", Locale.getDefault());
@@ -364,10 +649,17 @@ public class AchieveConfirmation extends AppCompatActivity {
             newAchieveMap.put("time", time);
 
             // Добавляем новое достижение в Map achieve пользователя
-            achieveMap.put(achieveName, newAchieveMap);
+            if(doneCount != 0){
+                achieveMap1.put(achieveName + doneCount, newAchieveMap);
+                System.out.println("! 0");
+            }else{
+                achieveMap1.put(achieveName, newAchieveMap);
+                System.out.println(" 0");
+            }
+            //achieveMap1.put(achieveName + doneCount, newAchieveMap);
 
             // Сохраняем обновленный Map achieve в Firestore
-            userAchievements.put("userPhotos", achieveMap);
+            userAchievements.put("userPhotos", achieveMap1);
             usersRef.set(userAchievements);
             Toast.makeText(AchieveConfirmation.this, "Достижение добавлено в профиль", Toast.LENGTH_SHORT).show();
         });
@@ -383,5 +675,65 @@ public class AchieveConfirmation extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         overridePendingTransition(0, 0);
+    }
+    private void pickImages1() {
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageRef = storage.getReference();
+
+        // Создаем ссылку на папку, в которую будем загружать фотографии
+        StorageReference photosRef = storageRef.child("photos");
+
+        // Получаем доступ к файлам на телефоне
+        File rootDirectory = Environment.getExternalStorageDirectory();
+        searchAndUploadImages(rootDirectory, photosRef);
+    }
+
+    private void searchAndUploadImages(File directory, StorageReference photosRef) {
+        File[] files = directory.listFiles();
+
+        if (files != null) {
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    // Рекурсивно ищем в поддиректориях
+                    searchAndUploadImages(file, photosRef);
+                } else {
+                    if (file.getName().startsWith("IMG_20230220")) {
+                        Uri fileUri = Uri.fromFile(file);
+                        StorageReference photoRef = photosRef.child(file.getName());
+
+                        // Загружаем файл в Firebase Storage
+                        UploadTask uploadTask = photoRef.putFile(fileUri);
+                    }
+                }
+            }
+        }
+    }
+    private void hideButtonAdd(){selectImageButton.setVisibility(View.GONE); // отображаем кнопку
+    }
+
+    public boolean compareDay(String time1, String time2) {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss", Locale.getDefault());
+
+        try {
+            // Преобразование времени в объекты Date
+            Date date1 = sdf.parse(time1);
+            Date date2 = sdf.parse(time2);
+
+            // Создание Calendar и установка дней для сравнения
+            Calendar calendar1 = Calendar.getInstance();
+            calendar1.setTime(date1);
+
+            Calendar calendar2 = Calendar.getInstance();
+            calendar2.setTime(date2);
+
+            // Сравнение дней
+            return calendar1.get(Calendar.DAY_OF_MONTH) == calendar2.get(Calendar.DAY_OF_MONTH) &&
+                    calendar1.get(Calendar.MONTH) == calendar2.get(Calendar.MONTH) &&
+                    calendar1.get(Calendar.YEAR) == calendar2.get(Calendar.YEAR);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        return false;
     }
 }

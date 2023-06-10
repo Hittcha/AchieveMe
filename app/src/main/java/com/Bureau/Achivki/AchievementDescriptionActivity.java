@@ -29,6 +29,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Locale;
@@ -55,6 +56,7 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
         String categoryName = intentFromMain.getStringExtra("Category_key");
         String userName = intentFromMain.getStringExtra("User_name");
         Long achieveCount = intentFromMain.getLongExtra("achieveCount", 0);
+        Long achievePrice = intentFromMain.getLongExtra("achievePrice", 0);
 
         Window window = getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
@@ -118,6 +120,7 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
         confirmButton.setOnClickListener(v -> {
             Intent intent = new Intent(AchievementDescriptionActivity.this, AchieveConfirmation.class);
             intent.putExtra("Achieve_key", achieveName);
+            intent.putExtra("achievePrice", achievePrice);
             startActivity(intent);
         });
 
@@ -164,9 +167,13 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
                     achieveMap.put(achieveName, newAchieveMap);
 
                     // Сохраняем обновленный Map achieve в Firestore
+
+                    if (achievePrice != 0){
+                        newAchieveMap.put("price", achievePrice);
+                    }
                     userAchievements.put("userAchievements", achieveMap);
                     usersRef.set(userAchievements);
-                    addScore(currentUser.getUid());
+                    addScore(currentUser.getUid(), achievePrice);
                     Toast.makeText(AchievementDescriptionActivity.this, "Достижение добавлено", Toast.LENGTH_SHORT).show();
                 });
                 showButtonDel();
@@ -192,7 +199,7 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
 
                     usersRef.set(userAchievements);
 
-                    delScore(currentUser.getUid());
+                    delScore(currentUser.getUid(), achievePrice);
 
                     Toast.makeText(AchievementDescriptionActivity.this, "Достижение удалено", Toast.LENGTH_SHORT).show();
                 });
@@ -203,33 +210,11 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
         addFavorites.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FirebaseFirestore db = FirebaseFirestore.getInstance();
-                CollectionReference usersRef = db.collection("Users");
+                //FirebaseFirestore db = FirebaseFirestore.getInstance();
+                //CollectionReference usersRef = db.collection("Users");
 
-                // Найти пользователя с именем
-                Query query = usersRef.whereEqualTo("name", userName);
-                query.get().addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        QuerySnapshot querySnapshot = task.getResult();
-                        for (DocumentSnapshot documentSnapshot : querySnapshot.getDocuments()) {
-                            // Получить ID пользователя
-                            String userId = documentSnapshot.getId();
-                            // Обновить массив ачивок пользователя
-                            usersRef.document(userId).update("favorites", FieldValue.arrayUnion(achieveName))
-                                    .addOnSuccessListener(aVoid -> {
-                                        // Ачивка добавлена успешно
-                                        Log.d(TAG, "Ачивка добавлена пользователю: " + userName);
-                                    })
-                                    .addOnFailureListener(e -> {
-                                        // Обработка ошибок
-                                        Log.w(TAG, "Ошибка при добавлении ачивки пользователю: " + userName, e);
-                                    });
-                        }
-                    } else {
-                        // Обработка ошибок
-                        Log.w(TAG, "Ошибка при поиске пользователя: " + userName, task.getException());
-                    }
-                });
+                addFavorites();
+
             }
         });
     }
@@ -243,12 +228,19 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
         delButton.setVisibility(View.GONE); // скрываем кнопку
         addButton.setVisibility(View.VISIBLE); // отображаем кнопку
     }
-    public void addScore(String uid) {
+    public void addScore(String uid, long achievePrice) {
         // Получаем ссылку на коллекцию пользователей
         CollectionReference usersRef = FirebaseFirestore.getInstance().collection("Users");
 
+        long standardPrice = 10;
+        if(achievePrice != 0){
+            standardPrice = achievePrice;
+        }
+
+        //System.out.println("achievePrice: " + achievePrice);
+
         DocumentReference userDocRef = usersRef.document(uid);
-        userDocRef.update("score", FieldValue.increment(10))
+        userDocRef.update("score", FieldValue.increment(standardPrice))
                 .addOnSuccessListener(aVoid -> {
                     // Успешное обновление
                     System.out.println("Успешное обновление счета");
@@ -259,12 +251,17 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
                 });
 
     }
-    public void delScore(String uid){
+    public void delScore(String uid, long achievePrice){
 
         CollectionReference usersRef = FirebaseFirestore.getInstance().collection("Users");
 
+        long standardPrice = 10;
+        if(achievePrice != 0){
+            standardPrice = achievePrice;
+        }
+
         DocumentReference userDocRef = usersRef.document(uid);
-        userDocRef.update("score", FieldValue.increment(-10))
+        userDocRef.update("score", FieldValue.increment(-standardPrice))
                 .addOnSuccessListener(aVoid -> {
                     // Успешное обновление
                     System.out.println("Успешное обновление счета");
@@ -280,4 +277,50 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
         delButton.setVisibility(View.GONE);
     }
 
+    private void addFavorites(){
+        Intent intentFromMain = getIntent();
+        String achieveName = intentFromMain.getStringExtra("Achieve_key");
+        String categoryName = intentFromMain.getStringExtra("Category_key");
+
+        mAuth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference usersRef = db.collection("Users").document(currentUser.getUid());
+
+
+        usersRef.get().addOnSuccessListener(documentSnapshot -> {
+            Map<String, Object> userAchievements = documentSnapshot.getData();
+
+            Map<String, Object> achieveMap = (Map<String, Object>) userAchievements.get("favorites");
+            // Проверяем, существует ли уже мап с именем achieveName
+
+            /*if (userAchievements == null) {
+                // Если пользователь не существует, создаем новый документ
+                userAchievements = new HashMap<>();
+                userAchievements.put("userPhotos", new HashMap<>());
+            } else if (!userAchievements.containsKey("userPhotos")) {
+                // Если Map achieve не существует, создаем его
+                userAchievements.put("userPhotos", new HashMap<>());
+            }*/
+
+            // Получаем текущий Map achieve из документа пользователя
+            //Map<String, Object> achieveMap1 = (Map<String, Object>) userAchievements.get("userPhotos");
+
+            //Map<String, Object> newFav = new HashMap<>();
+
+            // Создаем новый Map с информацией о новом достижении
+            Map<String, Object> newFav = new HashMap<>();
+            newFav.put("name", achieveName);
+            newFav.put("category", categoryName);
+
+
+            //achieveMap1.put(achieveName + doneCount, newAchieveMap);
+
+            // Сохраняем обновленный Map achieve в Firestore
+            achieveMap.put(achieveName, newFav);
+            userAchievements.put("favorites", achieveMap);
+            usersRef.set(userAchievements);
+            Toast.makeText(this, "Достижение добавлено в профиль", Toast.LENGTH_SHORT).show();
+        });
+    }
 }
