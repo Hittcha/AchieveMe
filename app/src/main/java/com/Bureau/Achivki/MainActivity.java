@@ -14,6 +14,7 @@ import android.graphics.Shader;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -28,12 +29,16 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
+import androidx.core.widget.NestedScrollView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -45,20 +50,56 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
-
     private String userName;
     private String profileImageUrl;
     private Long userScore;
     private Long userSubs;
     private Long userFriends;
 
+    private NestedScrollView nestedScrollView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //обновление экрана при свайпе вниз
+        /*SwipeRefreshLayout swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            recreate();
+            swipeRefreshLayout.setRefreshing(false);
+        });*/
+
+       /*nestedScrollView = findViewById(R.id.nestedScrollView);
+
+        nestedScrollView.setOnTouchListener(new View.OnTouchListener() {
+            private float startY;
+
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        startY = event.getY();
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        float endY = event.getY();
+                        if (startY - endY < 200) {
+                            // Свайп вниз с достаточной высотой
+                            // Выполните операции обновления экрана здесь
+
+                            // Например, обновите данные или перезагрузите фрагмент
+                            // Или вызовите метод, который обновляет ваш интерфейс
+                            recreate();
+                        }
+                        break;
+                }
+                return false;
+            }
+        });*/
+
 
         SharedPreferences sharedPreferences = getSharedPreferences("User_Data", MODE_PRIVATE);
 
@@ -133,7 +174,7 @@ public class MainActivity extends AppCompatActivity {
                 editor.putLong("Friends", userFriends);
                 editor.apply();
 
-                listOfFavorites();
+                //listOfFavorites();
                 setImage(profileImageUrl);
 
                 //Если аватар не сохранен локально - то грузим его с клауда и сохраняем
@@ -231,9 +272,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void listOfFavorites() {
-        //CollectionReference favoritesRef = db.collection("Users");
 
         LinearLayout parentLayout = findViewById(R.id.favoritesLinearLayout);
+        parentLayout.removeAllViews();
 
         AssetManager assetManager = getAssets();
 
@@ -246,6 +287,10 @@ public class MainActivity extends AppCompatActivity {
         userRef.get().addOnSuccessListener(documentSnapshot -> {
             Map<String, Object> userData = documentSnapshot.getData();
             Map<String, Object> fav = (Map<String, Object>) userData.get("favorites");
+
+            Map<String, Object> userAchieveMap = (Map<String, Object>) userData.get("userAchievements");
+            // Получение достижений пользователя
+            Set<String> userAchievements = userAchieveMap.keySet();
 
             for (Map.Entry<String, Object> entry : fav.entrySet()) {
                 Map<String, Object> achievement = (Map<String, Object>) entry.getValue();
@@ -331,11 +376,87 @@ public class MainActivity extends AppCompatActivity {
                 }
                 favorites_icon_Button.setOnClickListener(v -> {
                     // Обработка нажатия кнопки
-                    System.out.println("Category_key  " + category);
-                    Intent intent = new Intent(MainActivity.this, AchieveCategoryListActivity.class);
-                    intent.putExtra("Category_key", category);
-                    startActivity(intent);
 
+                    CollectionReference achievementsCollectionRef = FirebaseFirestore.getInstance().collection("Achievements");
+
+                   // CollectionReference usersCollectionRef = FirebaseFirestore.getInstance().collection("Users");
+
+                    Query categoryQuery = achievementsCollectionRef.whereEqualTo("name", achname);
+                    categoryQuery.get().addOnSuccessListener(querySnapshot -> {
+                        for (DocumentSnapshot document : querySnapshot.getDocuments()) {
+                            //count++;
+
+                            // Получаем имя достижения из документа
+                            String achievementName = document.getString("name");
+
+                            boolean proof = Boolean.TRUE.equals(document.getBoolean("proof"));
+                            boolean collectable = false;
+                            long achieveCount = 0;
+                            long doneCount = 0;
+                            String countDesc = "";
+                            long dayLimit = 0;
+
+                            long achievePrice = 0;
+                            if (document.contains("price")) {
+                                achievePrice = document.getLong("price");
+                                System.out.println("price " + achievePrice);
+                            }
+
+                            if (document.contains("collectable")) {
+                                collectable = Boolean.TRUE.equals(document.getBoolean("collectable"));
+                                achieveCount = document.getLong("count");
+                                dayLimit = document.getLong("dayLimit");
+                                countDesc = document.getString("countDesc");
+                            } else {
+                                // Обработка ситуации, когда поле отсутствует
+                            }
+
+
+                            Intent intent = new Intent(MainActivity.this, AchievementDescriptionActivity.class);
+
+
+                            if (userAchievements.contains(achname)) {
+                                System.out.println("Достижение \"" + achname + "\" есть и у пользователя, и в категории " + category);
+                                Map<String, Object> achievementMap = (Map<String, Object>) userAchieveMap.get(achievementName);
+                                if (document.contains("collectable")) {
+                                    doneCount = (long) achievementMap.get("doneCount");
+
+                                    intent.putExtra("collectable", collectable);
+                                    intent.putExtra("dayLimit", dayLimit);
+                                    intent.putExtra("achieveCount", achieveCount);
+                                }
+
+                                intent.putExtra("Category_key", category);
+                                intent.putExtra("Achieve_key", achname);
+                                intent.putExtra("achievePrice", achievePrice);
+                                intent.putExtra("Is_Received", true);
+                                intent.putExtra("ProofNeeded", proof);
+                                startActivity(intent);
+
+                                System.out.println("doneCount"+ doneCount);
+                                //checkStatus(achievementName, categoryName, name, proof, collectable, achieveCount, doneCount, countDesc, dayLimit, achievePrice);
+                                //achievedone++;
+                            }else{
+                                //createAchieveBlock(achievementName, "black", categoryName, name, proof, collectable, achieveCount, 0, countDesc, dayLimit, achievePrice);
+                                System.out.println("Нет " + achievementName);
+
+                                if (document.contains("collectable")) {
+
+                                    intent.putExtra("collectable", collectable);
+                                    intent.putExtra("dayLimit", dayLimit);
+                                    intent.putExtra("achieveCount", achieveCount);
+                                }
+
+                                intent.putExtra("Category_key", category);
+                                intent.putExtra("Achieve_key", achname);
+                                intent.putExtra("achievePrice", achievePrice);
+                                intent.putExtra("Is_Received", false);
+                                intent.putExtra("ProofNeeded", proof);
+                                startActivity(intent);
+                            }
+
+                        }
+                    });
                 });
             }
 
@@ -557,5 +678,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         overridePendingTransition(0, 0);
+
+        listOfFavorites();
     }
 }

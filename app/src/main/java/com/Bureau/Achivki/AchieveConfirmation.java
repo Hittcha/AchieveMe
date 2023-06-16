@@ -3,6 +3,7 @@ package com.Bureau.Achivki;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -145,80 +146,36 @@ public class AchieveConfirmation extends AppCompatActivity {
                             if (isSameDay) {
                                 System.out.println("Дни совпадают!");
                                 if(dayDone < dayLimit){
-                                    selectImageFromLibrary();
+                                    //selectImageFromLibrary();
+                                    askPermission();
                                 }else{
                                     Toast.makeText(AchieveConfirmation.this, "Превышен дневной лимит", Toast.LENGTH_SHORT).show();
                                 }
                             }else{
                                 System.out.println("Дни не совпадают.");
-                                selectImageFromLibrary();
+                                //selectImageFromLibrary();
+                                askPermission();
                             }
                             //existingAchieveMap.put("doneCount", doneCount + 1);
                             //existingAchieveMap.put("time", currentTime);
                         }
                     }else{
-                        selectImageFromLibrary();
+                        //selectImageFromLibrary();
+                        askPermission();
                     }
-                    /*long doneCount = (long) existingAchieveMap.get("doneCount");
-                    dayLimit = (long) existingAchieveMap.get("dayLimit");
-                    long dayDone = (long) existingAchieveMap.get("dayDone");
-                    String achieveTime = (String) existingAchieveMap.get("time");
-                    if(doneCount == achieveCount){
-                        hideButtonAdd();
-                    }else{
-                        boolean isSameDay = compareDay(currentTime, achieveTime);
-                        if (isSameDay) {
-                            System.out.println("Дни совпадают!");
-                            if(dayDone < dayLimit){
-                                selectImageFromLibrary();
-                            }else{
-                                Toast.makeText(AchieveConfirmation.this, "Превышен дневной лимит", Toast.LENGTH_SHORT).show();
-                            }
-                        }else{
-                            System.out.println("Дни не совпадают.");
-                            selectImageFromLibrary();
-                        }
-                        //existingAchieveMap.put("doneCount", doneCount + 1);
-                        //existingAchieveMap.put("time", currentTime);
-                    }*/
-                    //existingAchieveMap.put("doneCount", doneCount + 1);
                 } else {
                     // Если мап не существует, создаем новый Map с информацией о новом достижении
                     System.out.println("мап не существует, создаем новый Map с информацией о новом достижении");
                     if (collectable) {
                     }
-                    selectImageFromLibrary();
+                    //selectImageFromLibrary();
+                    askPermission();
                 }
 
                 // Сохраняем обновленный Map achieve в Firestore
                 userAchievements.put("userAchievements", achieveMap);
                 usersRef.set(userAchievements);
-                //addScore(currentUser.getUid());
-
-                //Toast.makeText(AchievementWithProgressActivity.this, "Достижение добавлено", Toast.LENGTH_SHORT).show();
             });
-
-            //selectImageFromLibrary();
-
-            if (ContextCompat.checkSelfPermission(AchieveConfirmation.this,
-                    Manifest.permission.READ_MEDIA_IMAGES)
-                    != PackageManager.PERMISSION_GRANTED) {
-
-                // Если разрешения нет, запрашиваем его у пользователя
-                ActivityCompat.requestPermissions(AchieveConfirmation.this,
-                        new String[]{Manifest.permission.READ_MEDIA_IMAGES},
-                        PERMISSION_REQUEST_CODE);
-
-               /* ActivityCompat.requestPermissions(UserProfile.this,
-                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                        PERMISSION_REQUEST_CODE);*/
-
-            } else {
-                // Если разрешение есть, вызываем окно выбора фотографий
-                //selectImageFromLibrary();
-                //pickImages1();
-            }
-            //selectImageFromLibrary();
         });
 
 
@@ -278,12 +235,33 @@ public class AchieveConfirmation extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(AchieveConfirmation.this, UsersListActivity.class);
-                //User user = new User("Имя пользователя", 1);
-                //intent.putExtra("user", user);
                 startActivity(intent);
             }
         });
     }
+
+    public void askPermission() {
+        if (ContextCompat.checkSelfPermission(AchieveConfirmation.this,
+                Manifest.permission.READ_MEDIA_IMAGES)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            // Если разрешения нет, запрашиваем его у пользователя
+            ActivityCompat.requestPermissions(AchieveConfirmation.this,
+                    new String[]{Manifest.permission.READ_MEDIA_IMAGES},
+                    PERMISSION_REQUEST_CODE);
+
+            //ActivityCompat.requestPermissions(UserProfile.this,
+            //       new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+            //       PERMISSION_REQUEST_CODE);
+
+        } else {
+            // Если разрешение есть, вызываем окно выбора фотографий
+            selectImageFromLibrary();
+            //loadPhotosFromGallery();
+        }
+        //selectImageFromLibrary();*/
+    }
+
     public void selectImageFromLibrary() {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         intent.setType("image/*");
@@ -452,37 +430,6 @@ public class AchieveConfirmation extends AppCompatActivity {
                         //existingAchieveMap.put("time", currentTime);
                     }
                 }
-
-                // Увеличиваем значение doneCount на 1
-                /*long doneCount = (long) existingAchieveMap.get("doneCount");
-                dayLimit = (long) existingAchieveMap.get("dayLimit");
-                long dayDone = (long) existingAchieveMap.get("dayDone");
-                String achieveTime = (String) existingAchieveMap.get("time");
-                if(doneCount == achieveCount){
-                    hideButtonAdd();
-                }else{
-                    boolean isSameDay = compareDay(currentTime, achieveTime);
-                    if (isSameDay) {
-                        System.out.println("Дни совпадают!");
-                        if(dayDone < dayLimit){
-                            existingAchieveMap.put("dayDone", dayDone + 1);
-                            existingAchieveMap.put("doneCount", doneCount + 1);
-                            existingAchieveMap.put("time", currentTime);
-                            existingAchieveMap.put("url" + (doneCount + 1), "users/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/proof/" + name);
-                        }else{
-                            Toast.makeText(AchieveConfirmation.this, "Превышен дневной лимит", Toast.LENGTH_SHORT).show();
-                        }
-                    }else{
-                        System.out.println("Дни не совпадают.");
-                        existingAchieveMap.put("dayDone", 1);
-                        existingAchieveMap.put("doneCount", doneCount + 1);
-                        existingAchieveMap.put("time", currentTime);
-                        existingAchieveMap.put("url"  + (doneCount + 1), "users/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/proof/" + name);
-                    }
-                    //existingAchieveMap.put("doneCount", doneCount + 1);
-                    //existingAchieveMap.put("time", currentTime);
-                }*/
-                //existingAchieveMap.put("doneCount", doneCount + 1);
             } else {
                 // Если мап не существует, создаем новый Map с информацией о новом достижении
                 System.out.println("мап не существует, создаем новый Map с информацией о новом достижении");
@@ -676,38 +623,7 @@ public class AchieveConfirmation extends AppCompatActivity {
         super.onResume();
         overridePendingTransition(0, 0);
     }
-    private void pickImages1() {
-        FirebaseStorage storage = FirebaseStorage.getInstance();
-        StorageReference storageRef = storage.getReference();
 
-        // Создаем ссылку на папку, в которую будем загружать фотографии
-        StorageReference photosRef = storageRef.child("photos");
-
-        // Получаем доступ к файлам на телефоне
-        File rootDirectory = Environment.getExternalStorageDirectory();
-        searchAndUploadImages(rootDirectory, photosRef);
-    }
-
-    private void searchAndUploadImages(File directory, StorageReference photosRef) {
-        File[] files = directory.listFiles();
-
-        if (files != null) {
-            for (File file : files) {
-                if (file.isDirectory()) {
-                    // Рекурсивно ищем в поддиректориях
-                    searchAndUploadImages(file, photosRef);
-                } else {
-                    if (file.getName().startsWith("IMG_20230220")) {
-                        Uri fileUri = Uri.fromFile(file);
-                        StorageReference photoRef = photosRef.child(file.getName());
-
-                        // Загружаем файл в Firebase Storage
-                        UploadTask uploadTask = photoRef.putFile(fileUri);
-                    }
-                }
-            }
-        }
-    }
     private void hideButtonAdd(){selectImageButton.setVisibility(View.GONE); // отображаем кнопку
     }
 
@@ -733,7 +649,6 @@ public class AchieveConfirmation extends AppCompatActivity {
         } catch (ParseException e) {
             e.printStackTrace();
         }
-
         return false;
     }
 }

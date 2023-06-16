@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     android:theme="@style/AppTheme"
     tools:context=".AchievementDescriptionActivity">
+
 <androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="320dp"
     android:layout_height="360dp"

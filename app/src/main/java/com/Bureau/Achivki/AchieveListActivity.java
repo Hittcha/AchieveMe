@@ -2,40 +2,43 @@ package com.Bureau.Achivki;
 
 import static android.content.ContentValues.TAG;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
-
 import android.content.Intent;
-import android.graphics.Color;
+import android.content.res.AssetManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
+import android.widget.ImageView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
+import android.widget.TextView;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+import androidx.core.graphics.drawable.RoundedBitmapDrawable;
+import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
+
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
-import java.util.ArrayList;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 public class AchieveListActivity extends AppCompatActivity {
 
-    private int buttonCount = 0;
+    //private int buttonCount = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,45 +61,36 @@ public class AchieveListActivity extends AppCompatActivity {
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        List<String> categories = new ArrayList<>();
+        //List<String> categories = new ArrayList<>();
 
         CollectionReference achievementsRef = db.collection("Achievements");
 
 
-        TableLayout tableLayout = findViewById(R.id.tableLayout);
-
-        Set<String> uniqueNames = new HashSet<>();
-
         ImageButton backButton = findViewById(R.id.imageButtonBack);
-
         backButton.setOnClickListener(v -> {
             Intent intent = new Intent(AchieveListActivity.this, MainActivity.class);
             startActivity(intent);
         });
 
         ImageButton leaderListButton = findViewById(R.id.imageButtonLeaderList);
-
-        ImageButton menuButton = findViewById(R.id.imageButtonMenu);
-
-        ImageButton favoritesButton = findViewById(R.id.imageButtonFavorites);
-
-        ImageButton achieveListButton = findViewById(R.id.imageButtonAchieveList);
-
         leaderListButton.setOnClickListener(v -> {
             Intent intent = new Intent(AchieveListActivity.this, LeaderBoardActivity.class);
             startActivity(intent);
         });
 
+        ImageButton menuButton = findViewById(R.id.imageButtonMenu);
         menuButton.setOnClickListener(v -> {
             Intent intent = new Intent(AchieveListActivity.this, MainActivity.class);
             startActivity(intent);
         });
 
+        ImageButton achieveListButton = findViewById(R.id.imageButtonAchieveList);
         achieveListButton.setOnClickListener(v -> {
             Intent intent = new Intent(AchieveListActivity.this, AchieveListActivity.class);
             startActivity(intent);
         });
 
+        ImageButton favoritesButton = findViewById(R.id.imageButtonFavorites);
         favoritesButton.setOnClickListener(v -> {
             Intent intent = new Intent(AchieveListActivity.this, ListOfFavoritesActivity.class);
             startActivity(intent);
@@ -108,66 +102,147 @@ public class AchieveListActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
+        // Создание таблицы
+        TableLayout tableLayout = new TableLayout(AchieveListActivity.this);
+        TableLayout.LayoutParams tableLayoutParams = new TableLayout.LayoutParams(
+                TableLayout.LayoutParams.MATCH_PARENT,
+                TableLayout.LayoutParams.MATCH_PARENT
+        );
+        tableLayout.setLayoutParams(tableLayoutParams);
+
+        // Получение размера экрана
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        int screenWidth = displayMetrics.widthPixels;
+
+        // Рассчитываем ширину блока на основе размера экрана
+        int blockWidth = screenWidth / 2; // Делим ширину экрана пополам
+
+        // Получение данных из базы данных и добавление blockLayout в таблицу
         achievementsRef.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 // Обработка полученных документов
+                AssetManager assetManager = getAssets();
+                TableRow currentRow = null; // Текущая строка для добавления blockLayout
+                int blockCount = 0; // Счетчик для отслеживания количества blockLayout в текущей строке
+                Set<String> uniqueNames = new HashSet<>(); // Множество для отслеживания уникальных названий
+
                 for (QueryDocumentSnapshot document : task.getResult()) {
                     // Получить название достижения из документа
                     String categoryName = document.getString("category");
 
                     // Проверить, является ли это уникальным именем
                     if (!uniqueNames.contains(categoryName)) {
-                        // Создать новую кнопку с названием достижения
-                        Button button = new Button(getApplicationContext());
-                        button.setText(categoryName);
+                        uniqueNames.add(categoryName); // Добавить название в множество
 
-                        button.setBackgroundResource(R.drawable.template);
-
-                        button.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                // Обработка нажатия кнопки
-                                System.out.println("Category_key  " + categoryName);
-                                Intent intent = new Intent(AchieveListActivity.this, AchieveCategoryListActivity.class);
-                                intent.putExtra("Category_key", categoryName);
-                                startActivity(intent);
-                            }
-                        });
-
-                        // Добавить имя в HashSet уникальных имен
-                        uniqueNames.add(categoryName);
-
-                        // Проверить, должны ли мы создать новую строку в таблице
-                        if (buttonCount % 2 == 0) {
-                            // Создать новую строку в таблице
-                            TableRow row = new TableRow(getApplicationContext());
-                            row.setLayoutParams(new TableLayout.LayoutParams(
-                                    TableLayout.LayoutParams.MATCH_PARENT,
-                                    TableLayout.LayoutParams.WRAP_CONTENT,
-                                    1.0f
-                            ));
-                            tableLayout.addView(row);
+                        if (blockCount == 0) {
+                            // Создать новую строку, если текущая строка пустая
+                            currentRow = new TableRow(AchieveListActivity.this);
+                            tableLayout.addView(currentRow);
                         }
 
-                        // Найти последнюю созданную строку и добавить кнопку в нее
-                        TableRow lastRow = (TableRow) tableLayout.getChildAt(tableLayout.getChildCount() - 1);
-                        TableRow.LayoutParams params = new TableRow.LayoutParams(
-                                TableRow.LayoutParams.MATCH_PARENT,
-                                TableRow.LayoutParams.WRAP_CONTENT,
-                                1.0f
+                        // Создать новый blockLayout с названием достижения и установить ширину и высоту
+                        View blockLayout = LayoutInflater.from(AchieveListActivity.this)
+                                .inflate(R.layout.block_achieve_category_list, currentRow, false);
+                        TableRow.LayoutParams blockLayoutParams = new TableRow.LayoutParams(
+                                //TableRow.LayoutParams.MATCH_PARENT,
+                                blockWidth,
+                                700
                         );
-                        params.setMargins(dpToPx(10), dpToPx(10), dpToPx(10), dpToPx(10));
-                        button.setLayoutParams(params);
-                        lastRow.addView(button);
+                        blockLayoutParams.setMargins(12, 12, 12, 12); // Устанавливаем отступы между блоками
+                        blockLayout.setLayoutParams(blockLayoutParams);
 
-                        // Увеличить счетчик кнопок
-                        buttonCount++;
+                        TextView favorites_name_TextView = blockLayout.findViewById(R.id.categoryNameTextView);
+                        ImageView favorites_icon_Button = blockLayout.findViewById(R.id.block_category_imageview);
+
+                        favorites_name_TextView.setText(categoryName);
+                        currentRow.addView(blockLayout);
+                        blockCount++;
+
+                        // Создать новую строку, если в текущей строке уже есть два blockLayout
+                        if (blockCount == 2) {
+                            blockCount = 0;
+                            currentRow = null;
+                        }
+
+                        switch (categoryName) {
+                            case "Красноярск":
+                                try {
+                                    InputStream inputStream = getAssets().open("category_small/krasnoyarsk.png");
+                                    Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                                    RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), bitmap);
+                                    roundedBitmapDrawable.setCornerRadius(20); // Здесь можно указать радиус закругления
+                                    favorites_icon_Button.setImageDrawable(roundedBitmapDrawable);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                                break;
+                            case "Еда и напитки":
+                                try {
+                                    InputStream inputStream = assetManager.open("category_small/food and drink.png");
+                                    Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                                    RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), bitmap);
+                                    roundedBitmapDrawable.setCornerRadius(20); // Здесь можно указать радиус закругления
+                                    favorites_icon_Button.setImageDrawable(roundedBitmapDrawable);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                                break;
+                            case "Путешествия":
+                                try {
+                                    InputStream inputStream = assetManager.open("category_small/traveling.png");
+                                    Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                                    RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), bitmap);
+                                    roundedBitmapDrawable.setCornerRadius(20); // Здесь можно указать радиус закругления
+                                    favorites_icon_Button.setImageDrawable(roundedBitmapDrawable);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                                break;
+                            case "Кулинар":
+                                try {
+                                    InputStream inputStream = assetManager.open("category_small/cooking.png");
+                                    Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                                    RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), bitmap);
+                                    roundedBitmapDrawable.setCornerRadius(20); // Здесь можно указать радиус закругления
+                                    favorites_icon_Button.setImageDrawable(roundedBitmapDrawable);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                                break;
+                            case "Калининград":
+                                try {
+                                    InputStream inputStream = assetManager.open("category_small/kaliningrad.png");
+                                    Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                                    RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), bitmap);
+                                    roundedBitmapDrawable.setCornerRadius(20); // Здесь можно указать радиус закругления
+                                    favorites_icon_Button.setImageDrawable(roundedBitmapDrawable);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                                break;
+                            default:
+                                blockLayout.setBackgroundResource(R.drawable.template);
+                                break;
+                        }
+
+                        blockLayout.setOnClickListener(v -> {
+                            // Обработка нажатия кнопки
+                            Intent intent = new Intent(AchieveListActivity.this, AchieveCategoryListActivity.class);
+                            intent.putExtra("Category_key", categoryName);
+                            startActivity(intent);
+                        });
                     }
                 }
             } else {
                 Log.d(TAG, "Error getting documents: ", task.getException());
             }
         });
+
+        // Добавление таблицы в родительский контейнер
+        ViewGroup parentLayout = findViewById(R.id.scrollView2);
+        parentLayout.addView(tableLayout);
+
     }
 
     private int dpToPx(int dp) {

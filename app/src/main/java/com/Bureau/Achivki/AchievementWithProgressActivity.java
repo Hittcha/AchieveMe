@@ -2,29 +2,27 @@ package com.Bureau.Achivki;
 
 import static android.content.ContentValues.TAG;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -36,9 +34,9 @@ import java.util.Map;
 
 public class AchievementWithProgressActivity extends AppCompatActivity {
     private TextView descMessage;
-    private ImageButton delButton;
-    private ImageButton confirmButton;
-    private ImageButton addButton;
+    private Button delButton;
+    private Button confirmButton;
+    private Button addButton;
     private FirebaseAuth mAuth;
     long dayLimit;
 
@@ -67,20 +65,15 @@ public class AchievementWithProgressActivity extends AppCompatActivity {
         ImageButton addFavorites = findViewById(R.id.addFavorites);
         descMessage = findViewById(R.id.desc_message);
         confirmButton = findViewById(R.id.confirmButton);
+        TextView achieveText = findViewById(R.id.AchieveName);
+
+        achieveText.setText(achieveName);
 
 
         boolean received = getIntent().getBooleanExtra("Is_Received", false);
         boolean proof = getIntent().getBooleanExtra("ProofNeeded", false);
         boolean collectable = getIntent().getBooleanExtra("collectable", false);
 
-
-        /*if (received) {
-            addButton.setVisibility(View.GONE); // скрываем кнопку
-            delButton.setVisibility(View.VISIBLE); // отображаем кнопку
-        } else {
-            delButton.setVisibility(View.GONE); // скрываем кнопку
-            addButton.setVisibility(View.VISIBLE); // отображаем кнопку
-        }*/
 
         if (proof) {
             showProofButton();
@@ -101,16 +94,16 @@ public class AchievementWithProgressActivity extends AppCompatActivity {
 
                             descMessage.setText(description);
 
-
                         }
                     } else {
                         Log.d(TAG, "Ошибка получения достижений из Firestorm: ", task.getException());
                     }
                 });
         backButton.setOnClickListener(v -> {
-            Intent intent = new Intent(AchievementWithProgressActivity.this, AchieveCategoryListActivity.class);
+            finish();
+            /*Intent intent = new Intent(AchievementWithProgressActivity.this, AchieveCategoryListActivity.class);
             intent.putExtra("Category_key", categoryName);
-            startActivity(intent);
+            startActivity(intent);*/
         });
 
         confirmButton.setOnClickListener(v -> {
@@ -242,35 +235,7 @@ public class AchievementWithProgressActivity extends AppCompatActivity {
         addFavorites.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 addFavorites();
-                /*FirebaseFirestore db = FirebaseFirestore.getInstance();
-                CollectionReference usersRef = db.collection("Users");
-
-                // Найти пользователя с именем
-                Query query = usersRef.whereEqualTo("name", userName);
-                query.get().addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        QuerySnapshot querySnapshot = task.getResult();
-                        for (DocumentSnapshot documentSnapshot : querySnapshot.getDocuments()) {
-                            // Получить ID пользователя
-                            String userId = documentSnapshot.getId();
-                            // Обновить массив ачивок пользователя
-                            usersRef.document(userId).update("favorites", FieldValue.arrayUnion(achieveName))
-                                    .addOnSuccessListener(aVoid -> {
-                                        // Ачивка добавлена успешно
-                                        Log.d(TAG, "Ачивка добавлена пользователю: " + userName);
-                                    })
-                                    .addOnFailureListener(e -> {
-                                        // Обработка ошибок
-                                        Log.w(TAG, "Ошибка при добавлении ачивки пользователю: " + userName, e);
-                                    });
-                        }
-                    } else {
-                        // Обработка ошибок
-                        Log.w(TAG, "Ошибка при поиске пользователя: " + userName, task.getException());
-                    }
-                });*/
             }
         });
     }
@@ -339,23 +304,6 @@ public class AchievementWithProgressActivity extends AppCompatActivity {
         });
     }
 
-
-    /*public void addScore(String uid) {
-
-        // Получаем ссылку на коллекцию пользователей
-        CollectionReference usersRef = FirebaseFirestore.getInstance().collection("Users");
-
-        DocumentReference userDocRef = usersRef.document(uid);
-        userDocRef.update("score", FieldValue.increment(10))
-                .addOnSuccessListener(aVoid -> {
-                    // Успешное обновление
-                    System.out.println("Успешное обновление счета");
-                })
-                .addOnFailureListener(e -> {
-                    // Обработка ошибки обновления
-                    System.out.println("Ошибка обновления счета: " + e.getMessage());
-                });
-    }*/
     public void delScore(String uid){
 
         // Получаем ссылку на коллекцию пользователей

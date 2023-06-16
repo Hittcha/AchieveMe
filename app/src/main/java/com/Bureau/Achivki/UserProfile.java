@@ -222,6 +222,7 @@ public class UserProfile extends AppCompatActivity {
         ImageButton selectImageButton = findViewById(R.id.button_choose_image);
 
         selectImageButton.setOnClickListener(v -> {
+            //selectImageFromLibrary();
 
             if (ContextCompat.checkSelfPermission(UserProfile.this,
                     Manifest.permission.READ_MEDIA_IMAGES)

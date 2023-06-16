@@ -364,8 +364,9 @@ public class AchieveCategoryListActivity extends AppCompatActivity {
 
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
-            Intent intent = new Intent(AchieveCategoryListActivity.this, MainActivity.class);
-            startActivity(intent);
+            /*Intent intent = new Intent(AchieveCategoryListActivity.this, MainActivity.class);
+            startActivity(intent);*/
+            onBackPressed();
             return true;
         }
         return super.onOptionsItemSelected(item);
