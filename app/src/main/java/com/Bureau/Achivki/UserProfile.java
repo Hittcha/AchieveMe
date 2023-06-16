@@ -1,9 +1,14 @@
 package com.Bureau.Achivki;
 
 import android.Manifest;
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ObjectAnimator;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapShader;
@@ -16,12 +21,18 @@ import android.graphics.Shader;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -30,10 +41,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.graphics.drawable.RoundedBitmapDrawable;
+import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
@@ -42,7 +56,9 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -58,6 +74,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 
 public class UserProfile extends AppCompatActivity {
@@ -121,6 +138,7 @@ public class UserProfile extends AppCompatActivity {
             startActivity(intent);
             return true;
         });
+
 
         mAuth = FirebaseAuth.getInstance();
         storage = FirebaseStorage.getInstance();
@@ -509,6 +527,87 @@ public class UserProfile extends AppCompatActivity {
 
         ImageView statusImageView = blockLayout.findViewById(R.id.statusImageView);
 
+        statusImageView.setOnClickListener(v -> {
+
+            FirebaseAuth mAuth = FirebaseAuth.getInstance();
+            FirebaseUser currentUser = mAuth.getCurrentUser();
+
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            DocumentReference userRef = db.collection("Users").document(currentUser.getUid());
+
+            userRef.get().addOnSuccessListener(documentSnapshot -> {
+                Map<String, Object> userData = documentSnapshot.getData();
+                Map<String, Object> fav = (Map<String, Object>) userData.get("favorites");
+
+                Map<String, Object> userAchieveMap = (Map<String, Object>) userData.get("userAchievements");
+                // Получение достижений пользователя
+                Set<String> userAchievements = userAchieveMap.keySet();
+
+                for (Map.Entry<String, Object> entry : fav.entrySet()) {
+                    Map<String, Object> achievement = (Map<String, Object>) entry.getValue();
+
+                    //String achname = (String) achievement.get("name");
+                    String category = (String) achievement.get("category");
+
+                    CollectionReference achievementsCollectionRef = FirebaseFirestore.getInstance().collection("Achievements");
+
+                    Query categoryQuery = achievementsCollectionRef.whereEqualTo("name", achname);
+                    categoryQuery.get().addOnSuccessListener(querySnapshot -> {
+                        for (DocumentSnapshot document : querySnapshot.getDocuments()) {
+
+                            boolean proof = Boolean.TRUE.equals(document.getBoolean("proof"));
+                            boolean collectable = false;
+                            long achieveCount = 0;
+                            String countDesc = "";
+                            long dayLimit = 0;
+
+                            long achievePrice = 0;
+                            if (document.contains("price")) {
+                                achievePrice = document.getLong("price");
+                                System.out.println("price " + achievePrice);
+                            }
+
+                            Intent intent = new Intent(this, AchievementDescriptionActivity.class);
+
+                            if (document.contains("collectable")) {
+                                System.out.println("collectable");
+                                collectable = Boolean.TRUE.equals(document.getBoolean("collectable"));
+                                achieveCount = document.getLong("count");
+                                dayLimit = document.getLong("dayLimit");
+                                countDesc = document.getString("countDesc");
+                                intent = new Intent(this, AchievementWithProgressActivity.class);
+                            }
+
+                            if (userAchievements.contains(achname)) {
+                                System.out.println("Достижение \"" + achname + "\" есть и у пользователя, и в категории " + category);
+                                intent.putExtra("dayLimit", dayLimit);
+                                intent.putExtra("achieveCount", achieveCount);
+                                intent.putExtra("collectable", collectable);
+                                intent.putExtra("Category_key", category);
+                                intent.putExtra("Achieve_key", achname);
+                                intent.putExtra("achievePrice", achievePrice);
+                                intent.putExtra("Is_Received", true);
+                                intent.putExtra("ProofNeeded", proof);
+                                intent.putExtra("isFavorites", true);
+                                startActivity(intent);
+                            }else{
+                                intent.putExtra("dayLimit", dayLimit);
+                                intent.putExtra("achieveCount", achieveCount);
+                                intent.putExtra("collectable", collectable);
+                                intent.putExtra("Category_key", category);
+                                intent.putExtra("Achieve_key", achname);
+                                intent.putExtra("achievePrice", achievePrice);
+                                intent.putExtra("Is_Received", false);
+                                intent.putExtra("ProofNeeded", proof);
+                                intent.putExtra("isFavorites", true);
+                                startActivity(intent);
+                            }
+                        }
+                    });
+                }
+            });
+        });
+
         if(status == null){
             status = "grey";
         }
@@ -547,7 +646,90 @@ public class UserProfile extends AppCompatActivity {
         }).addOnFailureListener(e -> {
             // Обработка ошибки загрузки изображения
         });
+
+        Button button = blockLayout.findViewById(R.id.button3);
+        NavigationView navigationView = blockLayout.findViewById(R.id.navigation_view);
+        Menu menu = navigationView.getMenu();
+        MenuItem menuItem = menu.findItem(R.id.nav_item2); // Replace 'menu_item_id' with the actual ID of the menu item you want to hide
+        menuItem.setVisible(false);
+
+        button.setOnClickListener(v -> {
+            toggleNavigationView(navigationView);
+        });
+
+        // Add touch listener to the parent layout
+        blockLayout.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                // Check if the touch event is outside the navigationView bounds
+                if (event.getAction() == MotionEvent.ACTION_DOWN && isTouchOutsideView(event, navigationView)) {
+                    hideNavigationView(navigationView);
+                    return true;
+                }
+                return false;
+            }
+        });
+
+        navigationView.setNavigationItemSelectedListener(item -> {
+            // Обработка выбранного пункта меню
+            switch (item.getItemId()) {
+                case R.id.nav_item1:
+                    // Действие при выборе настройки 1
+                    parentLayout.removeView(blockLayout);
+                    deleteUserPost(key);
+                    //intent = new Intent(UserProfile.this, SuggestAchieveActivity.class);
+                    break;
+                case R.id.nav_item2:
+                    // Действие при выборе настройки 2
+                    intent = new Intent(UserProfile.this, MyAchievementsActivity.class);
+                    break;
+            }
+            // Закрытие меню после выбора пункта
+            //toggleNavigationView(navigationView);
+            navigationView.setVisibility(View.INVISIBLE);
+            //startActivity(intent);
+            return true;
+        });
+
     }
+
+    private void deleteUserPost(String achname){
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference usersRef = db.collection("Users").document(currentUser.getUid());
+
+        usersRef.get().addOnSuccessListener(documentSnapshot -> {
+            Map<String, Object> userAchievements = documentSnapshot.getData();
+
+            Map<String, Object> achieveMap = (Map<String, Object>) userAchievements.get("userPhotos");
+
+            achieveMap.remove(achname);
+
+            userAchievements.put("userPhotos", achieveMap);
+
+            usersRef.set(userAchievements);
+
+            //recreate();
+
+            //parentLayout.removeView(blockLayout);
+
+            Toast.makeText(this, "Пост удален", Toast.LENGTH_SHORT).show();
+        });
+    }
+
+    private boolean isTouchOutsideView(MotionEvent event, View view) {
+        int[] viewLocation = new int[2];
+        view.getLocationOnScreen(viewLocation);
+        int viewLeft = viewLocation[0];
+        int viewTop = viewLocation[1];
+        int viewRight = viewLeft + view.getWidth();
+        int viewBottom = viewTop + view.getHeight();
+        float touchX = event.getRawX();
+        float touchY = event.getRawY();
+        return (touchX < viewLeft || touchX > viewRight || touchY < viewTop || touchY > viewBottom);
+    }
+
 
     public void addLike(String userName, String key){
 
@@ -616,6 +798,63 @@ public class UserProfile extends AppCompatActivity {
 
         });
     }
+
+    private void showSelectionDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Выберите опцию")
+                .setItems(R.array.options_array, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Действия при выборе опции
+                        switch (which) {
+                            case 0:
+                                // Действие для первой опции
+                                break;
+                            case 1:
+                                // Действие для второй опции
+                                break;
+                            // Добавьте другие опции, если необходимо
+                        }
+                    }
+                });
+
+        builder.create().show();
+    }
+
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.user_post_menu, menu);
+        return true;
+    }
+
+    private void toggleNavigationView(NavigationView navigationView) {
+        if (navigationView.getVisibility() == View.VISIBLE) {
+            hideNavigationView(navigationView);
+        } else {
+            showNavigationView(navigationView);
+        }
+    }
+
+    private void showNavigationView(NavigationView navigationView) {
+        navigationView.setVisibility(View.VISIBLE);
+        ObjectAnimator animator = ObjectAnimator.ofFloat(navigationView, "translationX", navigationView.getWidth(), 0);
+        animator.setDuration(300);
+        animator.setInterpolator(new AccelerateDecelerateInterpolator());
+        animator.start();
+    }
+
+    private void hideNavigationView(NavigationView navigationView) {
+        ObjectAnimator animator = ObjectAnimator.ofFloat(navigationView, "translationX", 0, navigationView.getWidth());
+        animator.setDuration(300);
+        animator.setInterpolator(new AccelerateDecelerateInterpolator());
+        animator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                navigationView.setVisibility(View.GONE);
+            }
+        });
+        animator.start();
+    }
+
+
     protected void onPause() {
         super.onPause();
         overridePendingTransition(0, 0);

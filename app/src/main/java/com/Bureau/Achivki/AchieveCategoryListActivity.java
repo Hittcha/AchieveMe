@@ -37,9 +37,12 @@ import java.util.Set;
 
 
 public class AchieveCategoryListActivity extends AppCompatActivity {
+    private static final int REQUEST_CODE = 10;
     private String userName;
     private int count = 0;
     private int achievedone = 0;
+
+    private ConstraintLayout selectedBlock;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -165,6 +168,13 @@ public class AchieveCategoryListActivity extends AppCompatActivity {
                             Map<String, Object> userAchieveMap = (Map<String, Object>) userDocSnapshot.get("userAchievements");
                             // Получение достижений пользователя
                             Set<String> userAchievements = userAchieveMap.keySet();
+
+                            // Получение Map UserAchieve пользователя
+                            Map<String, Object> userFavoritesMap = (Map<String, Object>) userDocSnapshot.get("favorites");
+                            // Получение достижений пользователя
+                            Set<String> userFavorites = userFavoritesMap.keySet();
+
+
                             // Получение документов достижений из коллекции achievements
                             Query categoryQuery = achievementsCollectionRef.whereEqualTo("category", categoryName);
                             categoryQuery.get().addOnSuccessListener(querySnapshot -> {
@@ -196,6 +206,13 @@ public class AchieveCategoryListActivity extends AppCompatActivity {
                                         // Обработка ситуации, когда поле отсутствует
                                     }
 
+                                    boolean isFavorites = false;
+
+                                    if (userFavorites.contains(achievementName)) {
+                                        isFavorites = true;
+                                    }
+                                    System.out.println("isFavorites " + isFavorites);
+
                                     if (userAchievements.contains(achievementName)) {
                                         System.out.println("Достижение \"" + achievementName + "\" есть и у пользователя, и в категории " + categoryName);
                                         Map<String, Object> achievementMap = (Map<String, Object>) userAchieveMap.get(achievementName);
@@ -203,10 +220,10 @@ public class AchieveCategoryListActivity extends AppCompatActivity {
                                             doneCount = (long) achievementMap.get("doneCount");
                                         }
                                         System.out.println("doneCount"+ doneCount);
-                                        checkStatus(achievementName, categoryName, name, proof, collectable, achieveCount, doneCount, countDesc, dayLimit, achievePrice);
+                                        checkStatus(achievementName, categoryName, name, proof, collectable, achieveCount, doneCount, countDesc, dayLimit, achievePrice, isFavorites);
                                         achievedone++;
                                     }else{
-                                        createAchieveBlock(achievementName, "black", categoryName, name, proof, collectable, achieveCount, 0, countDesc, dayLimit, achievePrice);
+                                        createAchieveBlock(achievementName, "black", categoryName, name, proof, collectable, achieveCount, 0, countDesc, dayLimit, achievePrice, isFavorites);
                                         System.out.println("Нет " + achievementName);
                                     }
                                 }
@@ -251,7 +268,7 @@ public class AchieveCategoryListActivity extends AppCompatActivity {
 
     }
 
-    private void checkStatus(String achievementName, String categoryName, String name, boolean proof, boolean collectable, long achieveCount, long doneCount, String countDesc, long dayLimit, long achievePrice){
+    private void checkStatus(String achievementName, String categoryName, String name, boolean proof, boolean collectable, long achieveCount, long doneCount, String countDesc, long dayLimit, long achievePrice, boolean isFavorites){
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = mAuth.getCurrentUser();
 
@@ -272,12 +289,12 @@ public class AchieveCategoryListActivity extends AppCompatActivity {
                     Boolean proofsended = (Boolean) achievement.get("proofsended");
                     if(Boolean.TRUE.equals(confirmed)){
                         System.out.println("confirmed");
-                        createAchieveBlock(achievementName,"green", categoryName, name, proof, collectable, achieveCount, doneCount, countDesc, dayLimit, achievePrice);
+                        createAchieveBlock(achievementName,"green", categoryName, name, proof, collectable, achieveCount, doneCount, countDesc, dayLimit, achievePrice, isFavorites);
                     }else if (Boolean.TRUE.equals(proofsended)) {
-                        createAchieveBlock(achievementName,"yellow", categoryName, name, proof, collectable, achieveCount, doneCount, countDesc, dayLimit, achievePrice);
+                        createAchieveBlock(achievementName,"yellow", categoryName, name, proof, collectable, achieveCount, doneCount, countDesc, dayLimit, achievePrice, isFavorites);
                         System.out.println("proofsended");
                     }else{
-                        createAchieveBlock(achievementName,"black", categoryName, name, proof, collectable, achieveCount, doneCount, countDesc, dayLimit, achievePrice);
+                        createAchieveBlock(achievementName,"black", categoryName, name, proof, collectable, achieveCount, doneCount, countDesc, dayLimit, achievePrice, isFavorites);
                         System.out.println("not ");
                     }
                 }
@@ -294,7 +311,7 @@ public class AchieveCategoryListActivity extends AppCompatActivity {
         popupWindow.showAtLocation(getWindow().getDecorView(), Gravity.CENTER, 0, 0);
     }
 
-    private void createAchieveBlock(String achieveName, String color, String categoryName, String username, boolean proof, boolean collectable, long achieveCount, long doneCount, String countDesc, long dayLimit, long achievePrice){
+    private void createAchieveBlock(String achieveName, String color, String categoryName, String username, boolean proof, boolean collectable, long achieveCount, long doneCount, String countDesc, long dayLimit, long achievePrice, boolean isFavorites){
         LinearLayout parentLayout = findViewById(R.id.scrollView1);
 
         boolean received;
@@ -347,11 +364,63 @@ public class AchieveCategoryListActivity extends AppCompatActivity {
             intent.putExtra("achieveCount", achieveCount);
             intent.putExtra("dayLimit", dayLimit);
             intent.putExtra("achievePrice", achievePrice);
+            intent.putExtra("isFavorites", isFavorites);
 //            ShowAchievementDescription();
             startActivity(intent);
         });
 
+        /*blockLayout.setOnClickListener(v -> {
+            Intent intent;
+            // Обработка нажатия кнопки
+            if (collectable) {
+                intent = new Intent(AchieveCategoryListActivity.this, AchievementWithProgressActivity.class);
+            } else {
+                intent = new Intent(AchieveCategoryListActivity.this, AchievementDescriptionActivity.class);
+            }
+            intent.putExtra("Achieve_key", achieveName);
+            intent.putExtra("Category_key", categoryName);
+            intent.putExtra("Is_Received", received);
+            //intent.putExtra("User_name", username);
+            intent.putExtra("ProofNeeded", proof);
+            intent.putExtra("collectable", collectable);
+            intent.putExtra("achieveCount", achieveCount);
+            intent.putExtra("dayLimit", dayLimit);
+            intent.putExtra("achievePrice", achievePrice);
+            intent.putExtra("isFavorites", isFavorites);
+            parentLayout.removeView(blockLayout);
+            startActivityForResult(intent, REQUEST_CODE);
+
+        });*/
+
+
     }
+
+    /*protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+
+        if (requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
+
+
+            String updatedAchieveName = data.getStringExtra("Achieve_key");
+            String categoryName = data.getStringExtra("Category_key");
+            String name = "sdad";
+            boolean proof = getIntent().getBooleanExtra("proof", false);
+            boolean collectable = getIntent().getBooleanExtra("collectable", false);
+            int achieveCount = 0;
+            int doneCount = 0;
+            String countDesc = "asfasf";
+            int dayLimit = 0;
+            int achievePrice = 0;
+            boolean isFavorites = getIntent().getBooleanExtra("isFavorites", false);
+
+            createAchieveBlock(updatedAchieveName,"green", categoryName, name, proof, collectable, achieveCount, doneCount, countDesc, dayLimit, achievePrice, isFavorites);
+
+            System.out.println("updatedAchieveName " + updatedAchieveName);
+        }
+    }*/
+
+
 
     protected void onPause() {
         super.onPause();

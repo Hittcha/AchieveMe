@@ -14,102 +14,114 @@
     android:minHeight="350dp"
     android:padding="0dp">
 
+        <TextView
+            android:id="@+id/achname"
+            android:layout_width="0dp"
+            android:layout_height="28dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:autoSizeTextType="uniform"
+            android:autoText="true"
+            android:text="Achievename"
+            android:textAlignment="viewStart"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="24sp"
+            app:layout_constraintEnd_toStartOf="@+id/button3"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toEndOf="@+id/statusImageView"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/achname"
-        android:layout_width="0dp"
-        android:layout_height="28dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:autoSizeTextType="uniform"
-        android:autoText="true"
-        android:text="Achievename"
-        android:textAlignment="viewStart"
-        android:textAllCaps="false"
-        android:textColor="@color/white"
-        android:textSize="24sp"
-        app:layout_constraintEnd_toStartOf="@+id/button3"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/statusImageView"
-        app:layout_constraintTop_toTopOf="parent" />
+        <TextView
+            android:id="@+id/date"
+            android:layout_width="106dp"
+            android:layout_height="19dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:text="Date"
+            android:textColor="@color/white"
+            android:textSize="10sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toEndOf="@+id/likesCount" />
 
-    <TextView
-        android:id="@+id/date"
-        android:layout_width="106dp"
-        android:layout_height="19dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
-        android:text="Date"
-        android:textColor="@color/white"
-        android:textSize="10sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/likesCount" />
+        <ImageView
+            android:id="@+id/imageView3"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toTopOf="@+id/toggleButton2"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/statusImageView"
+            tools:srcCompat="@tools:sample/avatars" />
 
-    <ImageView
-        android:id="@+id/imageView3"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="4dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/toggleButton2"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/statusImageView"
-        tools:srcCompat="@tools:sample/avatars" />
+        <TextView
+            android:id="@+id/likesCount"
+            android:layout_width="33dp"
+            android:layout_height="20dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="1dp"
+            android:layout_marginBottom="1dp"
+            android:elevation="20dp"
+            android:text="TextView"
+            android:textColor="@color/white"
+            app:layout_constraintBottom_toBottomOf="@+id/toggleButton2"
+            app:layout_constraintEnd_toEndOf="@+id/toggleButton2"
+            app:layout_constraintTop_toTopOf="@+id/toggleButton2"
+            app:layout_constraintVertical_bias="0.51" />
 
-    <TextView
-        android:id="@+id/likesCount"
-        android:layout_width="33dp"
-        android:layout_height="20dp"
-        android:layout_marginTop="4dp"
-        android:layout_marginEnd="1dp"
-        android:layout_marginBottom="1dp"
-        android:elevation="20dp"
-        android:text="TextView"
-        android:textColor="@color/white"
-        app:layout_constraintBottom_toBottomOf="@+id/toggleButton2"
-        app:layout_constraintEnd_toEndOf="@+id/toggleButton2"
-        app:layout_constraintTop_toTopOf="@+id/toggleButton2"
-        app:layout_constraintVertical_bias="0.51" />
+        <ToggleButton
+            android:id="@+id/toggleButton2"
+            android:layout_width="78dp"
+            android:layout_height="33dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/likeimage"
+            android:elevation="0dp"
+            android:paddingTop="8dp"
+            android:textOff=""
+            android:textOn=""
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
-    <ToggleButton
-        android:id="@+id/toggleButton2"
-        android:layout_width="78dp"
-        android:layout_height="33dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginBottom="8dp"
-        android:background="@drawable/likeimage"
-        android:elevation="0dp"
-        android:paddingTop="8dp"
-        android:textOff=""
-        android:textOn=""
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        <ImageView
+            android:id="@+id/statusImageView"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/galka_green" />
 
-    <ImageView
-        android:id="@+id/statusImageView"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/galka_green" />
+        <Button
+            android:id="@+id/button3"
+            android:layout_width="24dp"
+            android:layout_height="18dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:background="@drawable/three_dots"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
-        android:id="@+id/button3"
-        android:layout_width="18dp"
-        android:layout_height="4dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:background="@drawable/three_dots"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
+        <com.google.android.material.navigation.NavigationView
+            android:id="@+id/navigation_view"
+            android:layout_width="145dp"
+            android:layout_height="64dp"
+            android:layout_gravity="end"
+            android:background="@drawable/user_post_menu_background"
+            android:visibility="invisible"
+            app:elevation="100dp"
+            app:itemTextColor="@color/white"
+            app:layout_constraintEnd_toEndOf="@+id/button3"
+            app:layout_constraintTop_toBottomOf="@+id/button3"
+            app:menu="@menu/user_post_menu"
+            tools:visibility="visible" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

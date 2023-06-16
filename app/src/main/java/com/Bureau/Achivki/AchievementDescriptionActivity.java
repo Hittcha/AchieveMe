@@ -68,7 +68,10 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
 
         boolean received = getIntent().getBooleanExtra("Is_Received", false);
         boolean proof = getIntent().getBooleanExtra("ProofNeeded", false);
+        //boolean proof1 = getIntent().getBooleanExtra("fdgdfg", false);
         //boolean collectable = getIntent().getBooleanExtra("collectable", false);
+
+        //System.out.println("proof1" + proof1);
 
 
         if (received) {
@@ -109,8 +112,26 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
             Intent resultIntent = new Intent();
             setResult(RESULT_OK, resultIntent);*/
 
-            setResult(RESULT_OK);
-            finish();
+            /*Intent resultIntent = new Intent();
+            resultIntent.putExtra("Achieve_key", achieveName);
+            resultIntent.putExtra("Category_key", categoryName);
+            //resultIntent.putExtra("UpdatedAchieveName", name);
+            resultIntent.putExtra("proof", proof);
+            resultIntent.putExtra("collectable", false);
+            resultIntent.putExtra("achieveCount", 0);
+            resultIntent.putExtra("doneCount", 0);
+            resultIntent.putExtra("dayLimit", 0);
+            resultIntent.putExtra("achievePrice", 0);
+            resultIntent.putExtra("isFavorites", false);
+            setResult(RESULT_OK, resultIntent);
+            finish();*/
+
+            /*setResult(RESULT_OK);
+            finish();*/
+
+            Intent intent = new Intent(AchievementDescriptionActivity.this, AchieveCategoryListActivity.class);
+            intent.putExtra("Category_key", categoryName);
+            startActivity(intent);
 
             //finish();
             //finish();

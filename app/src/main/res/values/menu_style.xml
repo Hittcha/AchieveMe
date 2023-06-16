@@ -1,0 +1,5 @@
+<resources>
+    <style name="MenuStyle1">
+        <item name="android:background">@drawable/menu_background</item>
+    </style>
+</resources>
