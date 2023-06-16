@@ -70,7 +70,7 @@ public class RegistrationActivity extends AppCompatActivity {
                                 Map<String, Object> userPhotoMap = new HashMap<>();
                                 Map<String, Object> subscribers = new HashMap<>();
                                 Map<String, Object> friends = new HashMap<>();
-                                ArrayList<String> favorites = new ArrayList<>();
+                                Map<String, Object> favorites = new HashMap<>();
 
 
                                 if (currentUser != null) {

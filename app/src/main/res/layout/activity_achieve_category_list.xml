@@ -99,7 +99,7 @@
 
   <androidx.constraintlayout.widget.ConstraintLayout
       android:id="@+id/top_constraint_layout"
-      android:layout_width="0dp"
+      android:layout_width="match_parent"
       android:layout_height="160dp"
       app:layout_constraintBottom_toTopOf="@+id/progressBar"
       app:layout_constraintEnd_toEndOf="parent"
@@ -109,18 +109,20 @@
       app:layout_constraintVertical_bias="0.158">
 
     <ImageView
+        android:id="@+id/category_background"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-      android:id="@+id/category_background"
+        android:layout_height="0dp"
         android:scaleType="centerCrop"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_max="160dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        />
+        app:layout_constraintTop_toTopOf="parent" />
 
 
     <TextView
-        style="@style/category_topText"
         android:id="@+id/textView"
+        style="@style/category_topText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="6dp"
@@ -133,8 +135,8 @@
 
 
     <TextView
-        style="@style/category_topText"
         android:id="@+id/categoryNameTextView"
+        style="@style/category_topText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="TextView"
@@ -146,8 +148,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.19"
-        tools:text="Калининград"
-        />
+        tools:text="Калининград" />
 
   </androidx.constraintlayout.widget.ConstraintLayout>
 
