@@ -14,6 +14,7 @@ import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -35,6 +36,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class ListOfFavoritesActivity extends AppCompatActivity {
 
@@ -123,14 +125,14 @@ public class ListOfFavoritesActivity extends AppCompatActivity {
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
                         String name = document.getString("name");
-                        ArrayList<String> achievements = (ArrayList<String>) document.get("favorites");
+                        //ArrayList<String> achievements = (ArrayList<String>) document.get("favorites");
 
                         String userName = (String) document.get("name");
 
 
                         System.out.println("name " + userName);
 
-                        createAchieveButton(achievements, userName);
+                        createAchieveButton();
 
                         // теперь у вас есть имя пользователя и список его достижений
                     } else {
@@ -143,7 +145,97 @@ public class ListOfFavoritesActivity extends AppCompatActivity {
         });
     }
 
-    private void createAchieveButton(ArrayList<String> achieveName, String userName) {
+    private void createAchieveButton() {
+
+        LinearLayout parentLayout = findViewById(R.id.scrollView);
+
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference userRef = db.collection("Users").document(currentUser.getUid());
+
+        //List<String> achievementNames = new ArrayList<>();
+
+        userRef.get().addOnSuccessListener(documentSnapshot -> {
+            Map<String, Object> userData = documentSnapshot.getData();
+            Map<String, Object> fav = (Map<String, Object>) userData.get("favorites");
+
+            for (Map.Entry<String, Object> entry : fav.entrySet()) {
+                Map<String, Object> achievement = (Map<String, Object>) entry.getValue();
+
+                String achname = (String) achievement.get("name");
+                String category = (String) achievement.get("category");
+
+                CollectionReference achievementCollectionRef = FirebaseFirestore.getInstance().collection("Achievements");
+
+                ConstraintLayout blockLayout = (ConstraintLayout) LayoutInflater.from(ListOfFavoritesActivity.this)
+                        .inflate(R.layout.block_layout, parentLayout, false);
+
+                TextView usernameTextView = blockLayout.findViewById(R.id.username);
+                TextView balanceTextView = blockLayout.findViewById(R.id.balance);
+
+
+                // Задайте текст для TextView в соответствии с данными пользователя
+
+                Query query = achievementCollectionRef.whereEqualTo("name", achname);
+
+                query.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        String achievementDesc = null;
+                        for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots.getDocuments()) {
+                            achievementDesc = documentSnapshot.getString("desc");
+                        }
+
+                        balanceTextView.setText(achievementDesc);
+                    }
+                });
+
+                ImageButton deleteAch = blockLayout.findViewById(R.id.deleteAch);
+
+                deleteAch.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+                        FirebaseUser currentUser = mAuth.getCurrentUser();
+                        FirebaseFirestore db = FirebaseFirestore.getInstance();
+                        DocumentReference usersRef = db.collection("Users").document(currentUser.getUid());
+
+                        usersRef.get().addOnSuccessListener(documentSnapshot -> {
+                            Map<String, Object> userAchievements = documentSnapshot.getData();
+
+                            Map<String, Object> achieveMap = (Map<String, Object>) userAchievements.get("favorites");
+
+                            achieveMap.remove(achname);
+
+                            userAchievements.put("favorites", achieveMap);
+
+                            usersRef.set(userAchievements);
+
+                            //recreate();
+
+                            parentLayout.removeView(blockLayout);
+
+                            Toast.makeText(ListOfFavoritesActivity.this, "Достижение удалено", Toast.LENGTH_SHORT).show();
+                        });
+                    }
+                });
+
+                usernameTextView.setText(achname);
+
+                parentLayout.addView(blockLayout);
+
+                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                );
+            }
+        });
+    }
+
+    /*private void createAchieveButton(ArrayList<String> achieveName, String userName) {
 
         for (String name : achieveName) {
 
@@ -222,7 +314,7 @@ public class ListOfFavoritesActivity extends AppCompatActivity {
                     LinearLayout.LayoutParams.WRAP_CONTENT
             );
         }
-    }
+    }*/
     protected void onPause() {
         super.onPause();
         overridePendingTransition(0, 0);

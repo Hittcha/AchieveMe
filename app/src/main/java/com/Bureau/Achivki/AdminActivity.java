@@ -167,8 +167,21 @@ public class AdminActivity extends AppCompatActivity {
 
                                 String url = (String) achievement.get("url");
                                 String achname = (String) achievement.get("name");
+                                long achievePrice = (long) achievement.get("achievePrice");
                                 String time = (String) achievement.get("time");
                                 String token = (String) achievement.get("token");
+
+                                Boolean collectable = (Boolean) achievement.get("collectable");
+                                if(collectable==null){
+                                    collectable = false;
+                                }
+
+                                /*if (achievement.contains("collectable")) {
+                                    collectable = Boolean.TRUE.equals(achievement.getBoolean("collectable"));
+                                    System.out.println("price " + achievePrice);
+                                }*/
+
+                                System.out.println("collectable: " + collectable);
 
                                 System.out.println("url: " + url);
 
@@ -179,9 +192,9 @@ public class AdminActivity extends AppCompatActivity {
                                 confirmUserAchieveButton.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
-                                        confirmUserAchieve(token, achname);
+                                        confirmUserAchieve(token, achname, achievePrice, key);
 
-                                        sortedAchievements.remove(currentIndex);
+                                        //sortedAchievements.remove(currentIndex);
                                         achievements.remove(key);
                                         userData.put(userId, achievements);
                                         mAuthDocRef.set(userData);
@@ -191,11 +204,12 @@ public class AdminActivity extends AppCompatActivity {
                                     }
                                 });
 
+                                Boolean finalCollectable = collectable;
                                 disproveUserAchieveButton.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
-                                        disproofUserAchieve(token, achname);
-                                        sortedAchievements.remove(currentIndex);
+                                        disproofUserAchieve(token, achname, finalCollectable, key);
+                                        //sortedAchievements.remove(currentIndex);
                                         achievements.remove(key);
                                         userData.put(userId, achievements);
                                         mAuthDocRef.set(userData);
@@ -214,7 +228,7 @@ public class AdminActivity extends AppCompatActivity {
         });
     }
 
-    private void disproofUserAchieve(String token, String achieveName){
+    private void disproofUserAchieve(String token, String achieveName, boolean collectable, String key){
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference usersRef = db.collection("Users").document(token);
 
@@ -232,8 +246,34 @@ public class AdminActivity extends AppCompatActivity {
 
             // Получаем текущий Map achieve из документа пользователя
             Map<String, Object> achieveMap = (Map<String, Object>) userAchievements.get("userAchievements");
+            Map<String, Object> photosMap = (Map<String, Object>) userAchievements.get("userPhotos");
 
-            achieveMap.remove(achieveName);
+            System.out.println("achieveName " + key);
+
+            if (photosMap.containsKey(key)) {
+                Map<String, Object> photosMap1 = (Map<String, Object>) photosMap.get(key);
+                System.out.println("status ");
+                String status = (String) photosMap1.get("status");
+                photosMap1.put("status", "red");
+                System.out.println("status " + status);
+            }
+
+            if (collectable){
+                if (achieveMap.containsKey(achieveName)) {
+                    Map<String, Object> existingAchieveMap = (Map<String, Object>) achieveMap.get(achieveName);
+                    long doneCount = (long) existingAchieveMap.get("doneCount");
+                    long dayDone = (long) existingAchieveMap.get("dayDone");
+                    existingAchieveMap.put("doneCount", doneCount - 1);
+                    existingAchieveMap.put("dayDone", dayDone - 1);
+                    existingAchieveMap.remove("url" + doneCount);
+                }
+                /*long doneCount = (long) achieveMap.get("doneCount");
+                achieveMap.put("doneCount", doneCount - 1);*/
+            }else{
+                achieveMap.remove(achieveName);
+            }
+
+            //achieveMap.remove(achieveName);
 
             // Сохраняем обновленный Map achieve в Firestore
             userAchievements.put("userAchievements", achieveMap);
@@ -243,11 +283,11 @@ public class AdminActivity extends AppCompatActivity {
         });
     }
 
-    private void confirmUserAchieve(String token, String achieveName){
+    private void confirmUserAchieve(String token, String achieveName, long achievePrice, String key){
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference usersRef = db.collection("Users").document(token);
 
-        usersRef.update("score", FieldValue.increment(10));
+        usersRef.update("score", FieldValue.increment(achievePrice));
 
 
         usersRef.get().addOnSuccessListener(documentSnapshot -> {
@@ -263,6 +303,18 @@ public class AdminActivity extends AppCompatActivity {
 
             // Получаем текущий Map achieve из документа пользователя
             Map<String, Object> achieveMap = (Map<String, Object>) userAchievements.get("userAchievements");
+
+            Map<String, Object> photosMap = (Map<String, Object>) userAchievements.get("userPhotos");
+
+            System.out.println("achieveName " + key);
+
+            if (photosMap.containsKey(key)) {
+                Map<String, Object> photosMap1 = (Map<String, Object>) photosMap.get(key);
+                System.out.println("status ");
+                String status = (String) photosMap1.get("status");
+                photosMap1.put("status", "green");
+                System.out.println("status " + status);
+            }
 
             // Изменяем значение confirmed для достижения с определенным именем
             for (Map.Entry<String, Object> entry : achieveMap.entrySet()) {
