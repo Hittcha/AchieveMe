@@ -4,17 +4,26 @@ import static android.content.ContentValues.TAG;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
+import android.provider.CalendarContract;
 import android.util.Log;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.core.content.ContextCompat;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -40,7 +49,7 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
 
 
-    @SuppressLint("MissingInflatedId")
+    @SuppressLint({"MissingInflatedId", "ClickableViewAccessibility"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,11 +64,10 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         window.setStatusBarColor(ContextCompat.getColor(this, R.color.StatusBarColor));
 
-
+        ScrollView scrollView = findViewById(R.id.description_scrollview);
         addButton = findViewById(R.id.submit_button);
         delButton = findViewById(R.id.delete_button);
         ImageButton backButton = findViewById(R.id.BackButton);
-        ImageButton addFavorites = findViewById(R.id.addFavorites);
         descMessage = findViewById(R.id.desc_message);
         confirmButton = findViewById(R.id.confirmButton);
         TextView achieveText = findViewById(R.id.AchieveName);
@@ -68,7 +76,7 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
 
         boolean received = getIntent().getBooleanExtra("Is_Received", false);
         boolean proof = getIntent().getBooleanExtra("ProofNeeded", false);
-        //boolean proof1 = getIntent().getBooleanExtra("fdgdfg", false);
+        boolean favorite = getIntent().getBooleanExtra("isFavorites", false);
         //boolean collectable = getIntent().getBooleanExtra("collectable", false);
 
         //System.out.println("proof1" + proof1);
@@ -84,6 +92,10 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
 
         if (proof) {
             showProofButton();
+        }
+
+        if (favorite) {
+            changeStrokeColor();
         }
 
         System.out.println(achieveName);
@@ -221,8 +233,19 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
             showButtonAdd();
         });
 
-        addFavorites.setOnClickListener(v -> {
-            addFavorites();
+        scrollView.setOnTouchListener(new View.OnTouchListener() {
+            private final GestureDetector gestureDetector = new GestureDetector(AchievementDescriptionActivity.this, new GestureDetector.SimpleOnGestureListener(){
+                @Override
+                public boolean onDoubleTap(@NonNull MotionEvent e) {
+                    addFavorites();
+                    return super.onDoubleTap(e);
+                }
+            });
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                gestureDetector.onTouchEvent(event);
+                return true;
+            }
         });
     }
 
@@ -284,6 +307,7 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
         delButton.setVisibility(View.GONE);
     }
 
+    @SuppressLint("ResourceAsColor")
     private void addFavorites(){
         Intent intentFromMain = getIntent();
         String achieveName = intentFromMain.getStringExtra("Achieve_key");
@@ -309,6 +333,22 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
             userAchievements.put("favorites", achieveMap);
             usersRef.set(userAchievements);
             Toast.makeText(this, "Достижение добавлено в профиль", Toast.LENGTH_SHORT).show();
+            changeStrokeColor();
+
         });
+    }
+    private void changeStrokeColor() {
+        // изменения цвета рамки, при добавление в избранное
+        View mainConstraintLayout = findViewById(R.id.main_constraintLayout_description);
+        @SuppressLint("UseCompatLoadingForDrawables")
+        Drawable drawable = getDrawable(R.drawable.achievedescriptionbackground);
+        LayerDrawable layerDrawable = (LayerDrawable) drawable;
+        int layerIndex = 0;
+        Drawable layer = layerDrawable.getDrawable(layerIndex);
+        GradientDrawable gradientDrawable = (GradientDrawable) layer;
+        int color = ContextCompat.getColor(this,R.color.button);
+        gradientDrawable.setStroke(3, color);
+        layerDrawable.setDrawable(layerIndex, gradientDrawable);
+        mainConstraintLayout.setBackground(layerDrawable);
     }
 }
