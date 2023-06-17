@@ -241,6 +241,7 @@ public class AchieveConfirmation extends AppCompatActivity {
     }
 
     public void askPermission() {
+        selectImageFromLibrary();
         if (ContextCompat.checkSelfPermission(AchieveConfirmation.this,
                 Manifest.permission.READ_MEDIA_IMAGES)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -283,6 +284,21 @@ public class AchieveConfirmation extends AppCompatActivity {
             if (imageUri != null) {
                 try {
                     InputStream inputStream = getContentResolver().openInputStream(imageUri);
+
+                    if (inputStream != null) {
+                        long fileSizeInBytes = inputStream.available();
+                        long fileSizeInMegabytes = fileSizeInBytes / (1024 * 1024);
+                        //inputStream.close();
+
+                        System.out.println("fileSizeInMegabytes: " + fileSizeInMegabytes);
+
+                        if (fileSizeInMegabytes > 5) {
+                            // Файл превышает 5 мегабайт, выдаем ошибку
+                            Toast.makeText(this, "Выбранное изображение слишком большое. Максимальный размер - 5 МБ", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                    }
+
                     Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
                     profileImageView.setImageBitmap(bitmap);
 
@@ -328,6 +344,8 @@ public class AchieveConfirmation extends AppCompatActivity {
                     //uploadImageToStorage(bitmap, achieveName);
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
                 }
             }
         }

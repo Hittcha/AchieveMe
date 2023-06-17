@@ -18,5 +18,11 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
+    <string-array name="options_array">
+        <item>Опция 1</item>
+        <item>Опция 2</item>
+        <!-- Добавьте другие опции, если необходимо -->
+    </string-array>
+
 
 </resources>

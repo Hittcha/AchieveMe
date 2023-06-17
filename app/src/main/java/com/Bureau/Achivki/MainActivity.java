@@ -376,23 +376,15 @@ public class MainActivity extends AppCompatActivity {
                 }
                 favorites_icon_Button.setOnClickListener(v -> {
                     // Обработка нажатия кнопки
-
                     CollectionReference achievementsCollectionRef = FirebaseFirestore.getInstance().collection("Achievements");
-
-                   // CollectionReference usersCollectionRef = FirebaseFirestore.getInstance().collection("Users");
 
                     Query categoryQuery = achievementsCollectionRef.whereEqualTo("name", achname);
                     categoryQuery.get().addOnSuccessListener(querySnapshot -> {
                         for (DocumentSnapshot document : querySnapshot.getDocuments()) {
-                            //count++;
-
-                            // Получаем имя достижения из документа
-                            String achievementName = document.getString("name");
 
                             boolean proof = Boolean.TRUE.equals(document.getBoolean("proof"));
                             boolean collectable = false;
                             long achieveCount = 0;
-                            long doneCount = 0;
                             String countDesc = "";
                             long dayLimit = 0;
 
@@ -402,59 +394,41 @@ public class MainActivity extends AppCompatActivity {
                                 System.out.println("price " + achievePrice);
                             }
 
+                            Intent intent = new Intent(MainActivity.this, AchievementDescriptionActivity.class);
+
                             if (document.contains("collectable")) {
+                                System.out.println("collectable");
                                 collectable = Boolean.TRUE.equals(document.getBoolean("collectable"));
                                 achieveCount = document.getLong("count");
                                 dayLimit = document.getLong("dayLimit");
                                 countDesc = document.getString("countDesc");
-                            } else {
-                                // Обработка ситуации, когда поле отсутствует
+                                intent = new Intent(MainActivity.this, AchievementWithProgressActivity.class);
                             }
-
-
-                            Intent intent = new Intent(MainActivity.this, AchievementDescriptionActivity.class);
-
 
                             if (userAchievements.contains(achname)) {
                                 System.out.println("Достижение \"" + achname + "\" есть и у пользователя, и в категории " + category);
-                                Map<String, Object> achievementMap = (Map<String, Object>) userAchieveMap.get(achievementName);
-                                if (document.contains("collectable")) {
-                                    doneCount = (long) achievementMap.get("doneCount");
-
-                                    intent.putExtra("collectable", collectable);
-                                    intent.putExtra("dayLimit", dayLimit);
-                                    intent.putExtra("achieveCount", achieveCount);
-                                }
-
+                                intent.putExtra("dayLimit", dayLimit);
+                                intent.putExtra("achieveCount", achieveCount);
+                                intent.putExtra("collectable", collectable);
                                 intent.putExtra("Category_key", category);
                                 intent.putExtra("Achieve_key", achname);
                                 intent.putExtra("achievePrice", achievePrice);
                                 intent.putExtra("Is_Received", true);
                                 intent.putExtra("ProofNeeded", proof);
+                                intent.putExtra("isFavorites", true);
                                 startActivity(intent);
-
-                                System.out.println("doneCount"+ doneCount);
-                                //checkStatus(achievementName, categoryName, name, proof, collectable, achieveCount, doneCount, countDesc, dayLimit, achievePrice);
-                                //achievedone++;
                             }else{
-                                //createAchieveBlock(achievementName, "black", categoryName, name, proof, collectable, achieveCount, 0, countDesc, dayLimit, achievePrice);
-                                System.out.println("Нет " + achievementName);
-
-                                if (document.contains("collectable")) {
-
-                                    intent.putExtra("collectable", collectable);
-                                    intent.putExtra("dayLimit", dayLimit);
-                                    intent.putExtra("achieveCount", achieveCount);
-                                }
-
+                                intent.putExtra("dayLimit", dayLimit);
+                                intent.putExtra("achieveCount", achieveCount);
+                                intent.putExtra("collectable", collectable);
                                 intent.putExtra("Category_key", category);
                                 intent.putExtra("Achieve_key", achname);
                                 intent.putExtra("achievePrice", achievePrice);
                                 intent.putExtra("Is_Received", false);
                                 intent.putExtra("ProofNeeded", proof);
+                                intent.putExtra("isFavorites", true);
                                 startActivity(intent);
                             }
-
                         }
                     });
                 });

@@ -72,13 +72,14 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
         confirmButton = findViewById(R.id.confirmButton);
         TextView achieveText = findViewById(R.id.AchieveName);
 
-
         achieveText.setText(achieveName);
 
         boolean received = getIntent().getBooleanExtra("Is_Received", false);
         boolean proof = getIntent().getBooleanExtra("ProofNeeded", false);
         boolean favorite = getIntent().getBooleanExtra("isFavorites", false);
         //boolean collectable = getIntent().getBooleanExtra("collectable", false);
+
+        //System.out.println("proof1" + proof1);
 
 
         if (received) {
@@ -118,8 +119,34 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
                     }
                 });
         backButton.setOnClickListener(v -> {
-            setResult(RESULT_OK);
-            finish();
+            /*Intent intent = new Intent(this, MainActivity.class);
+            startActivityForResult(intent, 1);
+            Intent resultIntent = new Intent();
+            setResult(RESULT_OK, resultIntent);*/
+
+            /*Intent resultIntent = new Intent();
+            resultIntent.putExtra("Achieve_key", achieveName);
+            resultIntent.putExtra("Category_key", categoryName);
+            //resultIntent.putExtra("UpdatedAchieveName", name);
+            resultIntent.putExtra("proof", proof);
+            resultIntent.putExtra("collectable", false);
+            resultIntent.putExtra("achieveCount", 0);
+            resultIntent.putExtra("doneCount", 0);
+            resultIntent.putExtra("dayLimit", 0);
+            resultIntent.putExtra("achievePrice", 0);
+            resultIntent.putExtra("isFavorites", false);
+            setResult(RESULT_OK, resultIntent);
+            finish();*/
+
+            /*setResult(RESULT_OK);
+            finish();*/
+
+            Intent intent = new Intent(AchievementDescriptionActivity.this, AchieveCategoryListActivity.class);
+            intent.putExtra("Category_key", categoryName);
+            startActivity(intent);
+
+            //finish();
+            //finish();
         });
 
         confirmButton.setOnClickListener(v -> {
@@ -222,7 +249,6 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
         });
     }
 
-
     private void showButtonDel(){
         addButton.setVisibility(View.GONE); // скрываем кнопку
         delButton.setVisibility(View.VISIBLE); // отображаем кнопку
@@ -286,7 +312,6 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
         Intent intentFromMain = getIntent();
         String achieveName = intentFromMain.getStringExtra("Achieve_key");
         String categoryName = intentFromMain.getStringExtra("Category_key");
-
 
         mAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = mAuth.getCurrentUser();

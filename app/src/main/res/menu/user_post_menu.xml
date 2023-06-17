@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:theme="@style/MenuStyle1">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_item1"
+            android:title="Удалить пост" />
+        <item
+            android:id="@+id/nav_item2"
+            android:title="Пожаловаться" />
+    </group>
+</menu>
