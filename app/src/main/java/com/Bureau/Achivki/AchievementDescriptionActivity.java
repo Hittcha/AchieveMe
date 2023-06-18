@@ -53,6 +53,12 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //запрещаем закрывать окно нажав вне окна
+
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL,
+                WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL);
+
         setContentView(R.layout.activity_achievement_description);
 
         Intent intentFromMain = getIntent();
@@ -119,34 +125,11 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
                     }
                 });
         backButton.setOnClickListener(v -> {
-            /*Intent intent = new Intent(this, MainActivity.class);
-            startActivityForResult(intent, 1);
+
             Intent resultIntent = new Intent();
-            setResult(RESULT_OK, resultIntent);*/
-
-            /*Intent resultIntent = new Intent();
-            resultIntent.putExtra("Achieve_key", achieveName);
-            resultIntent.putExtra("Category_key", categoryName);
-            //resultIntent.putExtra("UpdatedAchieveName", name);
-            resultIntent.putExtra("proof", proof);
-            resultIntent.putExtra("collectable", false);
-            resultIntent.putExtra("achieveCount", 0);
-            resultIntent.putExtra("doneCount", 0);
-            resultIntent.putExtra("dayLimit", 0);
-            resultIntent.putExtra("achievePrice", 0);
-            resultIntent.putExtra("isFavorites", false);
             setResult(RESULT_OK, resultIntent);
-            finish();*/
+            finish();
 
-            /*setResult(RESULT_OK);
-            finish();*/
-
-            Intent intent = new Intent(AchievementDescriptionActivity.this, AchieveCategoryListActivity.class);
-            intent.putExtra("Category_key", categoryName);
-            startActivity(intent);
-
-            //finish();
-            //finish();
         });
 
         confirmButton.setOnClickListener(v -> {

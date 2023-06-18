@@ -26,13 +26,17 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 public class MyAchievementsActivity extends AppCompatActivity {
 
+    private static final int REQUEST_CODE = 10;
     private FirebaseAuth mAuth;
 
 
@@ -64,6 +68,8 @@ public class MyAchievementsActivity extends AppCompatActivity {
 
         List<String> achievementNames = new ArrayList<>();
 
+        createAchieveList(currentUser.getUid());
+
 
         userRef.get().addOnSuccessListener(documentSnapshot -> {
             Map<String, Object> userData = documentSnapshot.getData();
@@ -75,7 +81,7 @@ public class MyAchievementsActivity extends AppCompatActivity {
                 // Выводим данные достижения на экран
                 System.out.println("Achievement name: " + name);
                 System.out.println("Achievement description: " + desc);
-                createAchieveButton(name, desc);
+                //createAchieveButton(name, desc);
             }
             // Здесь можно продолжить работу с полученным Map достижений
         });
@@ -88,74 +94,161 @@ public class MyAchievementsActivity extends AppCompatActivity {
 
         ImageButton achieveListButton = findViewById(R.id.imageButtonAchieveList);
 
-        leaderListButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MyAchievementsActivity.this, LeaderBoardActivity.class);
-                startActivity(intent);
-            }
+        leaderListButton.setOnClickListener(v -> {
+            Intent intent = new Intent(MyAchievementsActivity.this, LeaderBoardActivity.class);
+            startActivity(intent);
         });
 
-        menuButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MyAchievementsActivity.this, MainActivity.class);
-                startActivity(intent);
-            }
+        menuButton.setOnClickListener(v -> {
+            Intent intent = new Intent(MyAchievementsActivity.this, MainActivity.class);
+            startActivity(intent);
         });
 
-        achieveListButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MyAchievementsActivity.this, AchieveListActivity.class);
-                startActivity(intent);
-            }
+        achieveListButton.setOnClickListener(v -> {
+            Intent intent = new Intent(MyAchievementsActivity.this, AchieveListActivity.class);
+            startActivity(intent);
         });
 
-        favoritesButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MyAchievementsActivity.this, ListOfFavoritesActivity.class);
-                startActivity(intent);
-            }
+        favoritesButton.setOnClickListener(v -> {
+            Intent intent = new Intent(MyAchievementsActivity.this, ListOfFavoritesActivity.class);
+            startActivity(intent);
         });
 
         ImageButton usersListButton = findViewById(R.id.imageButtonUsersList);
-        usersListButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MyAchievementsActivity.this, UsersListActivity.class);
-                //User user = new User("Имя пользователя", 1);
-                //intent.putExtra("user", user);
-                startActivity(intent);
-            }
+        usersListButton.setOnClickListener(v -> {
+            Intent intent = new Intent(MyAchievementsActivity.this, UsersListActivity.class);
+            //User user = new User("Имя пользователя", 1);
+            //intent.putExtra("user", user);
+            startActivity(intent);
         });
-
-
-        /*userRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    for (QueryDocumentSnapshot document : task.getResult()) {
-                        // Получаем map достижений пользователя
-                        Map<String, Object> achievements = (Map<String, Object>) document.get("achieve");
-                        // Обрабатываем каждое достижение
-                        for (Map.Entry<String, Object> entry : achievements.entrySet()) {
-                            Map<String, String> achievement = (Map<String, String>) entry.getValue();
-                            String name = achievement.get("name");
-                            String desc = achievement.get("desc");
-                            // Выводим данные достижения на экран
-                            System.out.println("Achievement name: " + name);
-                            System.out.println("Achievement description: " + desc);
-                        }
-                    }
-                } else {
-                    Log.d(TAG, "Error getting documents: ", task.getException());
-                }
-            }
-        });*/
     }
 
-    private void createAchieveButton(String achieveName, String achievementDesc) {
+    public void createAchieveList(String userId) {
+
+        Intent intentMain = getIntent();
+        String categoryName = intentMain.getStringExtra("Category_key");
+
+        // Получение ссылки на коллекцию пользователей
+        CollectionReference usersCollectionRef = FirebaseFirestore.getInstance().collection("Users");
+
+        // Получение ссылки на коллекцию достижений
+        CollectionReference achievementsCollectionRef = FirebaseFirestore.getInstance().collection("Achievements");
+
+        // Получение документа пользователя из коллекции Users
+        DocumentReference userDocRef = usersCollectionRef.document(userId);
+
+        userDocRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot userDocSnapshot = task.getResult();
+                if (userDocSnapshot.exists()) {
+                    // Получение Map UserAchieve пользователя
+                    Map<String, Object> userAchieveMap = (Map<String, Object>) userDocSnapshot.get("userAchievements");
+                    // Получение достижений пользователя
+                    Set<String> userAchievements = userAchieveMap.keySet();
+
+                    // Получение Map UserAchieve пользователя
+                    Map<String, Object> userFavoritesMap = (Map<String, Object>) userDocSnapshot.get("achieve");
+                    // Получение достижений пользователя
+                    Set<String> userFavorites = userFavoritesMap.keySet();
+
+                    for (Map.Entry<String, Object> entry : userFavoritesMap.entrySet()) {
+                        Map<String, Object> achievement = (Map<String, Object>) entry.getValue();
+                        String achieveName = (String) achievement.get("name");
+                        String desc = (String) achievement.get("desc");
+
+                        boolean collectable = false;
+                        long achieveCount = 0;
+                        long dayLimit = 0;
+
+                        if (achievement.containsKey("collectable")) {
+                            collectable = (boolean) achievement.get("collectable");
+
+                            achieveCount = (long) achievement.get("count");
+                            dayLimit = (long) achievement.get("dayLimit");
+                        }
+
+                        boolean proof = Boolean.TRUE.equals(achievement.get("proof"));
+                        if (proof) {
+
+                        } else {
+
+                        }
+
+                        //String color = "black";
+
+                        LinearLayout parentLayout = findViewById(R.id.scrollView);
+
+                        boolean received;
+                        ConstraintLayout blockLayout;
+
+                        if (userAchievements.contains(achieveName)) {
+
+                            System.out.println("Достижение \"" + achieveName + "\" есть и у пользователя, и в категории ");
+                            Boolean confirmed = (Boolean) userAchieveMap.get("confirmed");
+                            Boolean proofsended = (Boolean) userAchieveMap.get("proofsended");
+                            System.out.println("proofsended " + proofsended);
+
+                            if(Boolean.TRUE.equals(confirmed)){
+                                blockLayout = (ConstraintLayout) LayoutInflater.from(this)
+                                        .inflate(R.layout.block_achieve_green, parentLayout, false);
+                                received = true;
+                            }else if(Boolean.TRUE.equals(proofsended)){
+                                blockLayout = (ConstraintLayout) LayoutInflater.from(this)
+                                        .inflate(R.layout.block_achieve_yellow, parentLayout, false);
+                                received = true;
+                            }else{
+                                blockLayout = (ConstraintLayout) LayoutInflater.from(this)
+                                        .inflate(R.layout.block_achieve, parentLayout, false);
+                                received = false;
+                            }
+
+                        }else{
+                            System.out.println("Нет " + achieveName);
+                            blockLayout = (ConstraintLayout) LayoutInflater.from(this)
+                                    .inflate(R.layout.block_achieve, parentLayout, false);
+                            received = false;
+                        }
+
+                        TextView AchieveNameTextView = blockLayout.findViewById(R.id.achieveName_blockTextView);
+
+                        AchieveNameTextView.setText(achieveName);
+
+                        parentLayout.addView(blockLayout);
+
+                        boolean finalCollectable = collectable;
+                        long finalAchieveCount = achieveCount;
+                        long finalDayLimit = dayLimit;
+                        blockLayout.setOnClickListener(v -> {
+                            Intent intent;
+                            // Обработка нажатия кнопки
+                            if (finalCollectable) {
+                                intent = new Intent(this, AchievementWithProgressActivity.class);
+                            } else {
+                                intent = new Intent(this, AchievementDescriptionActivity.class);
+                            }
+                            intent.putExtra("Achieve_key", achieveName);
+                            intent.putExtra("Category_key", categoryName);
+                            intent.putExtra("Is_Received", received);
+                            intent.putExtra("desc", desc);
+                            intent.putExtra("ProofNeeded", proof);
+                            intent.putExtra("collectable", finalCollectable);
+                            intent.putExtra("achieveCount", finalAchieveCount);
+                            intent.putExtra("dayLimit", finalDayLimit);
+                            intent.putExtra("achievePrice", 0);
+                            intent.putExtra("isFavorites", false);
+                            //parentLayout.removeView(blockLayout);
+                            startActivityForResult(intent, REQUEST_CODE);
+
+                        });
+
+                    }
+
+                }
+            }
+        });
+    }
+
+    /*private void createAchieveButton(String achieveName, String achievementDesc) {
 
         LinearLayout parentLayout = findViewById(R.id.scrollView);
 
@@ -224,7 +317,7 @@ public class MyAchievementsActivity extends AppCompatActivity {
                 LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
         );
-    }
+    }*/
     protected void onPause() {
         super.onPause();
         overridePendingTransition(0, 0);

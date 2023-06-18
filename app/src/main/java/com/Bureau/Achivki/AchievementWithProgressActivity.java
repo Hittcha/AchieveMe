@@ -43,6 +43,12 @@ public class AchievementWithProgressActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //запрещаем закрывать окно нажав вне окна
+
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL,
+                WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL);
+
         setContentView(R.layout.activity_achievement_with_progress);
         Intent intentFromMain = getIntent();
         String achieveName = intentFromMain.getStringExtra("Achieve_key");
@@ -100,10 +106,9 @@ public class AchievementWithProgressActivity extends AppCompatActivity {
                     }
                 });
         backButton.setOnClickListener(v -> {
+            Intent resultIntent = new Intent();
+            setResult(RESULT_OK, resultIntent);
             finish();
-            /*Intent intent = new Intent(AchievementWithProgressActivity.this, AchieveCategoryListActivity.class);
-            intent.putExtra("Category_key", categoryName);
-            startActivity(intent);*/
         });
 
         confirmButton.setOnClickListener(v -> {
