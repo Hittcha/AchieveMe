@@ -33,7 +33,7 @@
         android:layout_height="100dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="4dp"
-        android:background="@drawable/image_1"
+        android:background="@drawable/favoritesachievebackground"
         android:elevation="0dp"
         android:scaleType="centerCrop"
         app:layout_constraintStart_toStartOf="parent"

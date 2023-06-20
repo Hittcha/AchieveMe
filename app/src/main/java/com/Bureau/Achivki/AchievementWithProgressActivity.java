@@ -2,17 +2,25 @@ package com.Bureau.Achivki;
 
 import static android.content.ContentValues.TAG;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
@@ -43,6 +51,12 @@ public class AchievementWithProgressActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //запрещаем закрывать окно нажав вне окна
+
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL,
+                WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL);
+
         setContentView(R.layout.activity_achievement_with_progress);
         Intent intentFromMain = getIntent();
         String achieveName = intentFromMain.getStringExtra("Achieve_key");
@@ -55,6 +69,8 @@ public class AchievementWithProgressActivity extends AppCompatActivity {
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         window.setStatusBarColor(ContextCompat.getColor(this, R.color.StatusBarColor));
 
+        ScrollView scrollView = findViewById(R.id.description_scrollview);
+
         /*androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("fdsf");*/
@@ -62,7 +78,7 @@ public class AchievementWithProgressActivity extends AppCompatActivity {
         addButton = findViewById(R.id.submit_button);
         delButton = findViewById(R.id.delete_button);
         ImageButton backButton = findViewById(R.id.BackButton);
-        ImageButton addFavorites = findViewById(R.id.addFavorites);
+        //ImageButton addFavorites = findViewById(R.id.addFavorites);
         descMessage = findViewById(R.id.desc_message);
         confirmButton = findViewById(R.id.confirmButton);
         TextView achieveText = findViewById(R.id.AchieveName);
@@ -73,6 +89,9 @@ public class AchievementWithProgressActivity extends AppCompatActivity {
         boolean received = getIntent().getBooleanExtra("Is_Received", false);
         boolean proof = getIntent().getBooleanExtra("ProofNeeded", false);
         boolean collectable = getIntent().getBooleanExtra("collectable", false);
+
+        boolean isUserAchieve = getIntent().getBooleanExtra("isUserAchieve", false);
+        String desc = intentFromMain.getStringExtra("desc");
 
 
         if (proof) {
@@ -86,24 +105,27 @@ public class AchievementWithProgressActivity extends AppCompatActivity {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         CollectionReference achievementsRef = db.collection("Achievements");
 
-        achievementsRef.whereEqualTo("name", achieveName).get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-                            String description = document.getString("desc");
+        if(isUserAchieve){
+            descMessage.setText(desc);
+        }else {
+            achievementsRef.whereEqualTo("name", achieveName).get()
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                String description = document.getString("desc");
 
-                            descMessage.setText(description);
+                                descMessage.setText(description);
 
+                            }
+                        } else {
+                            Log.d(TAG, "Ошибка получения достижений из Firestorm: ", task.getException());
                         }
-                    } else {
-                        Log.d(TAG, "Ошибка получения достижений из Firestorm: ", task.getException());
-                    }
-                });
+                    });
+        }
         backButton.setOnClickListener(v -> {
+            Intent resultIntent = new Intent();
+            setResult(RESULT_OK, resultIntent);
             finish();
-            /*Intent intent = new Intent(AchievementWithProgressActivity.this, AchieveCategoryListActivity.class);
-            intent.putExtra("Category_key", categoryName);
-            startActivity(intent);*/
         });
 
         confirmButton.setOnClickListener(v -> {
@@ -232,10 +254,18 @@ public class AchievementWithProgressActivity extends AppCompatActivity {
             }
         });
 
-        addFavorites.setOnClickListener(new View.OnClickListener() {
+        scrollView.setOnTouchListener(new View.OnTouchListener() {
+            private final GestureDetector gestureDetector = new GestureDetector(AchievementWithProgressActivity.this, new GestureDetector.SimpleOnGestureListener(){
+                @Override
+                public boolean onDoubleTap(@NonNull MotionEvent e) {
+                    addFavorites();
+                    return super.onDoubleTap(e);
+                }
+            });
             @Override
-            public void onClick(View v) {
-                addFavorites();
+            public boolean onTouch(View v, MotionEvent event) {
+                gestureDetector.onTouchEvent(event);
+                return true;
             }
         });
     }
@@ -329,29 +359,56 @@ public class AchievementWithProgressActivity extends AppCompatActivity {
         Intent intentFromMain = getIntent();
         String achieveName = intentFromMain.getStringExtra("Achieve_key");
         String categoryName = intentFromMain.getStringExtra("Category_key");
+        Long achievePrice = intentFromMain.getLongExtra("achievePrice", 0);
+        boolean collectable = getIntent().getBooleanExtra("collectable", false);
+        long achieveCount = intentFromMain.getLongExtra("achieveCount", 0);
+        String countDesc = intentFromMain.getStringExtra("countDesc");
 
-        mAuth = FirebaseAuth.getInstance();
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        DocumentReference usersRef = db.collection("Users").document(currentUser.getUid());
+        if(!categoryName.equals("userAchieve")) {
 
-
-        usersRef.get().addOnSuccessListener(documentSnapshot -> {
-            Map<String, Object> userAchievements = documentSnapshot.getData();
-
-            Map<String, Object> achieveMap = (Map<String, Object>) userAchievements.get("favorites");
-
-            // Создаем новый Map с информацией о новом достижении
-            Map<String, Object> newFav = new HashMap<>();
-            newFav.put("name", achieveName);
-            newFav.put("category", categoryName);
+            mAuth = FirebaseAuth.getInstance();
+            FirebaseUser currentUser = mAuth.getCurrentUser();
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            DocumentReference usersRef = db.collection("Users").document(currentUser.getUid());
 
 
-            // Сохраняем обновленный Map achieve в Firestore
-            achieveMap.put(achieveName, newFav);
-            userAchievements.put("favorites", achieveMap);
-            usersRef.set(userAchievements);
-            Toast.makeText(this, "Достижение добавлено в профиль", Toast.LENGTH_SHORT).show();
-        });
+            usersRef.get().addOnSuccessListener(documentSnapshot -> {
+                Map<String, Object> userAchievements = documentSnapshot.getData();
+
+                Map<String, Object> achieveMap = (Map<String, Object>) userAchievements.get("favorites");
+
+                // Создаем новый Map с информацией о новом достижении
+                Map<String, Object> newFav = new HashMap<>();
+                newFav.put("name", achieveName);
+                newFav.put("category", categoryName);
+                newFav.put("price", achievePrice);
+                newFav.put("collectable", collectable);
+                newFav.put("achieveCount", achieveCount);
+                newFav.put("countDesc", countDesc);
+
+
+                // Сохраняем обновленный Map achieve в Firestore
+                achieveMap.put(achieveName, newFav);
+                userAchievements.put("favorites", achieveMap);
+                usersRef.set(userAchievements);
+                Toast.makeText(this, "Достижение добавлено в профиль", Toast.LENGTH_SHORT).show();
+                changeStrokeColor();
+            });
+        }
+    }
+
+    private void changeStrokeColor() {
+        // изменения цвета рамки, при добавление в избранное
+        View mainConstraintLayout = findViewById(R.id.main_constraintLayout_description);
+        @SuppressLint("UseCompatLoadingForDrawables")
+        Drawable drawable = getDrawable(R.drawable.achievedescriptionbackground);
+        LayerDrawable layerDrawable = (LayerDrawable) drawable;
+        int layerIndex = 0;
+        Drawable layer = layerDrawable.getDrawable(layerIndex);
+        GradientDrawable gradientDrawable = (GradientDrawable) layer;
+        int color = ContextCompat.getColor(this,R.color.button);
+        gradientDrawable.setStroke(3, color);
+        layerDrawable.setDrawable(layerIndex, gradientDrawable);
+        mainConstraintLayout.setBackground(layerDrawable);
     }
 }

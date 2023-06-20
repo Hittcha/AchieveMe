@@ -19,7 +19,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,8 +40,8 @@ public class RegistrationActivity extends AppCompatActivity {
         userNameEditText = findViewById(R.id.ActivityReg_userName_edit_text);
 
         mAuth = FirebaseAuth.getInstance();
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference ref = database.getReference();
+        //FirebaseDatabase database = FirebaseDatabase.getInstance();
+        //DatabaseReference ref = database.getReference();
 
 
         registrationButton.setOnClickListener(v -> {
@@ -98,7 +97,7 @@ public class RegistrationActivity extends AppCompatActivity {
                                     }
                                 });
 
-                                Intent intent = new Intent(RegistrationActivity.this, MainActivity.class);
+                                Intent intent = new Intent(RegistrationActivity.this, StartActivity.class);
                                 startActivity(intent);
                             }else{
                                 Toast.makeText(RegistrationActivity.this, "Такой пользователь уже существует дюдя", Toast.LENGTH_SHORT).show();

@@ -7,6 +7,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,6 +26,9 @@ public class SuggestAchieveActivity extends AppCompatActivity {
 
     private TextView editTextTextAchieveName;
     private TextView editTextTextAchieveDesc;
+    private TextView editTextTextAchieveCategory;
+    private TextView editTextNumberMaxCount;
+    private TextView editTextNumberDayLimit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,8 +47,16 @@ public class SuggestAchieveActivity extends AppCompatActivity {
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_back_arrow);
         getSupportActionBar().setTitle("Создать свое достижение");
 
+
         editTextTextAchieveName = findViewById(R.id.editTextTextAchieveName);
+        editTextTextAchieveCategory = findViewById(R.id.editTextTextAchieveCategory);
         editTextTextAchieveDesc = findViewById(R.id.editTextTextAchieveDesc);
+
+        Switch collectableSwitch = findViewById(R.id.collectableSwitch);
+        Switch proofSwitch = findViewById(R.id.ProofSwitch);
+
+        editTextNumberMaxCount = findViewById(R.id.editTextNumberMaxCount);
+        editTextNumberDayLimit = findViewById(R.id.editTextNumberDayLimit);
 
         Button suggestButton = findViewById(R.id.suggestButton);
 
@@ -87,44 +99,90 @@ public class SuggestAchieveActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-
         suggestButton.setOnClickListener(v -> {
-            if (editTextTextAchieveName.getText().toString().isEmpty() || editTextTextAchieveDesc.getText().toString().isEmpty()){
-                Toast.makeText(SuggestAchieveActivity.this, "Empty field", Toast.LENGTH_SHORT).show();
-            }else{
 
-                //TextView nameTextView = findViewById(R.id.nameTextView);
-                String name = editTextTextAchieveName.getText().toString();
+            String name = editTextTextAchieveName.getText().toString();
+            String category = editTextTextAchieveCategory.getText().toString();
+            String desc = editTextTextAchieveDesc.getText().toString();
 
-                //TextView emailTextView = findViewById(R.id.emailEditText);
-                String desc = editTextTextAchieveDesc.getText().toString();
-                usersRef.get().addOnSuccessListener(documentSnapshot -> {
-                    Map<String, Object> userAchievements = documentSnapshot.getData();
-                    if (userAchievements == null) {
-                        // Если пользователь не существует, создаем новый документ
-                        userAchievements = new HashMap<>();
-                        userAchievements.put("achieve", new HashMap<>());
-                    } else if (!userAchievements.containsKey("achieve")) {
-                        // Если Map achieve не существует, создаем его
-                        userAchievements.put("achieve", new HashMap<>());
+            if (name.length() <= 4 || category.length() <= 4 || desc.length() <= 10) {
+                Toast.makeText(SuggestAchieveActivity.this, "Invalid input length", Toast.LENGTH_SHORT).show();
+            } else {
+
+                boolean isProofEnabled = proofSwitch.isChecked();
+                boolean isCollectableEnabled = collectableSwitch.isChecked();
+
+                final String count = editTextNumberMaxCount.getText().toString();
+                final String dayLimit = editTextNumberDayLimit.getText().toString();
+
+                if (isCollectableEnabled && count.isEmpty()) {
+                    Toast.makeText(SuggestAchieveActivity.this, "Count should not be empty", Toast.LENGTH_SHORT).show();
+                }else {
+
+                    if (!isValidTextOrNumber(name)) {
+                        Toast.makeText(SuggestAchieveActivity.this, "Invalid input: name", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    if (!isValidTextOrNumber(category)) {
+                        Toast.makeText(SuggestAchieveActivity.this, "Invalid input: category", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    if (!isValidTextOrNumber(desc)) {
+                        Toast.makeText(SuggestAchieveActivity.this, "Invalid input: desc", Toast.LENGTH_SHORT).show();
+                        return;
                     }
 
-                    // Получаем текущий Map achieve из документа пользователя
-                    Map<String, Object> achieveMap = (Map<String, Object>) userAchievements.get("achieve");
+                    usersRef.get().addOnSuccessListener(documentSnapshot -> {
+                        Map<String, Object> userAchievements = documentSnapshot.getData();
+                        if (userAchievements == null) {
+                            // Если пользователь не существует, создаем новый документ
+                            userAchievements = new HashMap<>();
+                            userAchievements.put("achieve", new HashMap<>());
+                        } else if (!userAchievements.containsKey("achieve")) {
+                            // Если Map achieve не существует, создаем его
+                            userAchievements.put("achieve", new HashMap<>());
+                        }
 
-                    // Создаем новый Map с информацией о новом достижении
-                    Map<String, Object> newAchieveMap = new HashMap<>();
-                    newAchieveMap.put("name", name);
-                    newAchieveMap.put("desc", desc);
+                        // Получаем текущий Map achieve из документа пользователя
+                        Map<String, Object> achieveMap = (Map<String, Object>) userAchievements.get("achieve");
 
-                    // Добавляем новое достижение в Map achieve пользователя
-                    achieveMap.put(name, newAchieveMap);
+                        // Проверяем количество элементов в achieveMap
+                        if (achieveMap.size() >= 10) {
+                            Toast.makeText(SuggestAchieveActivity.this, "Вы уже достигли максимального количества созданных достижений", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
 
-                    // Сохраняем обновленный Map achieve в Firestore
-                    userAchievements.put("achieve", achieveMap);
-                    usersRef.set(userAchievements);
-                    Toast.makeText(SuggestAchieveActivity.this, "Достижение добавлено", Toast.LENGTH_SHORT).show();
-                });
+                        // Создаем новый Map с информацией о новом достижении
+                        Map<String, Object> newAchieveMap = new HashMap<>();
+                        newAchieveMap.put("name", name);
+                        newAchieveMap.put("category", category);
+                        newAchieveMap.put("desc", desc);
+
+                        if (isProofEnabled) {
+                            newAchieveMap.put("proof", true);
+                        } else {
+                            newAchieveMap.put("proof", false);
+                        }
+
+                        if (isCollectableEnabled) {
+                            newAchieveMap.put("collectable", true);
+                            newAchieveMap.put("count", Long.parseLong(count));
+                            if (dayLimit.isEmpty()) {
+                                newAchieveMap.put("dayLimit", Long.parseLong(count));
+                            }else {
+                                newAchieveMap.put("dayLimit", Long.parseLong(dayLimit));
+                            }
+                        }
+
+                        // Добавляем новое достижение в Map achieve пользователя
+                        achieveMap.put(name, newAchieveMap);
+
+                        // Сохраняем обновленный Map achieve в Firestore
+                        userAchievements.put("achieve", achieveMap);
+                        usersRef.set(userAchievements);
+                        Toast.makeText(SuggestAchieveActivity.this, "Достижение добавлено", Toast.LENGTH_SHORT).show();
+                    });
+                }
             }
         });
     }
@@ -134,5 +192,10 @@ public class SuggestAchieveActivity extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private boolean isValidTextOrNumber(String input) {
+        // Проверка наличия цифр или букв в строке
+        return input.matches(".*\\d.*") || input.matches(".*[a-zA-Zа-яА-Я].*");
     }
 }
