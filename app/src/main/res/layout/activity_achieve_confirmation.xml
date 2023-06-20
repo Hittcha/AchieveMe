@@ -61,46 +61,99 @@
 
     </LinearLayout>
 
+    <TextView
+        android:id="@+id/confirm_top_text"
+        style="@style/leaderText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Добавьте изображение, подтверждающее получение достижения"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="20dp"
+        android:gravity="center"/>
+
+    <Button
+        android:id="@+id/achive_confirmation_information_button"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginTop="2dp"
+        android:background="@drawable/information_button"
+        android:fontFamily="monospace"
+        android:text="i"
+        android:textSize="20sp"
+        android:textColor="@color/hintColor"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@id/image_view"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/confirm_top_text" />
+
+    <TextView
+        android:id="@+id/information"
+        android:layout_width="240dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/edittext_main"
+        android:paddingStart="6dp"
+        android:paddingTop="10dp"
+        android:paddingEnd="6dp"
+        android:paddingBottom="6dp"
+        android:text="@string/information_photo"
+        android:textColor="@color/lowWhite"
+        android:textSize="24sp"
+        android:translationZ="1dp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/group_2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.941"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.261"
+        tools:visibility="visible" />
+
     <ImageView
         android:id="@+id/image_view"
-        android:layout_width="247dp"
-        android:layout_height="315dp"
-        android:layout_marginTop="16dp"
-        android:background="#1D1D1D"
+        android:layout_width="350dp"
+        android:layout_height="350dp"
+        android:background="@color/Primary_500"
         android:cropToPadding="true"
         android:scaleType="centerCrop"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/confirm_top_text"
+        app:layout_constraintVertical_bias="0.735"
+        app:layout_constraintBottom_toTopOf="@id/guideline_confirme"/>
 
     <Button
+        style="@style/button_style"
+        android:textSize="20sp"
         android:id="@+id/button_choose_image"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="228dp"
         android:text="Выбрать изображение"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintVertical_chainStyle="packed"
+        app:layout_constraintBottom_toTopOf="@id/button2"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/image_view"
-        app:layout_constraintVertical_bias="0.811" />
+        app:layout_constraintTop_toBottomOf="@id/guideline_confirme" />
 
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="220dp"
-        android:layout_height="206dp"
-        app:layout_constraintBottom_toTopOf="@+id/button_choose_image"
+        android:layout_width="350dp"
+        android:layout_height="350dp"
+        android:background="@color/Primary_500"
+        android:cropToPadding="true"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toTopOf="@id/guideline_confirme"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/confirm_top_text"
         app:layout_constraintVertical_bias="0.735"
-        tools:srcCompat="@tools:sample/avatars" />
+         />
 
     <Button
+        style="@style/button_style"
+        android:textSize="20sp"
         android:id="@+id/button2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -108,6 +161,15 @@
         android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button_choose_image" />
+        app:layout_constraintTop_toBottomOf="@+id/button_choose_image"
+        app:layout_constraintBottom_toTopOf="@id/group_2"
+        tools:visibility="visible"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_confirme"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.69" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

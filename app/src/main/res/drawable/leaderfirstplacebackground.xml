@@ -1,15 +1,8 @@
-<vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="290dp"
-    android:height="87dp"
-    android:viewportWidth="290"
-    android:viewportHeight="87">
-    <group>
-        <path
-            android:fillColor="#E8FFC700"
-            android:pathData="M4 10c0-5.52 4.48-10 10-10h262c5.52 0 10 4.48 10 10v59c0 5.52-4.48 10-10 10h-262c-5.52 0-10-4.48-10-10z"/>
-        <path
-            android:strokeColor="#FF000000"
-            android:strokeWidth="1"
-            android:pathData="M4.5 10c0-5.25 4.25-9.5 9.5-9.5h262c5.25 0 9.5 4.25 9.5 9.5v59c0 5.25-4.25 9.5-9.5 9.5h-262c-5.25 0-9.5-4.25-9.5-9.5z"/>
-    </group>
-</vector>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+
+    android:shape="rectangle">
+    <gradient android:type="linear"
+        android:startColor="#977806"
+        android:endColor="#FCD92F"/>
+    <corners android:radius="40dp"/>
+</shape>

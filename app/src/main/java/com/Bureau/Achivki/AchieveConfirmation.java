@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -67,9 +68,9 @@ public class AchieveConfirmation extends AppCompatActivity {
     private String achieveName;
     long dayLimit;
 
-
     private static final int PERMISSION_REQUEST_CODE = 100;
-
+    private TextView informationText;
+    boolean windowIsOpen = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -102,6 +103,22 @@ public class AchieveConfirmation extends AppCompatActivity {
         profileImageView = findViewById(R.id.image_view);
         selectImageButton = findViewById(R.id.button_choose_image);
 
+        Button informationButton = findViewById(R.id.achive_confirmation_information_button);
+        informationText = findViewById(R.id.information);
+
+
+        informationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (windowIsOpen) {
+                    closeWindow();
+                    windowIsOpen = false;
+                } else {
+                    openWindow();
+                    windowIsOpen = true;
+                }
+            }
+        });
 
         selectImageButton.setOnClickListener(v -> {
 
@@ -668,5 +685,11 @@ public class AchieveConfirmation extends AppCompatActivity {
             e.printStackTrace();
         }
         return false;
+    }
+    private void closeWindow() {
+        informationText.setVisibility(View.INVISIBLE);
+    }
+    private void openWindow(){
+        informationText.setVisibility(View.VISIBLE);
     }
 }
