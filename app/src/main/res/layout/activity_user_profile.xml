@@ -170,9 +170,8 @@
                         android:layout_height="wrap_content"
                         android:text="0"
                         android:textColor="@color/white"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.106"
-                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="@+id/scoreTextView"
+                        app:layout_constraintStart_toStartOf="@+id/scoreTextView"
                         app:layout_constraintTop_toBottomOf="@+id/scoreTextView" />
 
                     <Button
@@ -226,9 +225,8 @@
                         android:layout_height="wrap_content"
                         android:text="0"
                         android:textColor="@color/white"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.699"
-                        app:layout_constraintStart_toEndOf="@+id/subsCountTextView"
+                        app:layout_constraintEnd_toEndOf="@+id/friendsList"
+                        app:layout_constraintStart_toStartOf="@+id/friendsList"
                         app:layout_constraintTop_toBottomOf="@+id/friendsList" />
 
                     <TextView
@@ -237,8 +235,8 @@
                         android:layout_height="wrap_content"
                         android:text="0"
                         android:textColor="@color/white"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="@+id/subscriptionsList"
+                        app:layout_constraintStart_toStartOf="@+id/subscriptionsList"
                         app:layout_constraintTop_toBottomOf="@+id/subscriptionsList" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>

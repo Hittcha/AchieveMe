@@ -37,9 +37,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class AchieveListActivity extends AppCompatActivity {
-
-    //private int buttonCount = 0;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,8 +57,6 @@ public class AchieveListActivity extends AppCompatActivity {
         getSupportActionBar().setTitle("Категории");
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-        //List<String> categories = new ArrayList<>();
 
         CollectionReference achievementsRef = db.collection("Achievements");
 

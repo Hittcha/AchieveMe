@@ -8,7 +8,6 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
-import android.provider.CalendarContract;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -23,7 +22,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.core.content.ContextCompat;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -93,6 +91,7 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
         System.out.println("desc" + desc);
 
         System.out.println("achievePrice " + achievePrice);
+        System.out.println("-------isFavorites " + favorite);
 
 
         if (received) {
@@ -109,6 +108,8 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
 
         if (favorite) {
             changeStrokeColor();
+        }else{
+            changeStrokeColorBack();
         }
 
         System.out.println(achieveName);
@@ -280,8 +281,6 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
             standardPrice = achievePrice;
         }
 
-        //System.out.println("achievePrice: " + achievePrice);
-
         DocumentReference userDocRef = usersRef.document(uid);
         userDocRef.update("score", FieldValue.increment(standardPrice))
                 .addOnSuccessListener(aVoid -> {
@@ -365,6 +364,20 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
         Drawable layer = layerDrawable.getDrawable(layerIndex);
         GradientDrawable gradientDrawable = (GradientDrawable) layer;
         int color = ContextCompat.getColor(this,R.color.button);
+        gradientDrawable.setStroke(3, color);
+        layerDrawable.setDrawable(layerIndex, gradientDrawable);
+        mainConstraintLayout.setBackground(layerDrawable);
+    }
+    private void changeStrokeColorBack() {
+        // изменения цвета рамки, при добавление в избранное
+        View mainConstraintLayout = findViewById(R.id.main_constraintLayout_description);
+        @SuppressLint("UseCompatLoadingForDrawables")
+        Drawable drawable = getDrawable(R.drawable.achievedescriptionbackground);
+        LayerDrawable layerDrawable = (LayerDrawable) drawable;
+        int layerIndex = 0;
+        Drawable layer = layerDrawable.getDrawable(layerIndex);
+        GradientDrawable gradientDrawable = (GradientDrawable) layer;
+        int color = ContextCompat.getColor(this,R.color.black);
         gradientDrawable.setStroke(3, color);
         layerDrawable.setDrawable(layerIndex, gradientDrawable);
         mainConstraintLayout.setBackground(layerDrawable);
