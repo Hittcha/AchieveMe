@@ -1,11 +1,8 @@
 package com.Bureau.Achivki;
 
-import static android.content.ContentValues.TAG;
-
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -13,6 +10,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,23 +20,23 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class ListOfFavoritesActivity extends AppCompatActivity {
+
+    private static final int REQUEST_CODE = 10;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -155,75 +153,145 @@ public class ListOfFavoritesActivity extends AppCompatActivity {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference userRef = db.collection("Users").document(currentUser.getUid());
 
-        //List<String> achievementNames = new ArrayList<>();
-
         userRef.get().addOnSuccessListener(documentSnapshot -> {
             Map<String, Object> userData = documentSnapshot.getData();
             Map<String, Object> fav = (Map<String, Object>) userData.get("favorites");
 
+            Map<String, Object> userAchieveMap = (Map<String, Object>) userData.get("userAchievements");
+
+            // Получение достижений пользователя
+            Set<String> userAchievements = userAchieveMap.keySet();
+
             for (Map.Entry<String, Object> entry : fav.entrySet()) {
                 Map<String, Object> achievement = (Map<String, Object>) entry.getValue();
+                //Map<String, Object> achievementMap = (Map<String, Object>) userAchieveMap.get(achieveName);
 
-                String achname = (String) achievement.get("name");
+
+                String achieveName = (String) achievement.get("name");
                 String category = (String) achievement.get("category");
+                String desc = (String) achievement.get("desc");
 
-                CollectionReference achievementCollectionRef = FirebaseFirestore.getInstance().collection("Achievements");
+                System.out.println("desc " + desc);
+                System.out.println("achieveName " + achieveName);
 
-                ConstraintLayout blockLayout = (ConstraintLayout) LayoutInflater.from(ListOfFavoritesActivity.this)
-                        .inflate(R.layout.block_layout, parentLayout, false);
+                boolean collectable = false;
+                long achieveCount = 0;
+                long dayLimit = 0;
+                long doneCount = 0;
+                String countDesc = "";
 
-                TextView usernameTextView = blockLayout.findViewById(R.id.username);
-                TextView balanceTextView = blockLayout.findViewById(R.id.balance);
+
+                if (achievement.containsKey("collectable")) {
+                    collectable = (boolean) achievement.get("collectable");
+                    achieveCount = (long) achievement.get("achieveCount");
+                   //dayLimit = (long) achievement.get("dayLimit");
+
+                    countDesc = (String) achievement.get("countDesc");
+                    System.out.println("collectable " + collectable);
+                } else {
+                    // Обработка ситуации, когда поле отсутствует
+                    System.out.println("not collectable " + collectable);
+                }
+
+                boolean proof = Boolean.TRUE.equals(achievement.get("proof"));
+                if (proof) {
+
+                } else {
+
+                }
+
+                long achievePrice = 0;
+                if (achievement.containsKey("price")) {
+                    achievePrice = (long) achievement.get("price");
+                    System.out.println("price " + achievePrice);
+                }
 
 
-                // Задайте текст для TextView в соответствии с данными пользователя
+                ConstraintLayout blockLayout;
+                boolean received;
 
-                Query query = achievementCollectionRef.whereEqualTo("name", achname);
+                if (userAchievements.contains(achieveName)) {
 
-                query.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                    @Override
-                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                        String achievementDesc = null;
-                        for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots.getDocuments()) {
-                            achievementDesc = documentSnapshot.getString("desc");
+                    Map<String, Object> achievementMap = (Map<String, Object>) userAchieveMap.get(achieveName);
+
+                    System.out.println("Достижение \"" + achieveName + "\" есть и у пользователя, и в категории ");
+                    Boolean confirmed = (Boolean) achievementMap.get("confirmed");
+                    Boolean proofsended = (Boolean) achievementMap.get("proofsended");
+                    System.out.println("proofsended " + proofsended);
+
+                    if(Boolean.TRUE.equals(confirmed)){
+                        blockLayout = (ConstraintLayout) LayoutInflater.from(this)
+                                .inflate(R.layout.block_achieve_green, parentLayout, false);
+                        received = true;
+                        if (achievementMap.containsKey("doneCount")) {
+                            doneCount = (long) achievementMap.get("doneCount");
                         }
-
-                        balanceTextView.setText(achievementDesc);
+                    }else if(Boolean.TRUE.equals(proofsended)){
+                        blockLayout = (ConstraintLayout) LayoutInflater.from(this)
+                                .inflate(R.layout.block_achieve_yellow, parentLayout, false);
+                        received = true;
+                        if (achievementMap.containsKey("doneCount")) {
+                            doneCount = (long) achievementMap.get("doneCount");
+                        }
+                    }else{
+                        blockLayout = (ConstraintLayout) LayoutInflater.from(this)
+                                .inflate(R.layout.block_achieve, parentLayout, false);
+                        received = false;
                     }
+
+                }else{
+                    System.out.println("Нет " + achieveName);
+                    blockLayout = (ConstraintLayout) LayoutInflater.from(this)
+                            .inflate(R.layout.block_achieve, parentLayout, false);
+                    received = false;
+                }
+
+                if(collectable){
+                    ProgressBar progress = blockLayout.findViewById(R.id.achieveProgressBar);
+                    TextView progressDesc = blockLayout.findViewById(R.id.countDesc);
+                    progress.setVisibility(View.VISIBLE);
+                    progressDesc.setVisibility(View.VISIBLE);
+                    progress.setMax((int)achieveCount);
+                    progress.setProgress((int) doneCount);
+                    progressDesc.setText(countDesc + ": " + (int) doneCount + " из " + (int) achieveCount);
+                }
+
+                TextView AchieveNameTextView = blockLayout.findViewById(R.id.achieveName_blockTextView);
+
+                AchieveNameTextView.setText(achieveName);
+
+                blockLayout.setOnClickListener(v -> {
+                    checkAchieve(achieveName, received);
                 });
 
-                ImageButton deleteAch = blockLayout.findViewById(R.id.deleteAch);
+                ImageButton deleteAch = blockLayout.findViewById(R.id.delete_achieve_button);
 
-                deleteAch.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
+                deleteAch.setVisibility(View.VISIBLE);
+                deleteAch.setOnClickListener(v -> {
 
-                        FirebaseAuth mAuth = FirebaseAuth.getInstance();
-                        FirebaseUser currentUser = mAuth.getCurrentUser();
-                        FirebaseFirestore db = FirebaseFirestore.getInstance();
-                        DocumentReference usersRef = db.collection("Users").document(currentUser.getUid());
+                    FirebaseAuth mAuth1 = FirebaseAuth.getInstance();
+                    FirebaseUser currentUser1 = mAuth1.getCurrentUser();
+                    FirebaseFirestore db1 = FirebaseFirestore.getInstance();
+                    DocumentReference usersRef = db1.collection("Users").document(currentUser1.getUid());
 
-                        usersRef.get().addOnSuccessListener(documentSnapshot -> {
-                            Map<String, Object> userAchievements = documentSnapshot.getData();
+                    usersRef.get().addOnSuccessListener(documentSnapshot1 -> {
+                        Map<String, Object> userAchievements1 = documentSnapshot1.getData();
 
-                            Map<String, Object> achieveMap = (Map<String, Object>) userAchievements.get("favorites");
+                        Map<String, Object> achieveMap = (Map<String, Object>) userAchievements1.get("favorites");
 
-                            achieveMap.remove(achname);
+                        achieveMap.remove(achieveName);
 
-                            userAchievements.put("favorites", achieveMap);
+                        userAchievements1.put("favorites", achieveMap);
 
-                            usersRef.set(userAchievements);
+                        usersRef.set(userAchievements1);
 
-                            //recreate();
+                        //recreate();
 
-                            parentLayout.removeView(blockLayout);
+                        parentLayout.removeView(blockLayout);
 
-                            Toast.makeText(ListOfFavoritesActivity.this, "Достижение удалено", Toast.LENGTH_SHORT).show();
-                        });
-                    }
+                        Toast.makeText(ListOfFavoritesActivity.this, "Достижение удалено", Toast.LENGTH_SHORT).show();
+                    });
                 });
-
-                usernameTextView.setText(achname);
 
                 parentLayout.addView(blockLayout);
 
@@ -235,86 +303,74 @@ public class ListOfFavoritesActivity extends AppCompatActivity {
         });
     }
 
-    /*private void createAchieveButton(ArrayList<String> achieveName, String userName) {
+    public void checkAchieve(String achieveName, boolean received){
 
-        for (String name : achieveName) {
+        Intent intentMain = getIntent();
+        String categoryName = intentMain.getStringExtra("Category_key");
 
-            LinearLayout parentLayout = findViewById(R.id.scrollView);
+        // Получение ссылки на коллекцию пользователей
+        //CollectionReference usersCollectionRef = FirebaseFirestore.getInstance().collection("Users");
 
-            //Button btnAdd = findViewById(R.id.btn_add);
+        // Получение ссылки на коллекцию достижений
+        CollectionReference achievementsCollectionRef = FirebaseFirestore.getInstance().collection("Achievements");
 
-            CollectionReference achievementCollectionRef = FirebaseFirestore.getInstance().collection("Achievements");
+        Query categoryQuery = achievementsCollectionRef.whereEqualTo("name", achieveName);
+        categoryQuery.get().addOnSuccessListener(querySnapshot -> {
+            for (DocumentSnapshot document : querySnapshot.getDocuments()) {
+                // Получаем имя достижения из документа
+                String achievementName = document.getString("name");
 
-            ConstraintLayout blockLayout = (ConstraintLayout) LayoutInflater.from(ListOfFavoritesActivity.this)
-                    .inflate(R.layout.block_layout, parentLayout, false);
+                boolean proof = Boolean.TRUE.equals(document.getBoolean("proof"));
+                boolean collectable = false;
+                long achieveCount = 0;
+                long doneCount = 0;
+                String countDesc = "";
+                long dayLimit = 0;
 
-            TextView usernameTextView = blockLayout.findViewById(R.id.username);
-            TextView balanceTextView = blockLayout.findViewById(R.id.balance);
-            //String achievementDesc;
-
-            // Задайте текст для TextView в соответствии с данными пользователя
-
-            Query query = achievementCollectionRef.whereEqualTo("name", name);
-
-            query.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                @Override
-                public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                    String achievementDesc = null;
-                    for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots.getDocuments()) {
-                        achievementDesc = documentSnapshot.getString("desc");
-                    }
-
-                    balanceTextView.setText(achievementDesc);
+                if (document.contains("collectable")) {
+                    collectable = Boolean.TRUE.equals(document.getBoolean("collectable"));
+                    achieveCount = document.getLong("count");
+                    dayLimit = document.getLong("dayLimit");
+                    countDesc = document.getString("countDesc");
+                    System.out.println("collectable " + collectable);
+                } else {
+                    // Обработка ситуации, когда поле отсутствует
+                    System.out.println("not collectable " + collectable);
                 }
-            });
 
-            ImageButton deleteAch = blockLayout.findViewById(R.id.deleteAch);
-
-            deleteAch.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-
-                    FirebaseFirestore db = FirebaseFirestore.getInstance();
-                    CollectionReference usersRef = db.collection("Users");
-
-                    // Найти пользователя с именем "Олег"
-                    Query query = usersRef.whereEqualTo("name", userName);
-                    query.get().addOnCompleteListener(task -> {
-                        if (task.isSuccessful()) {
-                            QuerySnapshot querySnapshot = task.getResult();
-                            for (DocumentSnapshot documentSnapshot : querySnapshot.getDocuments()) {
-                                // Получить ID пользователя
-                                String userId = documentSnapshot.getId();
-                                // Обновить массив ачивок пользователя
-                                usersRef.document(userId).update("favorites", FieldValue.arrayRemove(name))
-                                        .addOnSuccessListener(aVoid -> {
-                                            // Ачивка добавлена успешно
-                                            Log.d(TAG, "удалено у пользователя " + userName);
-                                            recreate();
-                                        })
-                                        .addOnFailureListener(e -> {
-                                            // Обработка ошибок
-                                            Log.w(TAG, "Ошибка при добавлении ачивки пользователю: " + userName, e);
-                                        });
-                            }
-                        } else {
-                            // Обработка ошибок
-                            Log.w(TAG, "Ошибка при поиске пользователя Gena", task.getException());
-                        }
-                    });
+                long achievePrice = 0;
+                if (document.contains("price")) {
+                    achievePrice = document.getLong("price");
+                    System.out.println("price " + achievePrice);
                 }
-            });
 
-            usernameTextView.setText(name);
+                boolean finalCollectable = collectable;
+                long finalAchievePrice = achievePrice;
+                long finalDayLimit = dayLimit;
+                long finalAchieveCount = achieveCount;
 
-            parentLayout.addView(blockLayout);
+                Intent intent;
+                // Обработка нажатия кнопки
+                if (finalCollectable) {
+                    intent = new Intent(this, AchievementWithProgressActivity.class);
+                } else {
+                    intent = new Intent(this, AchievementDescriptionActivity.class);
+                }
+                intent.putExtra("Achieve_key", achievementName);
+                intent.putExtra("Category_key", categoryName);
+                intent.putExtra("Is_Received", received);
+                intent.putExtra("ProofNeeded", proof);
+                intent.putExtra("collectable", finalCollectable);
+                intent.putExtra("achieveCount", finalAchieveCount);
+                intent.putExtra("dayLimit", finalDayLimit);
+                intent.putExtra("achievePrice", finalAchievePrice);
+                intent.putExtra("isFavorites", true);
+                intent.putExtra("isUserAchieve", false);
+                startActivityForResult(intent, REQUEST_CODE);
+            }
+        });
 
-            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT
-            );
-        }
-    }*/
+    }
     protected void onPause() {
         super.onPause();
         overridePendingTransition(0, 0);
@@ -329,5 +385,31 @@ public class ListOfFavoritesActivity extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
+
+            //перезагружаем список ачивок и обновляем счетсчик
+
+            LinearLayout parentLayout = findViewById(R.id.scrollView);
+            parentLayout.removeAllViews();
+
+            FirebaseAuth mAuth = FirebaseAuth.getInstance();
+            FirebaseUser currentUser = mAuth.getCurrentUser();
+
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            DocumentReference mAuthDocRef = db.collection("Users").document(currentUser.getUid());
+
+            mAuthDocRef.get().addOnSuccessListener(documentSnapshot -> {
+                if (documentSnapshot.exists()) {
+                    createAchieveButton();
+                } else {
+                    // документ не найден
+                }
+            });
+        }
     }
 }

@@ -3,17 +3,17 @@ package com.Bureau.Achivki;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -33,7 +33,6 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -67,9 +66,9 @@ public class AchieveConfirmation extends AppCompatActivity {
     private String achieveName;
     long dayLimit;
 
-
     private static final int PERMISSION_REQUEST_CODE = 100;
-
+    private TextView informationText;
+    boolean windowIsOpen = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -102,6 +101,22 @@ public class AchieveConfirmation extends AppCompatActivity {
         profileImageView = findViewById(R.id.image_view);
         selectImageButton = findViewById(R.id.button_choose_image);
 
+        Button informationButton = findViewById(R.id.achive_confirmation_information_button);
+        informationText = findViewById(R.id.information);
+
+
+        informationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (windowIsOpen) {
+                    closeWindow();
+                    windowIsOpen = false;
+                } else {
+                    openWindow();
+                    windowIsOpen = true;
+                }
+            }
+        });
 
         selectImageButton.setOnClickListener(v -> {
 
@@ -153,11 +168,8 @@ public class AchieveConfirmation extends AppCompatActivity {
                                 }
                             }else{
                                 System.out.println("Дни не совпадают.");
-                                //selectImageFromLibrary();
                                 askPermission();
                             }
-                            //existingAchieveMap.put("doneCount", doneCount + 1);
-                            //existingAchieveMap.put("time", currentTime);
                         }
                     }else{
                         //selectImageFromLibrary();
@@ -241,26 +253,22 @@ public class AchieveConfirmation extends AppCompatActivity {
     }
 
     public void askPermission() {
-        selectImageFromLibrary();
-        if (ContextCompat.checkSelfPermission(AchieveConfirmation.this,
-                Manifest.permission.READ_MEDIA_IMAGES)
-                != PackageManager.PERMISSION_GRANTED) {
+        if (Build.VERSION.SDK_INT >= 33) {
+            if (ContextCompat.checkSelfPermission(this,
+                    Manifest.permission.READ_MEDIA_IMAGES)
+                    != PackageManager.PERMISSION_GRANTED) {
 
-            // Если разрешения нет, запрашиваем его у пользователя
-            ActivityCompat.requestPermissions(AchieveConfirmation.this,
-                    new String[]{Manifest.permission.READ_MEDIA_IMAGES},
-                    PERMISSION_REQUEST_CODE);
-
-            //ActivityCompat.requestPermissions(UserProfile.this,
-            //       new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-            //       PERMISSION_REQUEST_CODE);
-
-        } else {
-            // Если разрешение есть, вызываем окно выбора фотографий
+                // Если разрешения нет, запрашиваем его у пользователя
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.READ_MEDIA_IMAGES},
+                        PERMISSION_REQUEST_CODE);
+            } else {
+                // Если разрешение есть, вызываем окно выбора фотографий
+                selectImageFromLibrary();
+            }
+        }else{
             selectImageFromLibrary();
-            //loadPhotosFromGallery();
         }
-        //selectImageFromLibrary();*/
     }
 
     public void selectImageFromLibrary() {
@@ -668,5 +676,11 @@ public class AchieveConfirmation extends AppCompatActivity {
             e.printStackTrace();
         }
         return false;
+    }
+    private void closeWindow() {
+        informationText.setVisibility(View.INVISIBLE);
+    }
+    private void openWindow(){
+        informationText.setVisibility(View.VISIBLE);
     }
 }

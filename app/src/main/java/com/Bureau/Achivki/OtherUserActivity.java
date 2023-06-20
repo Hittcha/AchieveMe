@@ -42,6 +42,7 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
@@ -53,6 +54,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class OtherUserActivity extends AppCompatActivity {
     private FirebaseFirestore db;
@@ -151,7 +153,7 @@ public class OtherUserActivity extends AppCompatActivity {
                         userScoreText.setText("" + userScore);
                         //userScore.
                         // использовать имя пользователя
-                        listoffavorites(otherUserName, userToken);
+                        //listoffavorites(otherUserName, userToken);
                         setImage(profileImageUrl);
 
 
@@ -409,134 +411,6 @@ public class OtherUserActivity extends AppCompatActivity {
         });
     }
 
-    private void listoffavorites(String name, String id) {
-        CollectionReference favoritesRef = db.collection("Users");
-
-        LinearLayout parentLayout = findViewById(R.id.favoritesLinearLayout);
-
-        AssetManager assetManager = getAssets();
-
-        FirebaseAuth mAuth = FirebaseAuth.getInstance();
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        DocumentReference userRef = db.collection("Users").document(id);
-
-        //List<String> achievementNames = new ArrayList<>();
-
-        userRef.get().addOnSuccessListener(documentSnapshot -> {
-            Map<String, Object> userData = documentSnapshot.getData();
-            Map<String, Object> fav = (Map<String, Object>) userData.get("favorites");
-
-            for (Map.Entry<String, Object> entry : fav.entrySet()) {
-                Map<String, Object> achievement = (Map<String, Object>) entry.getValue();
-
-                String achname = (String) achievement.get("name");
-                String category = (String) achievement.get("category");
-
-                ConstraintLayout blockLayout = (ConstraintLayout) LayoutInflater.from(OtherUserActivity.this)
-                        .inflate(R.layout.block_favorites_icon, parentLayout, false);
-
-                TextView favorites_name_TextView = blockLayout.findViewById(R.id.favorites_name_TextView);
-
-                Button favorites_icon_Button = blockLayout.findViewById(R.id.favorites_icon_Button);
-
-                favorites_name_TextView.setText(achname);
-
-                parentLayout.addView(blockLayout);
-
-                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.WRAP_CONTENT,
-                        LinearLayout.LayoutParams.WRAP_CONTENT
-                );
-
-                HorizontalScrollView scroll = findViewById(R.id.favoritesScrollView);
-                if (achievement.isEmpty()) {
-                    scroll.setVisibility(View.GONE);
-                }else{
-                    scroll.setVisibility(View.VISIBLE);
-                }
-
-                layoutParams.setMargins(20, 20, 20, 20);
-
-                switch (category) {
-                    case "Красноярск":
-                        try {
-                            InputStream inputStream = getAssets().open("favorites/krasnoyarsk_favorites.png");
-                            Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-                            RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), bitmap);
-                            roundedBitmapDrawable.setCornerRadius(20); // Здесь можно указать радиус закругления
-                            favorites_icon_Button.setBackground(roundedBitmapDrawable);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        break;
-                    case "Еда и напитки":
-                        try {
-                            InputStream inputStream = assetManager.open("favorites/food_and_drink_favorites.png");
-                            Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-                            RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), bitmap);
-                            roundedBitmapDrawable.setCornerRadius(20); // Здесь можно указать радиус закругления
-                            favorites_icon_Button.setBackground(roundedBitmapDrawable);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        //blockLayout.setBackgroundResource(R.drawable.template_food);
-                        break;
-                    case "Путешествия":
-                        try {
-                            InputStream inputStream = assetManager.open("favorites/traveling_favorites.png");
-                            Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-                            RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), bitmap);
-                            roundedBitmapDrawable.setCornerRadius(20); // Здесь можно указать радиус закругления
-                            favorites_icon_Button.setBackground(roundedBitmapDrawable);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        //blockLayout.setBackgroundResource(R.drawable.template_travel);
-                        break;
-                    case "Кулинар":
-                        try {
-                            InputStream inputStream = assetManager.open("favorites/cooking_favorites.png");
-                            Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-                            RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), bitmap);
-                            roundedBitmapDrawable.setCornerRadius(20); // Здесь можно указать радиус закругления
-                            favorites_icon_Button.setBackground(roundedBitmapDrawable);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        //blockLayout.setBackgroundResource(R.drawable.template_cooking);
-                        break;
-                    case "Калининград":
-                        try {
-                            InputStream inputStream = assetManager.open("favorites/kaliningrad_favorites.png");
-                            Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-                            RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), bitmap);
-                            roundedBitmapDrawable.setCornerRadius(20); // Здесь можно указать радиус закругления
-                            favorites_icon_Button.setBackground(roundedBitmapDrawable);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        //blockLayout.setBackgroundResource(R.drawable.template_cooking);
-                        break;
-                    default:
-                        blockLayout.setBackgroundResource(R.drawable.template);
-                        break;
-                }
-                favorites_icon_Button.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        // Обработка нажатия кнопки
-                        System.out.println("Category_key  " + category);
-                        Intent intent = new Intent(OtherUserActivity.this, AchieveCategoryListActivity.class);
-                        intent.putExtra("Category_key", category);
-                        startActivity(intent);
-
-                    }
-                });
-            }
-        });
-    }
 
     private void createImageBlock(String url, Long likes, ArrayList people, String otherUserName, String key, String userToken, String time, String achname, String status){
         LinearLayout parentLayout = findViewById(R.id.scrollView);
@@ -603,6 +477,87 @@ public class OtherUserActivity extends AppCompatActivity {
         System.out.println("status " + status);
 
         ImageView statusImageView = blockLayout.findViewById(R.id.statusImageView);
+
+        statusImageView.setOnClickListener(v -> {
+
+            FirebaseAuth mAuth = FirebaseAuth.getInstance();
+            FirebaseUser currentUser = mAuth.getCurrentUser();
+
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            DocumentReference userRef = db.collection("Users").document(currentUser.getUid());
+
+            userRef.get().addOnSuccessListener(documentSnapshot -> {
+                Map<String, Object> userData = documentSnapshot.getData();
+                Map<String, Object> fav = (Map<String, Object>) userData.get("favorites");
+
+                Map<String, Object> userAchieveMap = (Map<String, Object>) userData.get("userAchievements");
+                // Получение достижений пользователя
+                Set<String> userAchievements = userAchieveMap.keySet();
+
+                for (Map.Entry<String, Object> entry : fav.entrySet()) {
+                    Map<String, Object> achievement = (Map<String, Object>) entry.getValue();
+
+                    //String achname = (String) achievement.get("name");
+                    String category = (String) achievement.get("category");
+
+                    CollectionReference achievementsCollectionRef = FirebaseFirestore.getInstance().collection("Achievements");
+
+                    Query categoryQuery = achievementsCollectionRef.whereEqualTo("name", achname);
+                    categoryQuery.get().addOnSuccessListener(querySnapshot -> {
+                        for (DocumentSnapshot document : querySnapshot.getDocuments()) {
+
+                            boolean proof = Boolean.TRUE.equals(document.getBoolean("proof"));
+                            boolean collectable = false;
+                            long achieveCount = 0;
+                            String countDesc = "";
+                            long dayLimit = 0;
+
+                            long achievePrice = 0;
+                            if (document.contains("price")) {
+                                achievePrice = document.getLong("price");
+                                System.out.println("price " + achievePrice);
+                            }
+
+                            Intent intent = new Intent(this, AchievementDescriptionActivity.class);
+
+                            if (document.contains("collectable")) {
+                                System.out.println("collectable");
+                                collectable = Boolean.TRUE.equals(document.getBoolean("collectable"));
+                                achieveCount = document.getLong("count");
+                                dayLimit = document.getLong("dayLimit");
+                                countDesc = document.getString("countDesc");
+                                intent = new Intent(this, AchievementWithProgressActivity.class);
+                            }
+
+                            if (userAchievements.contains(achname)) {
+                                System.out.println("Достижение \"" + achname + "\" есть и у пользователя, и в категории " + category);
+                                intent.putExtra("dayLimit", dayLimit);
+                                intent.putExtra("achieveCount", achieveCount);
+                                intent.putExtra("collectable", collectable);
+                                intent.putExtra("Category_key", category);
+                                intent.putExtra("Achieve_key", achname);
+                                intent.putExtra("achievePrice", achievePrice);
+                                intent.putExtra("Is_Received", true);
+                                intent.putExtra("ProofNeeded", proof);
+                                intent.putExtra("isFavorites", true);
+                                startActivity(intent);
+                            }else{
+                                intent.putExtra("dayLimit", dayLimit);
+                                intent.putExtra("achieveCount", achieveCount);
+                                intent.putExtra("collectable", collectable);
+                                intent.putExtra("Category_key", category);
+                                intent.putExtra("Achieve_key", achname);
+                                intent.putExtra("achievePrice", achievePrice);
+                                intent.putExtra("Is_Received", false);
+                                intent.putExtra("ProofNeeded", proof);
+                                intent.putExtra("isFavorites", true);
+                                startActivity(intent);
+                            }
+                        }
+                    });
+                }
+            });
+        });
 
         if(status == null){
             status = "grey";

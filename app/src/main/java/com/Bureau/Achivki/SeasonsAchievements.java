@@ -2,18 +2,23 @@ package com.Bureau.Achivki;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -26,6 +31,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +40,7 @@ import java.util.Set;
 
 public class SeasonsAchievements extends AppCompatActivity {
 
+    private static final int REQUEST_CODE = 10;
     private ImageButton backButton;
     private ImageButton favoritesButton;
 
@@ -78,6 +86,15 @@ public class SeasonsAchievements extends AppCompatActivity {
         favoritesButton = findViewById(R.id.imageButtonFavorites);
 
         achieveListButton = findViewById(R.id.imageButtonAchieveList);
+        ImageView backgroundImage = findViewById(R.id.season_category_background);
+
+        try {
+            InputStream ims = getAssets().open("season_challenge/summer_challenge_background.png");
+            Drawable drawableBackground = Drawable.createFromStream(ims, null);
+            backgroundImage.setImageDrawable(drawableBackground);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
 
         leaderListButton.setOnClickListener(new View.OnClickListener() {
@@ -128,35 +145,29 @@ public class SeasonsAchievements extends AppCompatActivity {
 
         db = FirebaseFirestore.getInstance();
 
-        System.out.println("11111111111111111111111111111111111111111111111111111111 " + currentUser.getUid());
+        //System.out.println("11111111111111111111111111111111111111111111111111111111 " + currentUser.getUid());
 
         DocumentReference mAuthDocRef = db.collection("Users").document(currentUser.getUid());
 
-        mAuthDocRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                if (documentSnapshot.exists()) {
-                    userName = documentSnapshot.getString("name");
-
-                    //welcomeMessage.setText("Привет " + userName);
-                    // использовать имя пользователя
-                    createAchieveList(userName, currentUser.getUid());
-                } else {
-                    // документ не найден
-                }
+        mAuthDocRef.get().addOnSuccessListener(documentSnapshot -> {
+            if (documentSnapshot.exists()) {
+                createAchieveList(currentUser.getUid());
+                System.out.println("Создаю список");
+            } else {
+                // документ не найден
+                System.out.println("документ не найден");
             }
         });
+
+
     }
 
+    public void createAchieveList(String userId){
 
 
-    public void createAchieveList(String name, String userId) {
-
-        //Intent intent = getIntent();
-        //String categoryName = intent.getStringExtra("Category_key");
-
+        Intent intentMain = getIntent();
+        //String categoryName = intentMain.getStringExtra("Category_key");
         String categoryName = "season1";
-        boolean recived = true;
 
         // Получение ссылки на коллекцию пользователей
         CollectionReference usersCollectionRef = FirebaseFirestore.getInstance().collection("Users");
@@ -172,43 +183,137 @@ public class SeasonsAchievements extends AppCompatActivity {
                 if (userDocSnapshot.exists()) {
                     // Получение Map UserAchieve пользователя
                     Map<String, Object> userAchieveMap = (Map<String, Object>) userDocSnapshot.get("userAchievements");
-
-                    //Map<String, Object> userAchieveMap1 = (Map<String, Object>) userDocSnapshot.get("userAchievements");
-
                     // Получение достижений пользователя
                     Set<String> userAchievements = userAchieveMap.keySet();
-                    // List<String> userAchievementsList = new ArrayList<>(userAchievements);
+
+                    // Получение Map UserAchieve пользователя
+                    Map<String, Object> userFavoritesMap = (Map<String, Object>) userDocSnapshot.get("favorites");
+                    // Получение достижений пользователя
+                    Set<String> userFavorites = userFavoritesMap.keySet();
+
+
                     // Получение документов достижений из коллекции achievements
                     Query categoryQuery = achievementsCollectionRef.whereEqualTo("category", categoryName);
-                    categoryQuery.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                        @Override
-                        public void onSuccess(QuerySnapshot querySnapshot) {
-                            for (DocumentSnapshot document : querySnapshot.getDocuments()) {
-                                count++;
-                                // Получаем имя достижения из документа
-                                String achievementName = document.getString("name");
-                                boolean proof = document.getBoolean("proof");
-                                // boolean confirm = document.getBoolean("confirmed");
-                                System.out.println("proof " + proof);
-                                //System.out.println("proof " + confirm);
+                    categoryQuery.get().addOnSuccessListener(querySnapshot -> {
+                        for (DocumentSnapshot document : querySnapshot.getDocuments()) {
+                            count++;
 
-                                // System.out.println("wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww " +p);
+                            boolean received;
+                            LinearLayout parentLayout = findViewById(R.id.scrollView1);
+                            ConstraintLayout blockLayout;
 
-                                // Сравниваем достижения пользователя и в категории "кулинария"
-                                if (userAchievements.contains(achievementName)) {
-                                    // Если достижение есть и там и там, выводим на экран
-                                    //createButton(achievementName, "green", categoryName, name, proof);
-                                    System.out.println("Достижение \"" + achievementName + "\" есть и у пользователя, и в категории " + categoryName);
-                                    checkStatus(achievementName, categoryName, name, proof);
-                                    achievedone++;
-                                } else {
-                                    createButton(achievementName, "black", categoryName, name, proof);
-                                    //checkStatus(achievementName, categoryName, name, proof);
-                                    System.out.println("Нет " + achievementName);
-                                }
+                            // Получаем имя достижения из документа
+                            String achievementName = document.getString("name");
+
+                            boolean proof = Boolean.TRUE.equals(document.getBoolean("proof"));
+                            boolean collectable = false;
+                            long achieveCount = 0;
+                            long doneCount = 0;
+                            String countDesc = "";
+                            long dayLimit = 0;
+
+                            if (document.contains("collectable")) {
+                                collectable = Boolean.TRUE.equals(document.getBoolean("collectable"));
+                                achieveCount = document.getLong("count");
+                                dayLimit = document.getLong("dayLimit");
+                                countDesc = document.getString("countDesc");
+                                System.out.println("collectable " + collectable);
+                            } else {
+                                // Обработка ситуации, когда поле отсутствует
+                                System.out.println("not collectable " + collectable);
                             }
-                            p(achievedone, count);
+
+                            long achievePrice = 0;
+                            if (document.contains("price")) {
+                                achievePrice = document.getLong("price");
+                                System.out.println("price " + achievePrice);
+                            }
+
+
+                            boolean isFavorites = false;
+
+                            if (userFavorites.contains(achievementName)) {
+                                isFavorites = true;
+                            }
+                            System.out.println("isFavorites " + isFavorites);
+
+
+                            if (userAchievements.contains(achievementName)) {
+                                System.out.println("Достижение \"" + achievementName + "\" есть и у пользователя, и в категории " + categoryName);
+                                Map<String, Object> achievementMap = (Map<String, Object>) userAchieveMap.get(achievementName);
+
+                                Boolean confirmed = (Boolean) achievementMap.get("confirmed");
+                                Boolean proofsended = (Boolean) achievementMap.get("proofsended");
+
+                                if (document.contains("collectable")) {
+                                    doneCount = (long) achievementMap.get("doneCount");
+                                }
+                                if(Boolean.TRUE.equals(confirmed)){
+                                    System.out.println("confirmed");
+                                    blockLayout = (ConstraintLayout) LayoutInflater.from(this)
+                                            .inflate(R.layout.block_achieve_green, parentLayout, false);
+                                    received = true;
+                                    achievedone++;
+                                }else if (Boolean.TRUE.equals(proofsended)) {
+                                    blockLayout = (ConstraintLayout) LayoutInflater.from(this)
+                                            .inflate(R.layout.block_achieve_yellow, parentLayout, false);
+                                    received = true;
+                                    System.out.println("proofsended");
+                                }else{
+                                    blockLayout = (ConstraintLayout) LayoutInflater.from(this)
+                                            .inflate(R.layout.block_achieve, parentLayout, false);
+                                    received = false;
+                                    System.out.println("not ");
+                                }
+                            }else{
+                                blockLayout = (ConstraintLayout) LayoutInflater.from(this)
+                                        .inflate(R.layout.block_achieve, parentLayout, false);
+                                received = false;
+                                System.out.println("Нет " + achievementName);
+                            }
+
+                            if(collectable){
+                                ProgressBar progress = blockLayout.findViewById(R.id.achieveProgressBar);
+                                TextView progressDesc = blockLayout.findViewById(R.id.countDesc);
+                                progress.setVisibility(View.VISIBLE);
+                                progressDesc.setVisibility(View.VISIBLE);
+                                progress.setMax((int)achieveCount);
+                                progress.setProgress((int) doneCount);
+                                progressDesc.setText(countDesc + ": " + (int) doneCount + " из " + (int) achieveCount);
+                            }
+
+                            TextView AchieveNameTextView = blockLayout.findViewById(R.id.achieveName_blockTextView);
+                            AchieveNameTextView.setText(achievementName);
+                            parentLayout.addView(blockLayout);
+
+                            boolean finalCollectable = collectable;
+                            boolean finalIsFavorites = isFavorites;
+                            long finalAchievePrice = achievePrice;
+                            long finalDayLimit = dayLimit;
+                            long finalAchieveCount = achieveCount;
+                            String finalCountDesc = countDesc;
+                            blockLayout.setOnClickListener(v -> {
+                                Intent intent;
+                                // Обработка нажатия кнопки
+                                if (finalCollectable) {
+                                    intent = new Intent(this, AchievementWithProgressActivity.class);
+                                } else {
+                                    intent = new Intent(this, AchievementDescriptionActivity.class);
+                                }
+                                intent.putExtra("Achieve_key", achievementName);
+                                intent.putExtra("Category_key", categoryName);
+                                intent.putExtra("Is_Received", received);
+                                intent.putExtra("ProofNeeded", proof);
+                                intent.putExtra("collectable", finalCollectable);
+                                intent.putExtra("achieveCount", finalAchieveCount);
+                                intent.putExtra("dayLimit", finalDayLimit);
+                                intent.putExtra("achievePrice", finalAchievePrice);
+                                intent.putExtra("isFavorites", finalIsFavorites);
+                                intent.putExtra("countDesc", finalCountDesc);
+                                startActivityForResult(intent, REQUEST_CODE);
+                            });
                         }
+                        p(achievedone , count);
                     });
                 }
             }
