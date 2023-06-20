@@ -8,8 +8,8 @@
 
     <ImageButton
         android:id="@+id/imageUserButton"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
         android:layout_marginStart="4dp"
         android:layout_marginTop="8dp"
         android:layout_weight="0"
@@ -20,22 +20,26 @@
         app:srcCompat="@drawable/ellipse_1_shape" />
 
     <TextView
+        style="@style/leaderText"
         android:id="@+id/userName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginTop="8dp"
+        android:textSize="20sp"
         android:text="TextView"
         android:textColor="@color/white"
         app:layout_constraintStart_toEndOf="@+id/imageUserButton"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
+        style="@style/leaderText"
         android:id="@+id/userScore"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
-        android:layout_marginTop="28dp"
+        android:layout_marginTop="16dp"
+        android:textSize="17sp"
         android:text="TextView"
         android:textColor="@color/white"
         app:layout_constraintStart_toEndOf="@+id/imageUserButton"
