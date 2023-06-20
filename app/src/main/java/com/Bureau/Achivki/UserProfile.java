@@ -19,6 +19,7 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.Shader;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.ContextMenu;
@@ -240,25 +241,7 @@ public class UserProfile extends AppCompatActivity {
         ImageButton selectImageButton = findViewById(R.id.button_choose_image);
 
         selectImageButton.setOnClickListener(v -> {
-            //selectImageFromLibrary();
-
-            if (ContextCompat.checkSelfPermission(UserProfile.this,
-                    Manifest.permission.READ_MEDIA_IMAGES)
-                    != PackageManager.PERMISSION_GRANTED) {
-
-                // Если разрешения нет, запрашиваем его у пользователя
-                ActivityCompat.requestPermissions(UserProfile.this,
-                new String[]{Manifest.permission.READ_MEDIA_IMAGES},
-                PERMISSION_REQUEST_CODE);
-
-                ActivityCompat.requestPermissions(UserProfile.this,
-                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                        PERMISSION_REQUEST_CODE);
-
-            } else {
-                // Если разрешение есть, вызываем окно выбора фотографий
-                selectImageFromLibrary();
-            }
+            askPermission();
         });
 
         TextView scoreText = findViewById(R.id.scoreTextView);
@@ -852,6 +835,25 @@ public class UserProfile extends AppCompatActivity {
             }
         });
         animator.start();
+    }
+
+    public void askPermission() {
+        if (Build.VERSION.SDK_INT >= 33) {
+            if (ContextCompat.checkSelfPermission(this,
+                    Manifest.permission.READ_MEDIA_IMAGES)
+                    != PackageManager.PERMISSION_GRANTED) {
+
+                // Если разрешения нет, запрашиваем его у пользователя
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.READ_MEDIA_IMAGES},
+                        PERMISSION_REQUEST_CODE);
+            } else {
+                // Если разрешение есть, вызываем окно выбора фотографий
+                selectImageFromLibrary();
+            }
+        }else{
+            selectImageFromLibrary();
+        }
     }
 
 

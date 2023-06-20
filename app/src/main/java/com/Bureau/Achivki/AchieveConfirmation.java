@@ -3,12 +3,11 @@ package com.Bureau.Achivki;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
@@ -34,7 +33,6 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -170,11 +168,8 @@ public class AchieveConfirmation extends AppCompatActivity {
                                 }
                             }else{
                                 System.out.println("Дни не совпадают.");
-                                //selectImageFromLibrary();
                                 askPermission();
                             }
-                            //existingAchieveMap.put("doneCount", doneCount + 1);
-                            //existingAchieveMap.put("time", currentTime);
                         }
                     }else{
                         //selectImageFromLibrary();
@@ -258,26 +253,22 @@ public class AchieveConfirmation extends AppCompatActivity {
     }
 
     public void askPermission() {
-        selectImageFromLibrary();
-        if (ContextCompat.checkSelfPermission(AchieveConfirmation.this,
-                Manifest.permission.READ_MEDIA_IMAGES)
-                != PackageManager.PERMISSION_GRANTED) {
+        if (Build.VERSION.SDK_INT >= 33) {
+            if (ContextCompat.checkSelfPermission(this,
+                    Manifest.permission.READ_MEDIA_IMAGES)
+                    != PackageManager.PERMISSION_GRANTED) {
 
-            // Если разрешения нет, запрашиваем его у пользователя
-            ActivityCompat.requestPermissions(AchieveConfirmation.this,
-                    new String[]{Manifest.permission.READ_MEDIA_IMAGES},
-                    PERMISSION_REQUEST_CODE);
-
-            //ActivityCompat.requestPermissions(UserProfile.this,
-            //       new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-            //       PERMISSION_REQUEST_CODE);
-
-        } else {
-            // Если разрешение есть, вызываем окно выбора фотографий
+                // Если разрешения нет, запрашиваем его у пользователя
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.READ_MEDIA_IMAGES},
+                        PERMISSION_REQUEST_CODE);
+            } else {
+                // Если разрешение есть, вызываем окно выбора фотографий
+                selectImageFromLibrary();
+            }
+        }else{
             selectImageFromLibrary();
-            //loadPhotosFromGallery();
         }
-        //selectImageFromLibrary();*/
     }
 
     public void selectImageFromLibrary() {

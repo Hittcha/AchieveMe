@@ -369,6 +369,16 @@ public class MainActivity extends AppCompatActivity {
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
+                    case "season1":
+                        try {
+                            InputStream inputStream = assetManager.open("favorites/season1.jpg");
+                            Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                            RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), bitmap);
+                            roundedBitmapDrawable.setCornerRadius(20); // Здесь можно указать радиус закругления
+                            favorites_icon_Button.setBackground(roundedBitmapDrawable);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                         break;
                     default:
                         blockLayout.setBackgroundResource(R.drawable.template);
@@ -376,8 +386,12 @@ public class MainActivity extends AppCompatActivity {
                 }
                 favorites_icon_Button.setOnClickListener(v -> {
                     // Обработка нажатия кнопки
-                    CollectionReference achievementsCollectionRef = FirebaseFirestore.getInstance().collection("Achievements");
-
+                    CollectionReference achievementsCollectionRef;
+                    if (category.equals("season1")){
+                        achievementsCollectionRef = FirebaseFirestore.getInstance().collection("SeasonAchievements");
+                    }else {
+                        achievementsCollectionRef = FirebaseFirestore.getInstance().collection("Achievements");
+                    }
                     Query categoryQuery = achievementsCollectionRef.whereEqualTo("name", achname);
                     categoryQuery.get().addOnSuccessListener(querySnapshot -> {
                         for (DocumentSnapshot document : querySnapshot.getDocuments()) {

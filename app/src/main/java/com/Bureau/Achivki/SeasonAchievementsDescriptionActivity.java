@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -40,12 +41,12 @@ public class SeasonAchievementsDescriptionActivity extends AppCompatActivity {
 
     private TextView descMessage;
 
-    private ImageButton addButton;
+    private Button addButton;
 
-    private ImageButton delButton;
+    private Button delButton;
 
-    private ImageButton backButton;
-    private ImageButton confirmButton;
+    private Button backButton;
+    private Button confirmButton;
 
     private DatabaseReference ref;
     private DatabaseReference ref1;
@@ -86,7 +87,7 @@ public class SeasonAchievementsDescriptionActivity extends AppCompatActivity {
 
         backButton = findViewById(R.id.BackButton);
 
-        addFavorites = findViewById(R.id.addFavorites);
+        //addFavorites = findViewById(R.id.addFavorites);
 
         descMessage = findViewById(R.id.desc_message);
 

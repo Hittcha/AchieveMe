@@ -120,7 +120,8 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
 
         if(isUserAchieve){
             descMessage.setText(desc);
-        }else{
+        }else if(categoryName.equals("season1")) {
+            achievementsRef = db.collection("SeasonAchievements");
             achievementsRef.whereEqualTo("name", achieveName).get()
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
@@ -135,7 +136,24 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
                             Log.d(TAG, "Ошибка получения достижений из Firestorm: ", task.getException());
                         }
                     });
-        }
+            }else {
+
+                achievementsRef.whereEqualTo("name", achieveName).get()
+                        .addOnCompleteListener(task -> {
+                            if (task.isSuccessful()) {
+                                for (QueryDocumentSnapshot document : task.getResult()) {
+                                    //String name = document.getString("name");
+                                    String description = document.getString("desc");
+                                    //String description = document.getString("desc");
+                                    System.out.println("description" + desc);
+                                    descMessage.setText(description);
+                                }
+                            } else {
+                                Log.d(TAG, "Ошибка получения достижений из Firestorm: ", task.getException());
+                            }
+                        });
+            }
+
         backButton.setOnClickListener(v -> {
 
             Intent resultIntent = new Intent();

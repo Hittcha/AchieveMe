@@ -97,7 +97,7 @@ public class RegistrationActivity extends AppCompatActivity {
                                     }
                                 });
 
-                                Intent intent = new Intent(RegistrationActivity.this, MainActivity.class);
+                                Intent intent = new Intent(RegistrationActivity.this, StartActivity.class);
                                 startActivity(intent);
                             }else{
                                 Toast.makeText(RegistrationActivity.this, "Такой пользователь уже существует дюдя", Toast.LENGTH_SHORT).show();
