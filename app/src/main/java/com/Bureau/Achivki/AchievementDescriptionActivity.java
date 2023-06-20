@@ -83,9 +83,16 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
         boolean received = getIntent().getBooleanExtra("Is_Received", false);
         boolean proof = getIntent().getBooleanExtra("ProofNeeded", false);
         boolean favorite = getIntent().getBooleanExtra("isFavorites", false);
+
+        boolean isUserAchieve = getIntent().getBooleanExtra("isUserAchieve", false);
+        String desc = intentFromMain.getStringExtra("desc");
+
         //boolean collectable = getIntent().getBooleanExtra("collectable", false);
 
-        //System.out.println("proof1" + proof1);
+        System.out.println("isUserAchieve" + isUserAchieve);
+        System.out.println("desc" + desc);
+
+        System.out.println("achievePrice " + achievePrice);
 
 
         if (received) {
@@ -111,19 +118,24 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         CollectionReference achievementsRef = db.collection("Achievements");
 
-        achievementsRef.whereEqualTo("name", achieveName).get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-                            //String name = document.getString("name");
-                            String description = document.getString("desc");
-
-                            descMessage.setText(description);
+        if(isUserAchieve){
+            descMessage.setText(desc);
+        }else{
+            achievementsRef.whereEqualTo("name", achieveName).get()
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                //String name = document.getString("name");
+                                String description = document.getString("desc");
+                                //String description = document.getString("desc");
+                                System.out.println("description" + desc);
+                                descMessage.setText(description);
+                            }
+                        } else {
+                            Log.d(TAG, "Ошибка получения достижений из Firestorm: ", task.getException());
                         }
-                    } else {
-                        Log.d(TAG, "Ошибка получения достижений из Firestorm: ", task.getException());
-                    }
-                });
+                    });
+        }
         backButton.setOnClickListener(v -> {
 
             Intent resultIntent = new Intent();
@@ -246,7 +258,7 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
         CollectionReference usersRef = FirebaseFirestore.getInstance().collection("Users");
 
         long standardPrice = 10;
-        if(achievePrice != 0){
+        if(achievePrice > 0){
             standardPrice = achievePrice;
         }
 
@@ -269,7 +281,7 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
         CollectionReference usersRef = FirebaseFirestore.getInstance().collection("Users");
 
         long standardPrice = 10;
-        if(achievePrice != 0){
+        if(achievePrice > 0){
             standardPrice = achievePrice;
         }
 
@@ -295,30 +307,35 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
         Intent intentFromMain = getIntent();
         String achieveName = intentFromMain.getStringExtra("Achieve_key");
         String categoryName = intentFromMain.getStringExtra("Category_key");
+        Long achievePrice = intentFromMain.getLongExtra("achievePrice", 0);
 
-        mAuth = FirebaseAuth.getInstance();
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        DocumentReference usersRef = db.collection("Users").document(currentUser.getUid());
+        if(!categoryName.equals("userAchieve")) {
 
-        usersRef.get().addOnSuccessListener(documentSnapshot -> {
+            mAuth = FirebaseAuth.getInstance();
+            FirebaseUser currentUser = mAuth.getCurrentUser();
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            DocumentReference usersRef = db.collection("Users").document(currentUser.getUid());
 
-            Map<String, Object> userAchievements = documentSnapshot.getData();
-            Map<String, Object> achieveMap = (Map<String, Object>) userAchievements.get("favorites");
+            usersRef.get().addOnSuccessListener(documentSnapshot -> {
 
-            // Создаем новый Map с информацией о новом достижении
-            Map<String, Object> newFav = new HashMap<>();
-            newFav.put("name", achieveName);
-            newFav.put("category", categoryName);
+                Map<String, Object> userAchievements = documentSnapshot.getData();
+                Map<String, Object> achieveMap = (Map<String, Object>) userAchievements.get("favorites");
 
-            // Сохраняем обновленный Map achieve в Firestore
-            achieveMap.put(achieveName, newFav);
-            userAchievements.put("favorites", achieveMap);
-            usersRef.set(userAchievements);
-            Toast.makeText(this, "Достижение добавлено в профиль", Toast.LENGTH_SHORT).show();
-            changeStrokeColor();
+                // Создаем новый Map с информацией о новом достижении
+                Map<String, Object> newFav = new HashMap<>();
+                newFav.put("name", achieveName);
+                newFav.put("category", categoryName);
+                newFav.put("price", achievePrice);
 
-        });
+                // Сохраняем обновленный Map achieve в Firestore
+                achieveMap.put(achieveName, newFav);
+                userAchievements.put("favorites", achieveMap);
+                usersRef.set(userAchievements);
+                Toast.makeText(this, "Достижение добавлено в профиль", Toast.LENGTH_SHORT).show();
+                changeStrokeColor();
+
+            });
+        }
     }
     private void changeStrokeColor() {
         // изменения цвета рамки, при добавление в избранное

@@ -124,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
         String userId = currentUser.getUid();
 
         //Проверка айди админа
-        if (userId.equals("S5S9nb7f0qheRWwlDu1CyCG4QxO2")){
+        if (userId.equals("EbXBnzc3Uag1IA67cLmEjvnoDgw2")){
             Button adminButton = findViewById(R.id.adminButton);
             adminButton.setVisibility(View.VISIBLE);
         }
@@ -544,16 +544,13 @@ public class MainActivity extends AppCompatActivity {
                     break;
             }
 
-            blockLayout.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    // Обработка нажатия кнопки
-                    System.out.println("Category_key  " + name);
-                    Intent intent = new Intent(MainActivity.this, AchieveCategoryListActivity.class);
-                    intent.putExtra("Category_key", name);
-                    startActivity(intent);
+            blockLayout.setOnClickListener(v -> {
+                // Обработка нажатия кнопки
+                System.out.println("Category_key  " + name);
+                Intent intent = new Intent(MainActivity.this, AchieveCategoryListActivity.class);
+                intent.putExtra("Category_key", name);
+                startActivity(intent);
 
-                }
             });
         }
     }

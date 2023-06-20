@@ -149,7 +149,7 @@ public class MyAchievementsActivity extends AppCompatActivity {
                     // Получение Map UserAchieve пользователя
                     Map<String, Object> userFavoritesMap = (Map<String, Object>) userDocSnapshot.get("achieve");
                     // Получение достижений пользователя
-                    Set<String> userFavorites = userFavoritesMap.keySet();
+                    //Set<String> userFavorites = userFavoritesMap.keySet();
 
                     for (Map.Entry<String, Object> entry : userFavoritesMap.entrySet()) {
                         Map<String, Object> achievement = (Map<String, Object>) entry.getValue();
@@ -174,7 +174,6 @@ public class MyAchievementsActivity extends AppCompatActivity {
 
                         }
 
-                        //String color = "black";
 
                         LinearLayout parentLayout = findViewById(R.id.scrollView);
 
@@ -183,9 +182,11 @@ public class MyAchievementsActivity extends AppCompatActivity {
 
                         if (userAchievements.contains(achieveName)) {
 
+                            Map<String, Object> achievementMap = (Map<String, Object>) userAchieveMap.get(achieveName);
+
                             System.out.println("Достижение \"" + achieveName + "\" есть и у пользователя, и в категории ");
-                            Boolean confirmed = (Boolean) userAchieveMap.get("confirmed");
-                            Boolean proofsended = (Boolean) userAchieveMap.get("proofsended");
+                            Boolean confirmed = (Boolean) achievementMap.get("confirmed");
+                            Boolean proofsended = (Boolean) achievementMap.get("proofsended");
                             System.out.println("proofsended " + proofsended);
 
                             if(Boolean.TRUE.equals(confirmed)){
@@ -213,6 +214,26 @@ public class MyAchievementsActivity extends AppCompatActivity {
 
                         AchieveNameTextView.setText(achieveName);
 
+                        ImageButton deleteAchieveButton = blockLayout.findViewById(R.id.delete_achieve_button);
+                        deleteAchieveButton.setVisibility(View.VISIBLE);
+
+                        deleteAchieveButton.setOnClickListener(v -> {
+                            userFavoritesMap.remove(achieveName);
+
+                            parentLayout.removeView(blockLayout);
+
+                            userDocRef.update("achieve", userFavoritesMap)
+                                    .addOnSuccessListener(aVoid -> {
+                                        // Достижение успешно удалено и обновлено в базе данных
+                                        // Выполните дополнительные действия при необходимости
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        // Произошла ошибка при обновлении достижения в базе данных
+                                        // Обработайте ошибку или выведите сообщение об ошибке
+                                    });
+
+                        });
+
                         parentLayout.addView(blockLayout);
 
                         boolean finalCollectable = collectable;
@@ -227,15 +248,16 @@ public class MyAchievementsActivity extends AppCompatActivity {
                                 intent = new Intent(this, AchievementDescriptionActivity.class);
                             }
                             intent.putExtra("Achieve_key", achieveName);
-                            intent.putExtra("Category_key", categoryName);
+                            intent.putExtra("Category_key", "userAchieve");
                             intent.putExtra("Is_Received", received);
                             intent.putExtra("desc", desc);
                             intent.putExtra("ProofNeeded", proof);
                             intent.putExtra("collectable", finalCollectable);
                             intent.putExtra("achieveCount", finalAchieveCount);
                             intent.putExtra("dayLimit", finalDayLimit);
-                            intent.putExtra("achievePrice", 0);
+                            intent.putExtra("achievePrice", 1L);
                             intent.putExtra("isFavorites", false);
+                            intent.putExtra("isUserAchieve", true);
                             //parentLayout.removeView(blockLayout);
                             startActivityForResult(intent, REQUEST_CODE);
 
@@ -318,6 +340,34 @@ public class MyAchievementsActivity extends AppCompatActivity {
                 LinearLayout.LayoutParams.WRAP_CONTENT
         );
     }*/
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
+
+            //перезагружаем список ачивок и обновляем счетсчик
+
+
+            LinearLayout parentLayout = findViewById(R.id.scrollView);
+            parentLayout.removeAllViews();
+
+            FirebaseAuth mAuth = FirebaseAuth.getInstance();
+            FirebaseUser currentUser = mAuth.getCurrentUser();
+
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            DocumentReference mAuthDocRef = db.collection("Users").document(currentUser.getUid());
+
+            mAuthDocRef.get().addOnSuccessListener(documentSnapshot -> {
+                if (documentSnapshot.exists()) {
+                    createAchieveList(currentUser.getUid());
+                } else {
+                    // документ не найден
+                }
+            });
+        }
+    }
+
     protected void onPause() {
         super.onPause();
         overridePendingTransition(0, 0);
