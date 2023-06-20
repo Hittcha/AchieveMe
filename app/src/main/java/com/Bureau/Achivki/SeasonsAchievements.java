@@ -2,6 +2,7 @@ package com.Bureau.Achivki;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -10,6 +11,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
@@ -26,6 +28,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -78,6 +82,15 @@ public class SeasonsAchievements extends AppCompatActivity {
         favoritesButton = findViewById(R.id.imageButtonFavorites);
 
         achieveListButton = findViewById(R.id.imageButtonAchieveList);
+        ImageView backgroundImage = findViewById(R.id.season_category_background);
+
+        try {
+            InputStream ims = getAssets().open("season_challenge/summer_challenge_background.png");
+            Drawable drawableBackground = Drawable.createFromStream(ims, null);
+            backgroundImage.setImageDrawable(drawableBackground);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
 
         leaderListButton.setOnClickListener(new View.OnClickListener() {

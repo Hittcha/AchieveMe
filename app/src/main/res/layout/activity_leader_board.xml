@@ -23,131 +23,171 @@
             android:id="@+id/leaderlayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="0dp"
+            android:layout_marginTop="7dp"
             android:orientation="vertical">
 
-            <LinearLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginTop="8dp"
+                android:layout_height="80dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginBottom="10dp"
                 android:background="@drawable/leaderfirstplacebackground"
                 android:orientation="horizontal">
 
                 <ImageButton
                     android:id="@+id/imageUserButton1"
-                    android:layout_width="60dp"
-                    android:layout_height="60dp"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginTop="10dp"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     android:layout_weight="0"
                     android:background="@null"
                     android:scaleType="centerCrop"
                     app:srcCompat="@drawable/ellipse_1_shape" />
 
                 <TextView
+                    style="@style/leaderText"
                     android:id="@+id/textPlace1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toEndOf="@id/imageUserButton1"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toTopOf="@id/Score1"
                     android:layout_marginStart="10dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_weight="0"
-                    android:text="TextView" />
+                    android:text="TextView"
+                    tools:text="Крутой_чел_первое_место"/>
+
 
                 <TextView
+                    style="@style/leaderText"
                     android:id="@+id/Score1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_weight="0"
-                    android:text="" />
-            </LinearLayout>
+                    android:text=""
+                    android:textSize="20sp"
+                    android:textColor="@color/white"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.06"
+                    app:layout_constraintStart_toEndOf="@id/imageUserButton1"
+                    app:layout_constraintTop_toBottomOf="@id/textPlace1"
+                    tools:text="1234" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <LinearLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="80dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginBottom="10dp"
                 android:background="@drawable/leadersecondplacebackground"
                 android:orientation="horizontal">
 
                 <ImageButton
                     android:id="@+id/imageUserButton2"
-                    android:layout_width="60dp"
-                    android:layout_height="60dp"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginTop="10dp"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     android:layout_weight="0"
                     android:background="@null"
                     android:scaleType="centerCrop"
                     app:srcCompat="@drawable/ellipse_1_shape" />
 
                 <TextView
+                    style="@style/leaderText"
                     android:id="@+id/textPlace2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toEndOf="@id/imageUserButton2"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toTopOf="@id/Score2"
                     android:layout_marginStart="10dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_weight="0"
                     android:text="TextView" />
 
                 <TextView
+                    style="@style/leaderText"
                     android:id="@+id/Score2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_weight="0"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.06"
+                    app:layout_constraintStart_toEndOf="@id/imageUserButton2"
+                    app:layout_constraintTop_toBottomOf="@id/textPlace2"
                     android:text="" />
-            </LinearLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <LinearLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="80dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginBottom="10dp"
                 android:background="@drawable/leaderthirdplacebackground"
                 android:orientation="horizontal">
 
                 <ImageButton
                     android:id="@+id/imageUserButton3"
-                    android:layout_width="60dp"
-                    android:layout_height="60dp"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginTop="10dp"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
                     android:layout_weight="0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     android:background="@null"
                     android:scaleType="centerCrop"
                     app:srcCompat="@drawable/ellipse_1_shape" />
 
                 <TextView
+                    style="@style/leaderText"
                     android:id="@+id/textPlace3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toEndOf="@id/imageUserButton3"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toTopOf="@id/Score3"
                     android:layout_marginStart="10dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_weight="0"
-                    android:text="TextView" />
+                    android:text="TextView"
+                    tools:text="Рандомное имя челобаса"/>
 
                 <TextView
+                    style="@style/leaderText"
                     android:id="@+id/Score3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_weight="0"
-                    android:text="" />
-            </LinearLayout>
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.06"
+                    app:layout_constraintStart_toEndOf="@id/imageUserButton3"
+                    app:layout_constraintTop_toBottomOf="@id/textPlace3"
+                    android:text=""
+                    tools:text="321"/>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="80dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginBottom="10dp"
                 android:background="@drawable/leaderbuttonbackground"
                 android:orientation="horizontal">
 
                 <ImageButton
                     android:id="@+id/imageUserButton4"
-                    android:layout_width="60dp"
-                    android:layout_height="60dp"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginTop="10dp"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
                     android:layout_weight="0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     android:background="@null"
                     android:scaleType="centerCrop"
                     app:srcCompat="@drawable/ellipse_1_shape" />
@@ -156,34 +196,44 @@
                     android:id="@+id/textPlace4"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    style="@style/leaderText"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toEndOf="@id/imageUserButton4"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toTopOf="@id/Score4"
                     android:layout_marginStart="10dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_weight="0"
                     android:text="TextView" />
 
                 <TextView
                     android:id="@+id/Score4"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_weight="0"
+                    style="@style/leaderText"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.06"
+                    app:layout_constraintStart_toEndOf="@id/imageUserButton4"
+                    app:layout_constraintTop_toBottomOf="@id/textPlace4"
                     android:text="" />
-            </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="80dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginBottom="10dp"
                 android:background="@drawable/leaderbuttonbackground"
                 android:orientation="horizontal">
 
                 <ImageButton
                     android:id="@+id/imageUserButton5"
-                    android:layout_width="60dp"
-                    android:layout_height="60dp"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginTop="10dp"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
                     android:layout_weight="0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     android:background="@null"
                     android:scaleType="centerCrop"
                     app:srcCompat="@drawable/ellipse_1_shape" />
@@ -192,34 +242,44 @@
                     android:id="@+id/textPlace5"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    style="@style/leaderText"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toEndOf="@id/imageUserButton5"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toTopOf="@id/Score5"
                     android:layout_marginStart="10dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_weight="0"
                     android:text="TextView" />
 
                 <TextView
                     android:id="@+id/Score5"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_weight="0"
+                    style="@style/leaderText"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.06"
+                    app:layout_constraintStart_toEndOf="@id/imageUserButton5"
+                    app:layout_constraintTop_toBottomOf="@id/textPlace5"
                     android:text="" />
-            </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="80dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginBottom="10dp"
                 android:background="@drawable/leaderbuttonbackground"
                 android:orientation="horizontal">
 
                 <ImageButton
                     android:id="@+id/imageUserButton6"
-                    android:layout_width="60dp"
-                    android:layout_height="60dp"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginTop="10dp"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
                     android:layout_weight="0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     android:background="@null"
                     android:scaleType="centerCrop"
                     app:srcCompat="@drawable/ellipse_1_shape" />
@@ -228,20 +288,26 @@
                     android:id="@+id/textPlace6"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    style="@style/leaderText"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toEndOf="@id/imageUserButton6"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toTopOf="@id/Score6"
                     android:layout_marginStart="10dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_weight="0"
                     android:text="TextView" />
 
                 <TextView
                     android:id="@+id/Score6"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_weight="0"
+                    style="@style/leaderText"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.06"
+                    app:layout_constraintStart_toEndOf="@id/imageUserButton6"
+                    app:layout_constraintTop_toBottomOf="@id/textPlace6"
                     android:text="" />
-            </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
         </LinearLayout>
 
 
@@ -260,15 +326,15 @@
         <View
             android:id="@+id/rectangle_6"
             android:layout_width="wrap_content"
-            android:layout_height="108dp"
+            android:layout_height="100dp"
             android:layout_marginStart="0dp"
             android:layout_marginTop="0dp"
             android:background="@drawable/rectangle_6_shape" />
 
         <ImageButton
             android:id="@+id/userAvatar"
-            android:layout_width="68dp"
-            android:layout_height="68dp"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
             android:layout_marginStart="12dp"
             android:layout_marginTop="12dp"
             android:background="@drawable/ellipse_1_shape"
@@ -285,9 +351,9 @@
             android:layout_marginStart="12dp"
             android:layout_marginTop="12dp"
             android:layout_marginEnd="190dp"
+            style="@style/leaderText"
             android:layout_toEndOf="@+id/userAvatar"
-            android:text="Счет"
-            android:textColor="@color/white" />
+            android:text="Счет" />
 
         <TextView
             android:id="@+id/userName"
@@ -298,9 +364,11 @@
             android:layout_marginStart="12dp"
             android:layout_marginTop="12dp"
             android:layout_marginEnd="191dp"
+            style="@style/leaderText"
+            android:textStyle="bold"
             android:layout_toEndOf="@+id/userAvatar"
             android:text="TextView"
-            android:textColor="@color/white" />
+            />
 
 
     </RelativeLayout>
