@@ -17,7 +17,7 @@
         <TextView
             android:id="@+id/achname"
             android:layout_width="0dp"
-            android:layout_height="28dp"
+            android:layout_height="25dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:autoSizeTextType="uniform"

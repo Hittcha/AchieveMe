@@ -167,6 +167,7 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
             Intent intent = new Intent(AchievementDescriptionActivity.this, AchieveConfirmation.class);
             intent.putExtra("Achieve_key", achieveName);
             intent.putExtra("achievePrice", achievePrice);
+            intent.putExtra("Category_key", categoryName);
             startActivity(intent);
         });
 
@@ -206,6 +207,7 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
                     Map<String, Object> newAchieveMap = new HashMap<>();
                     newAchieveMap.put("name", achieveName);
                     newAchieveMap.put("confirmed", true);
+                    newAchieveMap.put("category", categoryName);
                     newAchieveMap.put("proofsended", true);
                     newAchieveMap.put("time", time);
 

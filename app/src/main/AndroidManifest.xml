@@ -19,6 +19,10 @@
         android:theme="@style/Theme.AppCompat.Light.NoActionBar"
         tools:targetApi="31">
         <activity
+            android:name=".ReportActivity"
+            android:exported="false"
+            android:theme="@style/AchievementDialog"/>
+        <activity
             android:name=".AdminActivity"
             android:exported="false" />
         <activity
@@ -38,6 +42,7 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -55,8 +60,8 @@
             android:exported="false" />
         <activity
             android:name=".SeasonAchievementsDescriptionActivity"
-            android:theme="@style/AchievementDialog"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/AchievementDialog" />
         <activity
             android:name=".SeasonsAchievements"
             android:exported="false" />
@@ -92,12 +97,12 @@
             android:exported="false" />
         <activity
             android:name=".AchievementWithProgressActivity"
-            android:theme="@style/AchievementDialog"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/AchievementDialog" />
         <activity
             android:name=".AchievementDescriptionActivity"
-            android:theme="@style/AchievementDialog"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/AchievementDialog" />
         <activity
             android:name=".AchieveCategoryListActivity"
             android:exported="false" />
@@ -110,7 +115,6 @@
         <activity
             android:name=".StartMainActivity"
             android:exported="false" />
-
     </application>
 
 </manifest>

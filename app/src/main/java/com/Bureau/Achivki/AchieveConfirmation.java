@@ -418,6 +418,7 @@ public class AchieveConfirmation extends AppCompatActivity {
                 System.out.println("мап не существует, создаем новый Map с информацией о новом достижении");
                 Map<String, Object> newAchieveMap = new HashMap<>();
                 newAchieveMap.put("name", achieveName);
+                newAchieveMap.put("category", categoryName);
                 newAchieveMap.put("confirmed", false);
                 newAchieveMap.put("proofsended", true);
                 newAchieveMap.put("time", currentTime);
@@ -459,6 +460,7 @@ public class AchieveConfirmation extends AppCompatActivity {
             // Создаем новый Map с информацией о новом достижении
             Map<String, Object> newAchieveMap = new HashMap<>();
             newAchieveMap.put("name", achieveName);
+            newAchieveMap.put("category", categoryName);
             newAchieveMap.put("url", "users/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/proof/" + name);
             Calendar calendar = Calendar.getInstance();
             SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss", Locale.getDefault());

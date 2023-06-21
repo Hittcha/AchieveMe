@@ -65,9 +65,12 @@ public class UsersListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_users_list);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            /*Window window = getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(ContextCompat.getColor(this, R.color.StatusBarColor));*/
             Window window = getWindow();
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.setStatusBarColor(ContextCompat.getColor(this, R.color.StatusBarColor));
+            window.setStatusBarColor(ContextCompat.getColor(this, R.color.appBackGround));
         }
 
         androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.toolbar);
