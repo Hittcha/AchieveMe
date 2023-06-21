@@ -144,12 +144,12 @@
         android:background="@color/Primary_500"
         android:cropToPadding="true"
         android:scaleType="centerCrop"
+        android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@id/guideline_confirme"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/confirm_top_text"
-        app:layout_constraintVertical_bias="0.735"
-         />
+        app:layout_constraintVertical_bias="0.735" />
 
     <Button
         style="@style/button_style"

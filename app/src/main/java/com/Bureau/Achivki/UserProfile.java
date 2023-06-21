@@ -82,8 +82,6 @@ public class UserProfile extends AppCompatActivity {
     private String userName;
     private String profileImageUrl;
     private FirebaseFirestore firestore;
-
-    //private ImageView mImageView;
     private FirebaseAuth mAuth;
     private static final int REQUEST_CODE_SELECT_IMAGE = 100;
     private ImageView profileImageView;

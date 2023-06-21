@@ -37,15 +37,12 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class AchieveListActivity extends AppCompatActivity {
-
-    //private int buttonCount = 0;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_achieve_list);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = getWindow();
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.setStatusBarColor(ContextCompat.getColor(this, R.color.StatusBarColor));
@@ -57,11 +54,13 @@ public class AchieveListActivity extends AppCompatActivity {
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_back_arrow);
-        getSupportActionBar().setTitle("Категории");
+        getSupportActionBar().setTitle("Категории");*/
+
+        Window window = getWindow();
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.setStatusBarColor(ContextCompat.getColor(this, R.color.appBackGround));
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-        //List<String> categories = new ArrayList<>();
 
         CollectionReference achievementsRef = db.collection("Achievements");
 
@@ -114,9 +113,11 @@ public class AchieveListActivity extends AppCompatActivity {
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         int screenWidth = displayMetrics.widthPixels;
+        int screenHeight = displayMetrics.heightPixels;
 
         // Рассчитываем ширину блока на основе размера экрана
         int blockWidth = screenWidth / 2; // Делим ширину экрана пополам
+        int blockHeight = screenHeight / 4;
 
         // Получение данных из базы данных и добавление blockLayout в таблицу
         achievementsRef.get().addOnCompleteListener(task -> {
@@ -147,7 +148,7 @@ public class AchieveListActivity extends AppCompatActivity {
                         TableRow.LayoutParams blockLayoutParams = new TableRow.LayoutParams(
                                 //TableRow.LayoutParams.MATCH_PARENT,
                                 blockWidth,
-                                700
+                                blockHeight
                         );
                         blockLayoutParams.setMargins(12, 12, 12, 12); // Устанавливаем отступы между блоками
                         blockLayout.setLayoutParams(blockLayoutParams);

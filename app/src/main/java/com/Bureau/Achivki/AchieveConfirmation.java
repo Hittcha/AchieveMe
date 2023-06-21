@@ -16,12 +16,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -50,22 +48,13 @@ import java.util.Map;
 public class AchieveConfirmation extends AppCompatActivity {
     private Button setPublic;
     private Button selectImageButton;
-
     private ImageView mImageView;
-    private StorageReference mStorageRef;
-    private FirebaseFirestore db;
-
-
     private FirebaseAuth mAuth;
-
     private static final int REQUEST_CODE_SELECT_IMAGE = 100;
-
-    private ImageView profileImageView;
-
+    private ImageView proofImageView;
     private FirebaseStorage storage;
     private String achieveName;
     long dayLimit;
-
     private static final int PERMISSION_REQUEST_CODE = 100;
     private TextView informationText;
     boolean windowIsOpen = false;
@@ -94,11 +83,11 @@ public class AchieveConfirmation extends AppCompatActivity {
         StorageReference imageRef = storageRef.child("users").child(mAuth.getCurrentUser().getUid()).child("UserAvatar");
 
         mImageView = findViewById(R.id.image_view);
-        db = FirebaseFirestore.getInstance();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
         FirebaseUser currentUser = mAuth.getCurrentUser();
         DocumentReference mAuthDocRef = db.collection("Users").document(currentUser.getUid());
 
-        profileImageView = findViewById(R.id.image_view);
+        proofImageView = findViewById(R.id.image_view);
         selectImageButton = findViewById(R.id.button_choose_image);
 
         Button informationButton = findViewById(R.id.achive_confirmation_information_button);
@@ -190,65 +179,41 @@ public class AchieveConfirmation extends AppCompatActivity {
             });
         });
 
-
-
         mImageView = findViewById(R.id.image_view);
-        db = FirebaseFirestore.getInstance();
-
-
+        //db = FirebaseFirestore.getInstance();
         setPublic = findViewById(R.id.button2);
 
         setPublic.setOnClickListener(v -> setImagePublic(achieveName));
 
+        //StorageReference imageProofRef = storageRef.child("users").child(mAuth.getCurrentUser().getUid()).child("UserAvatar");
+
         ImageButton leaderListButton = findViewById(R.id.imageButtonLeaderList);
+        leaderListButton.setOnClickListener(v -> {
+            Intent intent = new Intent(AchieveConfirmation.this, LeaderBoardActivity.class);
+            startActivity(intent);
+        });
 
         ImageButton menuButton = findViewById(R.id.imageButtonMenu);
-
-        ImageButton favoritesButton = findViewById(R.id.imageButtonFavorites);
+        menuButton.setOnClickListener(v -> {
+            Intent intent = new Intent(AchieveConfirmation.this, MainActivity.class);
+            startActivity(intent);
+        });
 
         ImageButton achieveListButton = findViewById(R.id.imageButtonAchieveList);
-
-        StorageReference imageProofRef = storageRef.child("users").child(mAuth.getCurrentUser().getUid()).child("UserAvatar");
-
-
-        leaderListButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(AchieveConfirmation.this, LeaderBoardActivity.class);
-                startActivity(intent);
-            }
+        achieveListButton.setOnClickListener(v -> {
+            Intent intent = new Intent(AchieveConfirmation.this, AchieveListActivity.class);
+            startActivity(intent);
         });
-
-        menuButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(AchieveConfirmation.this, MainActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        achieveListButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(AchieveConfirmation.this, AchieveListActivity.class);
-                startActivity(intent);
-            }
-        });
-        favoritesButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(AchieveConfirmation.this, ListOfFavoritesActivity.class);
-                startActivity(intent);
-            }
+        ImageButton favoritesButton = findViewById(R.id.imageButtonFavorites);
+        favoritesButton.setOnClickListener(v -> {
+            Intent intent = new Intent(AchieveConfirmation.this, ListOfFavoritesActivity.class);
+            startActivity(intent);
         });
 
         ImageButton usersListButton = findViewById(R.id.imageButtonUsersList);
-        usersListButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(AchieveConfirmation.this, UsersListActivity.class);
-                startActivity(intent);
-            }
+        usersListButton.setOnClickListener(v -> {
+            Intent intent = new Intent(AchieveConfirmation.this, UsersListActivity.class);
+            startActivity(intent);
         });
     }
 
@@ -308,7 +273,7 @@ public class AchieveConfirmation extends AppCompatActivity {
                     }
 
                     Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-                    profileImageView.setImageBitmap(bitmap);
+                    proofImageView.setImageBitmap(bitmap);
 
                     if(collectable){
                         usersRef.get().addOnSuccessListener(documentSnapshot -> {
@@ -381,17 +346,14 @@ public class AchieveConfirmation extends AppCompatActivity {
 
         UploadTask uploadTask = imagesRef.putBytes(data);
 
-        uploadTask.addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                // Handle unsuccessful uploads
-                Toast.makeText(AchieveConfirmation.this, "Ошибка загрузки изображения", Toast.LENGTH_SHORT).show();
-            }
+        uploadTask.addOnFailureListener(exception -> {
+            // Handle unsuccessful uploads
+            Toast.makeText(AchieveConfirmation.this, "Ошибка загрузки изображения", Toast.LENGTH_SHORT).show();
         }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 // Handle successful uploads
-                Toast.makeText(AchieveConfirmation.this, "Изображение успешно загружено", Toast.LENGTH_SHORT).show();
+                Toast.makeText(AchieveConfirmation.this, "Изображение успешно загружено на проверку", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -400,9 +362,6 @@ public class AchieveConfirmation extends AppCompatActivity {
         String userID = currentUser.getUid();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference usersRef = db.collection("Users").document(currentUser.getUid());
-
-
-        // Map<String, Object> userAchievements = new HashMap<>();
 
         usersRef.get().addOnSuccessListener(documentSnapshot -> {
             Map<String, Object> userAchievements = documentSnapshot.getData();
@@ -452,8 +411,6 @@ public class AchieveConfirmation extends AppCompatActivity {
                             existingAchieveMap.put("time", currentTime);
                             existingAchieveMap.put("url"  + (doneCount + 1), "users/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/proof/" + name);
                         }
-                        //existingAchieveMap.put("doneCount", doneCount + 1);
-                        //existingAchieveMap.put("time", currentTime);
                     }
                 }
             } else {
@@ -461,6 +418,7 @@ public class AchieveConfirmation extends AppCompatActivity {
                 System.out.println("мап не существует, создаем новый Map с информацией о новом достижении");
                 Map<String, Object> newAchieveMap = new HashMap<>();
                 newAchieveMap.put("name", achieveName);
+                newAchieveMap.put("category", categoryName);
                 newAchieveMap.put("confirmed", false);
                 newAchieveMap.put("proofsended", true);
                 newAchieveMap.put("time", currentTime);
@@ -480,9 +438,6 @@ public class AchieveConfirmation extends AppCompatActivity {
             // Сохраняем обновленный Map achieve в Firestore
             userAchievements.put("userAchievements", achieveMap);
             usersRef.set(userAchievements);
-            //addScore(currentUser.getUid());
-
-            //Toast.makeText(AchievementWithProgressActivity.this, "Достижение добавлено", Toast.LENGTH_SHORT).show();
         });
 
         //Добавляем достижение в UsersLogs ProofList для модерации
@@ -505,6 +460,7 @@ public class AchieveConfirmation extends AppCompatActivity {
             // Создаем новый Map с информацией о новом достижении
             Map<String, Object> newAchieveMap = new HashMap<>();
             newAchieveMap.put("name", achieveName);
+            newAchieveMap.put("category", categoryName);
             newAchieveMap.put("url", "users/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/proof/" + name);
             Calendar calendar = Calendar.getInstance();
             SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss", Locale.getDefault());
@@ -528,7 +484,6 @@ public class AchieveConfirmation extends AppCompatActivity {
             // Сохраняем обновленный Map achieve в Firestore
             userAchievements.put(userID, achieveMap);
             usersLogsRef.set(userAchievements);
-            //Toast.makeText(AchieveConfirmation.this, "test", Toast.LENGTH_SHORT).show();
             showPublicButton();
         });
     }
@@ -606,7 +561,6 @@ public class AchieveConfirmation extends AppCompatActivity {
             newAchieveMap.put("name", achieveName);
             newAchieveMap.put("like", people);
             newAchieveMap.put("likes", 0);
-            //newAchieveMap.put("url", "users/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/proof/" + name + doneCount);
             if(doneCount != 0){
                 newAchieveMap.put("url", "users/" + FirebaseAuth.getInstance().getCurrentUser().getUid() + "/proof/" + name + doneCount);
                 System.out.println("! 0");

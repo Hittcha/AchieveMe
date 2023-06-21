@@ -124,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
         String userId = currentUser.getUid();
 
         //Проверка айди админа
-        if (userId.equals("EbXBnzc3Uag1IA67cLmEjvnoDgw2")){
+        if (userId.equals("IWIXASnDmoTJJxKAOCUxyRnxd0i1")){
             Button adminButton = findViewById(R.id.adminButton);
             adminButton.setVisibility(View.VISIBLE);
         }
@@ -369,9 +369,10 @@ public class MainActivity extends AppCompatActivity {
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
+                        break;
                     case "season1":
                         try {
-                            InputStream inputStream = assetManager.open("favorites/season1.jpg");
+                            InputStream inputStream = assetManager.open("favorites/season1_favorites.png");
                             Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
                             RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), bitmap);
                             roundedBitmapDrawable.setCornerRadius(20); // Здесь можно указать радиус закругления

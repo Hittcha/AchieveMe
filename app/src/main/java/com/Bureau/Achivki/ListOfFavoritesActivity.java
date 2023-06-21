@@ -44,10 +44,14 @@ public class ListOfFavoritesActivity extends AppCompatActivity {
         setContentView(R.layout.activity_list_of_favorites);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            /*Window window = getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(ContextCompat.getColor(this, R.color.StatusBarColor));*/
             Window window = getWindow();
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.setStatusBarColor(ContextCompat.getColor(this, R.color.StatusBarColor));
+            window.setStatusBarColor(ContextCompat.getColor(this, R.color.appBackGround));
         }
+
 
         androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.toolbar);
 
@@ -123,10 +127,8 @@ public class ListOfFavoritesActivity extends AppCompatActivity {
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
                         String name = document.getString("name");
-                        //ArrayList<String> achievements = (ArrayList<String>) document.get("favorites");
 
                         String userName = (String) document.get("name");
-
 
                         System.out.println("name " + userName);
 
@@ -164,8 +166,6 @@ public class ListOfFavoritesActivity extends AppCompatActivity {
 
             for (Map.Entry<String, Object> entry : fav.entrySet()) {
                 Map<String, Object> achievement = (Map<String, Object>) entry.getValue();
-                //Map<String, Object> achievementMap = (Map<String, Object>) userAchieveMap.get(achieveName);
-
 
                 String achieveName = (String) achievement.get("name");
                 String category = (String) achievement.get("category");
@@ -261,7 +261,7 @@ public class ListOfFavoritesActivity extends AppCompatActivity {
                 AchieveNameTextView.setText(achieveName);
 
                 blockLayout.setOnClickListener(v -> {
-                    checkAchieve(achieveName, received);
+                    checkAchieve(achieveName, received, category);
                 });
 
                 ImageButton deleteAch = blockLayout.findViewById(R.id.delete_achieve_button);
@@ -303,16 +303,16 @@ public class ListOfFavoritesActivity extends AppCompatActivity {
         });
     }
 
-    public void checkAchieve(String achieveName, boolean received){
-
-        Intent intentMain = getIntent();
-        String categoryName = intentMain.getStringExtra("Category_key");
-
-        // Получение ссылки на коллекцию пользователей
-        //CollectionReference usersCollectionRef = FirebaseFirestore.getInstance().collection("Users");
+    public void checkAchieve(String achieveName, boolean received, String category){
 
         // Получение ссылки на коллекцию достижений
-        CollectionReference achievementsCollectionRef = FirebaseFirestore.getInstance().collection("Achievements");
+        CollectionReference achievementsCollectionRef;
+
+        if(category.equals("season1")){
+            achievementsCollectionRef = FirebaseFirestore.getInstance().collection("SeasonAchievements");
+        }else{
+            achievementsCollectionRef = FirebaseFirestore.getInstance().collection("Achievements");
+        }
 
         Query categoryQuery = achievementsCollectionRef.whereEqualTo("name", achieveName);
         categoryQuery.get().addOnSuccessListener(querySnapshot -> {
@@ -343,6 +343,8 @@ public class ListOfFavoritesActivity extends AppCompatActivity {
                     achievePrice = document.getLong("price");
                     System.out.println("price " + achievePrice);
                 }
+
+                String categoryName = document.getString("category");
 
                 boolean finalCollectable = collectable;
                 long finalAchievePrice = achievePrice;

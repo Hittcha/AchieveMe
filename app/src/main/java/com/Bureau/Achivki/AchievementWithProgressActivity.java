@@ -90,12 +90,20 @@ public class AchievementWithProgressActivity extends AppCompatActivity {
         boolean proof = getIntent().getBooleanExtra("ProofNeeded", false);
         boolean collectable = getIntent().getBooleanExtra("collectable", false);
 
+        boolean favorite = getIntent().getBooleanExtra("isFavorites", false);
+
         boolean isUserAchieve = getIntent().getBooleanExtra("isUserAchieve", false);
         String desc = intentFromMain.getStringExtra("desc");
 
 
         if (proof) {
             showProofButton();
+        }
+
+        if (favorite) {
+            changeStrokeColor();
+        }else{
+            changeStrokeColorBack();
         }
 
         System.out.println(achieveName);
@@ -205,6 +213,7 @@ public class AchievementWithProgressActivity extends AppCompatActivity {
                     newAchieveMap.put("confirmed", true);
                     newAchieveMap.put("proofsended", true);
                     newAchieveMap.put("time", currentTime);
+                    newAchieveMap.put("category", categoryName);
                     if (collectable) {
                         newAchieveMap.put("collectable", collectable);
                         newAchieveMap.put("targetCount", achieveCount);
@@ -407,6 +416,20 @@ public class AchievementWithProgressActivity extends AppCompatActivity {
         Drawable layer = layerDrawable.getDrawable(layerIndex);
         GradientDrawable gradientDrawable = (GradientDrawable) layer;
         int color = ContextCompat.getColor(this,R.color.button);
+        gradientDrawable.setStroke(3, color);
+        layerDrawable.setDrawable(layerIndex, gradientDrawable);
+        mainConstraintLayout.setBackground(layerDrawable);
+    }
+    private void changeStrokeColorBack() {
+        // изменения цвета рамки, при добавление в избранное
+        View mainConstraintLayout = findViewById(R.id.main_constraintLayout_description);
+        @SuppressLint("UseCompatLoadingForDrawables")
+        Drawable drawable = getDrawable(R.drawable.achievedescriptionbackground);
+        LayerDrawable layerDrawable = (LayerDrawable) drawable;
+        int layerIndex = 0;
+        Drawable layer = layerDrawable.getDrawable(layerIndex);
+        GradientDrawable gradientDrawable = (GradientDrawable) layer;
+        int color = ContextCompat.getColor(this,R.color.black);
         gradientDrawable.setStroke(3, color);
         layerDrawable.setDrawable(layerIndex, gradientDrawable);
         mainConstraintLayout.setBackground(layerDrawable);

@@ -32,7 +32,6 @@ import com.google.firebase.firestore.Query;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 
 
@@ -40,7 +39,6 @@ public class AchieveCategoryListActivity extends AppCompatActivity {
     private static final int REQUEST_CODE = 10;
     private int count = 0;
     private int achievedone = 0;
-
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -330,135 +328,6 @@ public class AchieveCategoryListActivity extends AppCompatActivity {
             }
         });
     }
-
-    public void checkAchieve(){
-
-    }
-
-    /*public void createAchieveList(String userId){
-
-        Intent intentMain = getIntent();
-        String categoryName = intentMain.getStringExtra("Category_key");
-
-        // Получение ссылки на коллекцию пользователей
-        CollectionReference usersCollectionRef = FirebaseFirestore.getInstance().collection("Users");
-
-        // Получение ссылки на коллекцию достижений
-        CollectionReference achievementsCollectionRef = FirebaseFirestore.getInstance().collection("Achievements");
-
-        // Получение документа пользователя из коллекции Users
-        DocumentReference userDocRef = usersCollectionRef.document(userId);
-        userDocRef.get().addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        DocumentSnapshot userDocSnapshot = task.getResult();
-                        if (userDocSnapshot.exists()) {
-                            // Получение Map UserAchieve пользователя
-                            Map<String, Object> userAchieveMap = (Map<String, Object>) userDocSnapshot.get("userAchievements");
-                            // Получение достижений пользователя
-                            Set<String> userAchievements = userAchieveMap.keySet();
-
-                            // Получение Map UserAchieve пользователя
-                            Map<String, Object> userFavoritesMap = (Map<String, Object>) userDocSnapshot.get("favorites");
-                            // Получение достижений пользователя
-                            Set<String> userFavorites = userFavoritesMap.keySet();
-
-
-                            // Получение документов достижений из коллекции achievements
-                            Query categoryQuery = achievementsCollectionRef.whereEqualTo("category", categoryName);
-                            categoryQuery.get().addOnSuccessListener(querySnapshot -> {
-                                for (DocumentSnapshot document : querySnapshot.getDocuments()) {
-                                    count++;
-
-                                    // Получаем имя достижения из документа
-                                    String achievementName = document.getString("name");
-
-                                    boolean proof = Boolean.TRUE.equals(document.getBoolean("proof"));
-                                    boolean collectable = false;
-                                    long achieveCount = 0;
-                                    long doneCount = 0;
-                                    String countDesc = "";
-                                    long dayLimit = 0;
-
-                                    long achievePrice = 0;
-                                    if (document.contains("price")) {
-                                        achievePrice = document.getLong("price");
-                                        System.out.println("price " + achievePrice);
-                                    }
-
-                                    if (document.contains("collectable")) {
-                                        collectable = Boolean.TRUE.equals(document.getBoolean("collectable"));
-                                        achieveCount = document.getLong("count");
-                                        dayLimit = document.getLong("dayLimit");
-                                        countDesc = document.getString("countDesc");
-                                    } else {
-                                        // Обработка ситуации, когда поле отсутствует
-                                    }
-
-                                    boolean isFavorites = false;
-
-                                    if (userFavorites.contains(achievementName)) {
-                                        isFavorites = true;
-                                    }
-                                    System.out.println("isFavorites " + isFavorites);
-
-                                    if (userAchievements.contains(achievementName)) {
-                                        System.out.println("Достижение \"" + achievementName + "\" есть и у пользователя, и в категории " + categoryName);
-                                        Map<String, Object> achievementMap = (Map<String, Object>) userAchieveMap.get(achievementName);
-                                        if (document.contains("collectable")) {
-                                            doneCount = (long) achievementMap.get("doneCount");
-                                        }
-                                        System.out.println("doneCount"+ doneCount);
-                                        checkStatus(achievementName, categoryName, proof, collectable, achieveCount, doneCount, countDesc, dayLimit, achievePrice, isFavorites);
-                                        achievedone++;
-                                    }else{
-                                        createAchieveBlock(achievementName, "black", categoryName, proof, collectable, achieveCount, 0, countDesc, dayLimit, achievePrice, isFavorites);
-                                        System.out.println("Нет " + achievementName);
-                                    }
-                                }
-                                //System.out.println("achievedone" + achievedone);
-                                //System.out.println("count" + count);
-                                p(achievedone , count);
-                            });
-                        }
-                    }
-                });
-
-            }*/
-
-    /*private void checkStatus(String achievementName, String categoryName, boolean proof, boolean collectable, long achieveCount, long doneCount, String countDesc, long dayLimit, long achievePrice, boolean isFavorites){
-        FirebaseAuth mAuth = FirebaseAuth.getInstance();
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        DocumentReference userRef = db.collection("Users").document(currentUser.getUid());
-
-        //List<String> achievementNames = new ArrayList<>();
-
-        userRef.get().addOnSuccessListener(documentSnapshot -> {
-            Map<String, Object> userData = documentSnapshot.getData();
-            Map<String, Object> achievements = (Map<String, Object>) userData.get("userAchievements");
-
-            for (Map.Entry<String, Object> entry : achievements.entrySet()) {
-                Map<String, Object> achievement = (Map<String, Object>) entry.getValue();
-
-                if (Objects.equals(achievement.get("name"), achievementName)) {
-                    Boolean confirmed = (Boolean) achievement.get("confirmed");
-                    Boolean proofsended = (Boolean) achievement.get("proofsended");
-                    if(Boolean.TRUE.equals(confirmed)){
-                        System.out.println("confirmed");
-                        createAchieveBlock(achievementName,"green", categoryName, proof, collectable, achieveCount, doneCount, countDesc, dayLimit, achievePrice, isFavorites);
-                    }else if (Boolean.TRUE.equals(proofsended)) {
-                        createAchieveBlock(achievementName,"yellow", categoryName, proof, collectable, achieveCount, doneCount, countDesc, dayLimit, achievePrice, isFavorites);
-                        System.out.println("proofsended");
-                    }else{
-                        createAchieveBlock(achievementName,"black", categoryName, proof, collectable, achieveCount, doneCount, countDesc, dayLimit, achievePrice, isFavorites);
-                        System.out.println("not ");
-                    }
-                }
-            }
-        });
-    }*/
-
     private void ShowAchievementDescription() {
         PopupWindow popupWindow = new PopupWindow(this);
         View popupView = LayoutInflater.from(this).inflate(R.layout.activity_achievement_description, null);
@@ -467,70 +336,6 @@ public class AchieveCategoryListActivity extends AppCompatActivity {
         popupWindow.setWidth(WindowManager.LayoutParams.WRAP_CONTENT);
         popupWindow.showAtLocation(getWindow().getDecorView(), Gravity.CENTER, 0, 0);
     }
-
-    private void createAchieveBlock(String achieveName, String color, String categoryName, boolean proof, boolean collectable, long achieveCount, long doneCount, String countDesc, long dayLimit, long achievePrice, boolean isFavorites){
-        LinearLayout parentLayout = findViewById(R.id.scrollView1);
-
-
-        boolean received;
-        ConstraintLayout blockLayout;
-
-        if (Objects.equals(color, "green")){
-            blockLayout = (ConstraintLayout) LayoutInflater.from(AchieveCategoryListActivity.this)
-                    .inflate(R.layout.block_achieve_green, parentLayout, false);
-            received = true;
-        }else if(Objects.equals(color, "yellow")){
-            blockLayout = (ConstraintLayout) LayoutInflater.from(AchieveCategoryListActivity.this)
-                    .inflate(R.layout.block_achieve_yellow, parentLayout, false);
-            received = true;
-        }else{
-            blockLayout = (ConstraintLayout) LayoutInflater.from(AchieveCategoryListActivity.this)
-                    .inflate(R.layout.block_achieve, parentLayout, false);
-            received = false;
-        }
-
-        if(collectable){
-            ProgressBar progress = blockLayout.findViewById(R.id.achieveProgressBar);
-            TextView progressDesc = blockLayout.findViewById(R.id.countDesc);
-            progress.setVisibility(View.VISIBLE);
-            progressDesc.setVisibility(View.VISIBLE);
-            progress.setMax((int)achieveCount);
-            progress.setProgress((int) doneCount);
-            progressDesc.setText(countDesc + ": " + (int) doneCount + " из " + (int) achieveCount);
-        }
-
-        TextView AchieveNameTextView = blockLayout.findViewById(R.id.achieveName_blockTextView);
-
-        AchieveNameTextView.setText(achieveName);
-
-        parentLayout.addView(blockLayout);
-
-        blockLayout.setOnClickListener(v -> {
-            Intent intent;
-            // Обработка нажатия кнопки
-            if (collectable) {
-                intent = new Intent(AchieveCategoryListActivity.this, AchievementWithProgressActivity.class);
-            } else {
-                intent = new Intent(AchieveCategoryListActivity.this, AchievementDescriptionActivity.class);
-            }
-            intent.putExtra("Achieve_key", achieveName);
-            intent.putExtra("Category_key", categoryName);
-            intent.putExtra("Is_Received", received);
-            //intent.putExtra("User_name", username);
-            intent.putExtra("ProofNeeded", proof);
-            intent.putExtra("collectable", collectable);
-            intent.putExtra("achieveCount", achieveCount);
-            intent.putExtra("dayLimit", dayLimit);
-            intent.putExtra("achievePrice", achievePrice);
-            intent.putExtra("isFavorites", isFavorites);
-            //parentLayout.removeView(blockLayout);
-            startActivityForResult(intent, REQUEST_CODE);
-
-        });
-
-
-    }
-
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
@@ -559,7 +364,6 @@ public class AchieveCategoryListActivity extends AppCompatActivity {
             });
         }
     }
-
     protected void onPause() {
         super.onPause();
         overridePendingTransition(0, 0);
@@ -568,7 +372,6 @@ public class AchieveCategoryListActivity extends AppCompatActivity {
         super.onResume();
         overridePendingTransition(0, 0);
     }
-
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             onBackPressed();

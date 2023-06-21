@@ -1,5 +1,8 @@
 package com.Bureau.Achivki;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ObjectAnimator;
 import android.content.Intent;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
@@ -12,10 +15,13 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
@@ -36,6 +42,7 @@ import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
@@ -603,6 +610,41 @@ public class OtherUserActivity extends AppCompatActivity {
                 // Обработка ошибки загрузки изображения
             }
         });
+
+        Button button = blockLayout.findViewById(R.id.button3);
+        NavigationView navigationView = blockLayout.findViewById(R.id.navigation_view);
+        Menu menu = navigationView.getMenu();
+        MenuItem menuItem = menu.findItem(R.id.nav_item1); // Replace 'menu_item_id' with the actual ID of the menu item you want to hide
+        menuItem.setVisible(false);
+
+        button.setOnClickListener(v -> {
+            toggleNavigationView(navigationView);
+        });
+
+        navigationView.setNavigationItemSelectedListener(item -> {
+            // Обработка выбранного пункта меню
+            Intent intent = null;
+            switch (item.getItemId()) {
+                case R.id.nav_item1:
+                    // Действие при выборе настройки 1
+                    //parentLayout.removeView(blockLayout);
+                    //deleteUserPost(key);
+                    intent = new Intent(this, SuggestAchieveActivity.class);
+                    break;
+                case R.id.nav_item2:
+                    // Действие при выборе настройки 2
+                    intent = new Intent(this, ReportActivity.class);
+                    intent.putExtra("userToken", otherUserName);
+                    intent.putExtra("Achieve_key", achname);
+                    intent.putExtra("url", url);
+                    break;
+            }
+            // Закрытие меню после выбора пункта
+            //toggleNavigationView(navigationView);
+            navigationView.setVisibility(View.INVISIBLE);
+            startActivity(intent);
+            return true;
+        });
     }
 
     public void addLike(String userName, String key, String userToken){
@@ -666,6 +708,35 @@ public class OtherUserActivity extends AppCompatActivity {
 
             usersRef.set(userAchievements);
         });
+    }
+
+    private void showNavigationView(NavigationView navigationView) {
+        navigationView.setVisibility(View.VISIBLE);
+        ObjectAnimator animator = ObjectAnimator.ofFloat(navigationView, "translationX", navigationView.getWidth(), 0);
+        animator.setDuration(300);
+        animator.setInterpolator(new AccelerateDecelerateInterpolator());
+        animator.start();
+    }
+
+    private void hideNavigationView(NavigationView navigationView) {
+        ObjectAnimator animator = ObjectAnimator.ofFloat(navigationView, "translationX", 0, navigationView.getWidth());
+        animator.setDuration(300);
+        animator.setInterpolator(new AccelerateDecelerateInterpolator());
+        animator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                navigationView.setVisibility(View.GONE);
+            }
+        });
+        animator.start();
+    }
+
+    private void toggleNavigationView(NavigationView navigationView) {
+        if (navigationView.getVisibility() == View.VISIBLE) {
+            hideNavigationView(navigationView);
+        } else {
+            showNavigationView(navigationView);
+        }
     }
     protected void onPause() {
         super.onPause();
