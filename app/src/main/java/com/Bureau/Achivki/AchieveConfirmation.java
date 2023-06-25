@@ -3,6 +3,7 @@ package com.Bureau.Achivki;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -31,6 +32,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -230,9 +232,11 @@ public class AchieveConfirmation extends AppCompatActivity {
             } else {
                 // Если разрешение есть, вызываем окно выбора фотографий
                 selectImageFromLibrary();
+                //loadPhotosFromGallery();
             }
         }else{
             selectImageFromLibrary();
+            //loadPhotosFromGallery();
         }
     }
 

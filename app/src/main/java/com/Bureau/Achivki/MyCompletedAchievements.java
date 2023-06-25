@@ -44,19 +44,45 @@ public class MyCompletedAchievements extends AppCompatActivity {
         androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.toolbar);
 
         setSupportActionBar(toolbar);
-
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_back_arrow);
         getSupportActionBar().setTitle("Мои выполненные достижения");
 
+        createAchieveList();
+
+        ImageButton leaderListButton = findViewById(R.id.imageButtonLeaderList);
+        leaderListButton.setOnClickListener(v -> {
+            Intent intent = new Intent(MyCompletedAchievements.this, LeaderBoardActivity.class);
+            startActivity(intent);
+        });
+        ImageButton menuButton = findViewById(R.id.imageButtonMenu);
+        menuButton.setOnClickListener(v -> {
+            Intent intent = new Intent(MyCompletedAchievements.this, MainActivity.class);
+            startActivity(intent);
+        });
+        ImageButton favoritesButton = findViewById(R.id.imageButtonFavorites);
+        favoritesButton.setOnClickListener(v -> {
+            Intent intent = new Intent(MyCompletedAchievements.this, ListOfFavoritesActivity.class);
+            startActivity(intent);
+        });
+        ImageButton achieveListButton = findViewById(R.id.imageButtonAchieveList);
+        achieveListButton.setOnClickListener(v -> {
+            Intent intent = new Intent(MyCompletedAchievements.this, AchieveListActivity.class);
+            startActivity(intent);
+        });
+
+        ImageButton usersListButton = findViewById(R.id.imageButtonUsersList);
+        usersListButton.setOnClickListener(v -> {
+            Intent intent = new Intent(MyCompletedAchievements.this, UsersListActivity.class);
+            startActivity(intent);
+        });
+    }
+
+    private void createAchieveList(){
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
-
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-
         FirebaseUser currentUser = mAuth.getCurrentUser();
-
         DocumentReference mAuthDocRef = db.collection("Users").document(currentUser.getUid());
-
 
         mAuthDocRef.get().addOnSuccessListener(documentSnapshot -> {
             if (documentSnapshot.exists()) {
@@ -101,18 +127,15 @@ public class MyCompletedAchievements extends AppCompatActivity {
                     boolean received;
                     if(Boolean.TRUE.equals(confirmed)){
                         System.out.println("confirmed");
-                        //createAchieveBlock(achievementName,"green", achievementCategory, true);
                         blockLayout = (ConstraintLayout) LayoutInflater.from(MyCompletedAchievements.this)
                                 .inflate(R.layout.block_achieve_green, parentLayout, false);
                         received = true;
                     }else if (Boolean.TRUE.equals(proofsended)) {
-                        //createAchieveBlock(achievementName,"yellow", achievementCategory, true);
                         System.out.println("proofsended");
                         blockLayout = (ConstraintLayout) LayoutInflater.from(MyCompletedAchievements.this)
                                 .inflate(R.layout.block_achieve_yellow, parentLayout, false);
                         received = true;
                     }else{
-                        //createAchieveBlock(achievementName,"black", achievementCategory, false);
                         System.out.println("not ");
                         blockLayout = (ConstraintLayout) LayoutInflater.from(MyCompletedAchievements.this)
                                 .inflate(R.layout.block_achieve, parentLayout, false);
@@ -140,7 +163,6 @@ public class MyCompletedAchievements extends AppCompatActivity {
                         AchieveNameTextView.setText(achievementName);
                     }
 
-                    //AchieveNameTextView.setText(achievementName);
                     parentLayout.addView(blockLayout);
                 }
 
@@ -149,68 +171,6 @@ public class MyCompletedAchievements extends AppCompatActivity {
                 Toast.makeText(MyCompletedAchievements.this, "Документ не найден", Toast.LENGTH_SHORT).show();
             }
         });
-
-        ImageButton leaderListButton = findViewById(R.id.imageButtonLeaderList);
-        ImageButton menuButton = findViewById(R.id.imageButtonMenu);
-        ImageButton favoritesButton = findViewById(R.id.imageButtonFavorites);
-        ImageButton achieveListButton = findViewById(R.id.imageButtonAchieveList);
-
-        leaderListButton.setOnClickListener(v -> {
-            Intent intent = new Intent(MyCompletedAchievements.this, LeaderBoardActivity.class);
-            startActivity(intent);
-        });
-
-        menuButton.setOnClickListener(v -> {
-            Intent intent = new Intent(MyCompletedAchievements.this, MainActivity.class);
-            startActivity(intent);
-        });
-
-        favoritesButton.setOnClickListener(v -> {
-            Intent intent = new Intent(MyCompletedAchievements.this, ListOfFavoritesActivity.class);
-            startActivity(intent);
-        });
-
-        achieveListButton.setOnClickListener(v -> {
-            Intent intent = new Intent(MyCompletedAchievements.this, AchieveListActivity.class);
-            startActivity(intent);
-        });
-
-        ImageButton usersListButton = findViewById(R.id.imageButtonUsersList);
-        usersListButton.setOnClickListener(v -> {
-            Intent intent = new Intent(MyCompletedAchievements.this, UsersListActivity.class);
-            startActivity(intent);
-        });
-
-
-    }
-    private void createAchieveBlock(String achievementName, String color, String category, boolean received) {
-        LinearLayout parentLayout = findViewById(R.id.scrollViewLayout);
-        ConstraintLayout blockLayout;
-
-        if (Objects.equals(color, "green")) {
-            blockLayout = (ConstraintLayout) LayoutInflater.from(MyCompletedAchievements.this)
-                    .inflate(R.layout.block_achieve_green, parentLayout, false);
-        } else if (Objects.equals(color, "yellow")) {
-            blockLayout = (ConstraintLayout) LayoutInflater.from(MyCompletedAchievements.this)
-                    .inflate(R.layout.block_achieve_yellow, parentLayout, false);
-        } else {
-            blockLayout = (ConstraintLayout) LayoutInflater.from(MyCompletedAchievements.this)
-                    .inflate(R.layout.block_achieve, parentLayout, false);
-        }
-
-        blockLayout.setOnClickListener(v -> {
-            checkAchieve(achievementName, received, category);
-        });
-
-        TextView AchieveNameTextView = blockLayout.findViewById(R.id.achieveName_blockTextView);
-        if (category.equals("userAchieve")){
-            AchieveNameTextView.setText("Пользовательское достижение: " + achievementName);
-        }else{
-            AchieveNameTextView.setText(achievementName);
-        }
-
-        //AchieveNameTextView.setText(achievementName);
-        parentLayout.addView(blockLayout);
     }
     private void checkAchieve(String achieveName, boolean received, String category){
 
@@ -240,7 +200,8 @@ public class MyCompletedAchievements extends AppCompatActivity {
                     collectable = Boolean.TRUE.equals(document.getBoolean("collectable"));
                     achieveCount = document.getLong("count");
                     dayLimit = document.getLong("dayLimit");
-                    countDesc = document.getString("countDesc");
+
+                    //countDesc = document.getString("countDesc");
                     System.out.println("collectable " + collectable);
                 } else {
                     // Обработка ситуации, когда поле отсутствует
@@ -288,7 +249,16 @@ public class MyCompletedAchievements extends AppCompatActivity {
                 startActivityForResult(intent, REQUEST_CODE);
             }
         });
+    }
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
+        if (requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
+            //перезагружаем список ачивок
+            LinearLayout parentLayout = findViewById(R.id.scrollViewLayout);
+            parentLayout.removeAllViews();
+            createAchieveList();
+        }
     }
     protected void onPause() {
         super.onPause();

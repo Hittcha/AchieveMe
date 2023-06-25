@@ -47,6 +47,7 @@ public class AchievementWithProgressActivity extends AppCompatActivity {
     private Button addButton;
     private FirebaseAuth mAuth;
     long dayLimit;
+    long doneCount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +65,10 @@ public class AchievementWithProgressActivity extends AppCompatActivity {
         String userName = intentFromMain.getStringExtra("User_name");
         long achieveCount = intentFromMain.getLongExtra("achieveCount", 0);
         dayLimit = intentFromMain.getLongExtra("dayLimit", 0);
+
+        doneCount = intentFromMain.getLongExtra("doneCount", 0);
+
+        Long achievePrice = intentFromMain.getLongExtra("achievePrice", 0);
 
         Window window = getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
@@ -115,6 +120,26 @@ public class AchievementWithProgressActivity extends AppCompatActivity {
 
         if(isUserAchieve){
             descMessage.setText(desc);
+        }else if(categoryName.equals("season1")) {
+            achievementsRef = db.collection("SeasonAchievements");
+            achievementsRef.whereEqualTo("name", achieveName).get()
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                //String name = document.getString("name");
+                                String description = document.getString("desc");
+                                //String description = document.getString("desc");
+                                System.out.println("description" + desc);
+                                if(achievePrice < 1){
+                                    descMessage.setText(description + "\nВыполнено " + doneCount + " из " + achieveCount);
+                                }else {
+                                    descMessage.setText(description + " (+" + achievePrice + " ОС)." + "\nВыполнено " + doneCount + " из " + achieveCount);
+                                }
+                            }
+                        } else {
+                            Log.d(TAG, "Ошибка получения достижений из Firestorm: ", task.getException());
+                        }
+                    });
         }else {
             achievementsRef.whereEqualTo("name", achieveName).get()
                     .addOnCompleteListener(task -> {
@@ -122,8 +147,11 @@ public class AchievementWithProgressActivity extends AppCompatActivity {
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 String description = document.getString("desc");
 
-                                descMessage.setText(description);
-
+                                if(achievePrice < 1){
+                                    descMessage.setText(description + "\nВыполнено " + doneCount + " из " + achieveCount);
+                                }else {
+                                    descMessage.setText(description + " (+" + achievePrice + " ОС)." + "\nВыполнено " + doneCount + " из " + achieveCount);
+                                }
                             }
                         } else {
                             Log.d(TAG, "Ошибка получения достижений из Firestorm: ", task.getException());
@@ -136,6 +164,12 @@ public class AchievementWithProgressActivity extends AppCompatActivity {
             finish();
         });
 
+        System.out.println("isUserAchieve" + isUserAchieve);
+        System.out.println("desc" + desc);
+
+        System.out.println("achievePrice " + achievePrice);
+        System.out.println("-------isFavorites " + favorite);
+
         confirmButton.setOnClickListener(v -> {
             Intent intent = new Intent(AchievementWithProgressActivity.this, AchieveConfirmation.class);
             intent.putExtra("Achieve_key", achieveName);
@@ -144,6 +178,7 @@ public class AchievementWithProgressActivity extends AppCompatActivity {
             intent.putExtra("achieveCount", achieveCount);
             intent.putExtra("dayLimit", dayLimit);
             intent.putExtra("collectable", collectable);
+            intent.putExtra("achievePrice", achievePrice);
             startActivity(intent);
         });
 
@@ -192,7 +227,8 @@ public class AchievementWithProgressActivity extends AppCompatActivity {
                                 existingAchieveMap.put("dayDone", dayDone + 1);
                                 existingAchieveMap.put("doneCount", doneCount + 1);
                                 existingAchieveMap.put("time", currentTime);
-                                addScore(currentUser.getUid());
+                                //addScore(currentUser.getUid());
+                                addScore(currentUser.getUid(), achievePrice);
                             }else{
                                 //usersRef.update("score", FieldValue.increment(10));
                                 System.out.println("currentUser.getUid() " + currentUser.getUid());
@@ -203,7 +239,8 @@ public class AchievementWithProgressActivity extends AppCompatActivity {
                             existingAchieveMap.put("dayDone", 1);
                             existingAchieveMap.put("doneCount", doneCount + 1);
                             existingAchieveMap.put("time", currentTime);
-                            addScore(currentUser.getUid());
+                            //addScore(currentUser.getUid());
+                            addScore(currentUser.getUid(), achievePrice);
                         }
                     }
                 } else {
@@ -225,7 +262,8 @@ public class AchievementWithProgressActivity extends AppCompatActivity {
                     // Добавляем новое достижение в Map achieve пользователя
                     achieveMap.put(achieveName, newAchieveMap);
                     System.out.println("currentUser.getUid() " + currentUser.getUid());
-                    addScore(currentUser.getUid());
+                    //addScore(currentUser.getUid());
+                    addScore(currentUser.getUid(), achievePrice);
                 }
 
                 // Сохраняем обновленный Map achieve в Firestore
@@ -255,7 +293,9 @@ public class AchievementWithProgressActivity extends AppCompatActivity {
 
                     usersRef.set(userAchievements);
 
-                    delScore(currentUser.getUid());
+                    //delScore(currentUser.getUid());
+
+                    delScore(currentUser.getUid(), achievePrice);
 
                     Toast.makeText(AchievementWithProgressActivity.this, "Достижение удалено", Toast.LENGTH_SHORT).show();
                 });
@@ -311,7 +351,7 @@ public class AchievementWithProgressActivity extends AppCompatActivity {
         addButton.setVisibility(View.GONE); // отображаем кнопку
     }
 
-    public void addScore(String uid) {
+    /*public void addScore(String uid) {
         // Get a reference to the user document
         DocumentReference userDocRef = FirebaseFirestore.getInstance().collection("Users").document(uid);
 
@@ -358,7 +398,71 @@ public class AchievementWithProgressActivity extends AppCompatActivity {
                     // Обработка ошибки обновления
                     System.out.println("Ошибка обновления счета: " + e.getMessage());
                 });
+    }*/
+
+    private void addScore(String uid, long achievePrice) {
+        // Получаем ссылку на коллекцию пользователей
+
+        long standardPrice = 1;
+        if(achievePrice > 0){
+            standardPrice = achievePrice;
+        }
+
+
+
+        // Get a reference to the user document
+        DocumentReference userDocRef = FirebaseFirestore.getInstance().collection("Users").document(uid);
+
+        long finalStandardPrice = standardPrice;
+        userDocRef.get().addOnSuccessListener(documentSnapshot -> {
+            if (documentSnapshot.exists()) {
+                // Retrieve the current score value from the document
+                int currentScore = documentSnapshot.getLong("score").intValue();
+
+                // Increment the score by 10
+                int newScore = (int) (currentScore + finalStandardPrice);
+
+                // Update the score in the document
+                userDocRef.update("score", newScore)
+                        .addOnSuccessListener(aVoid -> {
+                            // Score updated successfully
+                            System.out.println("Score updated successfully. New score: " + newScore);
+                        })
+                        .addOnFailureListener(e -> {
+                            // Failed to update the score
+                            System.out.println("Failed to update score: " + e.getMessage());
+                        });
+            } else {
+                // User document does not exist
+                System.out.println("User document does not exist for UID: " + uid);
+            }
+        }).addOnFailureListener(e -> {
+            // Failed to retrieve the user document
+            System.out.println("Failed to retrieve user document: " + e.getMessage());
+        });
+
     }
+    public void delScore(String uid, long achievePrice){
+
+        CollectionReference usersRef = FirebaseFirestore.getInstance().collection("Users");
+
+        long standardPrice = 1;
+        if(achievePrice > 0){
+            standardPrice = achievePrice;
+        }
+
+        DocumentReference userDocRef = usersRef.document(uid);
+        userDocRef.update("score", FieldValue.increment(-standardPrice))
+                .addOnSuccessListener(aVoid -> {
+                    // Успешное обновление
+                    System.out.println("Успешное обновление счета");
+                })
+                .addOnFailureListener(e -> {
+                    // Обработка ошибки обновления
+                    System.out.println("Ошибка обновления счета: " + e.getMessage());
+                });
+    }
+
     public void showProofButton(){
         addButton.setVisibility(View.GONE); // скрываем кнопку
         confirmButton.setVisibility(View.VISIBLE); // отображаем кнопку

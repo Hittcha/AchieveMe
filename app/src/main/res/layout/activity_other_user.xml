@@ -111,7 +111,7 @@
 
                 <TextView
                     android:id="@+id/subscriptionsList2"
-                    android:layout_width="95dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="24dp"
                     android:layout_marginStart="92dp"
                     android:layout_marginTop="16dp"
@@ -125,7 +125,7 @@
 
                 <TextView
                     android:id="@+id/scoreTextView2"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="24dp"
                     android:layout_marginStart="32dp"
                     android:layout_marginTop="16dp"

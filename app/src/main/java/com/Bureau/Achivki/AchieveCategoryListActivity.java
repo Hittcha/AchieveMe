@@ -56,6 +56,8 @@ public class AchieveCategoryListActivity extends AppCompatActivity {
         Intent intentMain = getIntent();
         String categoryName = intentMain.getStringExtra("Category_key");
 
+        p(0,0);
+
 
         TextView categoryNameTextView = findViewById(R.id.categoryNameTextView);
         categoryNameTextView.setText(categoryName);
@@ -166,7 +168,7 @@ public class AchieveCategoryListActivity extends AppCompatActivity {
         });
     }
 
-    public void p(int a, int count){
+    private void p(int a, int count){
         ProgressBar progressBar = findViewById(R.id.progressBar);
         progressBar.setMax(count);
         progressBar.setProgress(a);
@@ -301,6 +303,7 @@ public class AchieveCategoryListActivity extends AppCompatActivity {
                             long finalDayLimit = dayLimit;
                             long finalAchieveCount = achieveCount;
                             String finalCountDesc = countDesc;
+                            long finalDoneCount = doneCount;
                             blockLayout.setOnClickListener(v -> {
                                 Intent intent;
                                 // Обработка нажатия кнопки
@@ -319,6 +322,7 @@ public class AchieveCategoryListActivity extends AppCompatActivity {
                                 intent.putExtra("achievePrice", finalAchievePrice);
                                 intent.putExtra("isFavorites", finalIsFavorites);
                                 intent.putExtra("countDesc", finalCountDesc);
+                                intent.putExtra("doneCount", finalDoneCount);
                                 startActivityForResult(intent, REQUEST_CODE);
                             });
                         }

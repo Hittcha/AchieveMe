@@ -222,6 +222,54 @@ public class AchieveListActivity extends AppCompatActivity {
                                     e.printStackTrace();
                                 }
                                 break;
+                            case "Фильмы":
+                                try {
+                                    InputStream inputStream = assetManager.open("category_small/films.jpg");
+                                    Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                                    RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), bitmap);
+                                    roundedBitmapDrawable.setCornerRadius(20); // Здесь можно указать радиус закругления
+                                    favorites_icon_Button.setImageDrawable(roundedBitmapDrawable);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                                //blockLayout.setBackgroundResource(R.drawable.template_cooking);
+                                break;
+                            case "Книги":
+                                try {
+                                    InputStream inputStream = assetManager.open("category_small/books.jpg");
+                                    Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                                    RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), bitmap);
+                                    roundedBitmapDrawable.setCornerRadius(20); // Здесь можно указать радиус закругления
+                                    favorites_icon_Button.setImageDrawable(roundedBitmapDrawable);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                                //blockLayout.setBackgroundResource(R.drawable.template_cooking);
+                                break;
+                            case "Москва":
+                                try {
+                                    InputStream inputStream = assetManager.open("category_small/moscow.jpg");
+                                    Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                                    RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), bitmap);
+                                    roundedBitmapDrawable.setCornerRadius(20); // Здесь можно указать радиус закругления
+                                    favorites_icon_Button.setImageDrawable(roundedBitmapDrawable);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                                //blockLayout.setBackgroundResource(R.drawable.template_cooking);
+                                break;
+                            case "Санкт Петербург":
+                                try {
+                                    InputStream inputStream = assetManager.open("category_small/sankt_petersburg.jpg");
+                                    Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                                    RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), bitmap);
+                                    roundedBitmapDrawable.setCornerRadius(20); // Здесь можно указать радиус закругления
+                                    favorites_icon_Button.setImageDrawable(roundedBitmapDrawable);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                                //blockLayout.setBackgroundResource(R.drawable.template_cooking);
+                                break;
                             default:
                                 blockLayout.setBackgroundResource(R.drawable.template);
                                 break;

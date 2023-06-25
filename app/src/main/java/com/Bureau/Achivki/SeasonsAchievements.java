@@ -145,7 +145,6 @@ public class SeasonsAchievements extends AppCompatActivity {
 
         db = FirebaseFirestore.getInstance();
 
-        //System.out.println("11111111111111111111111111111111111111111111111111111111 " + currentUser.getUid());
 
         DocumentReference mAuthDocRef = db.collection("Users").document(currentUser.getUid());
 
@@ -320,7 +319,7 @@ public class SeasonsAchievements extends AppCompatActivity {
         });
     }
 
-    private void checkStatus(String achievementName, String categoryName, String name, boolean proof){
+    /*private void checkStatus(String achievementName, String categoryName, String name, boolean proof){
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = mAuth.getCurrentUser();
 
@@ -362,11 +361,8 @@ public class SeasonsAchievements extends AppCompatActivity {
                 // Здесь можно продолжить работу с полученным Map достижений
             }
         });
-    }
-
-
-
-    private void createButton(String name, String color, String categoryName, String username, boolean proof) {
+    }*/
+    /*private void createButton(String name, String color, String categoryName, String username, boolean proof) {
         LinearLayout layout = findViewById(R.id.scrollView1);
         Button button = new Button(SeasonsAchievements.this);
         button.setText(name);
@@ -391,28 +387,7 @@ public class SeasonsAchievements extends AppCompatActivity {
         List<String> achievementNames = new ArrayList<>();
         // String confirmed = "sfd";
 
-       /* userRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                Map<String, Object> userData = documentSnapshot.getData();
-                Map<String, Object> achievements = (Map<String, Object>) userData.get("userAchievements");
 
-                for (Map.Entry<String, Object> entry : achievements.entrySet()) {
-                    Map<String, Object> achievement = (Map<String, Object>) entry.getValue();
-
-                    if (achievement.get("name").equals(name)) {
-                       Boolean confirmed = (Boolean) achievement.get("confirmed");
-                        System.out.println(confirmed);
-
-                    }
-
-                    //createAchieveButton(name, desc);
-                }
-                // Здесь можно продолжить работу с полученным Map достижений
-            }
-        });*/
-
-        // здесь можно добавить дополнительные параметры для кнопки, например, размеры, цвет, обработчик нажатия и т.д.
 
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
@@ -455,7 +430,8 @@ public class SeasonsAchievements extends AppCompatActivity {
         LinearLayout scrollView = findViewById(R.id.scrollView1);
         scrollView.addView(button);
 
-    }
+    }*/
+
     public void p(int a, int count){
         progressBar = findViewById(R.id.progressBar);
         progressBar.setMax(count);
