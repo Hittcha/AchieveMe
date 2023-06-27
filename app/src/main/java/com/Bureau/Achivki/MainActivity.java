@@ -124,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
         String userId = currentUser.getUid();
 
         //Проверка айди админа
-        if (userId.equals("IWIXASnDmoTJJxKAOCUxyRnxd0i1")){
+        if (userId.equals("oNJgYMcGVUg1vupBIWzT1fWdV372")){
             Button adminButton = findViewById(R.id.adminButton);
             adminButton.setVisibility(View.VISIBLE);
         }
@@ -202,6 +202,9 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
+
+        //showStartAchieve();
+
         achievementsRef.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 for (QueryDocumentSnapshot document : task.getResult()) {
@@ -268,6 +271,27 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(MainActivity.this, UsersListActivity.class);
             startActivity(intent);
         });
+
+    }
+
+    private void showStartAchieve(){
+        LinearLayout parentLayout = findViewById(R.id.scrollView1);
+        parentLayout.removeAllViews();
+
+        String achname = "name";
+        String category = "category";
+
+        ConstraintLayout blockLayout = (ConstraintLayout) LayoutInflater.from(MainActivity.this)
+                .inflate(R.layout.block_category, parentLayout, false);
+
+        TextView CategoryNameTextView = blockLayout.findViewById(R.id.categoryNameTextView);
+
+        CategoryNameTextView.setText(achname);
+
+        parentLayout.addView(blockLayout);
+
+        blockLayout.setBackgroundResource(R.drawable.template);
+        parentLayout.addView(blockLayout);
 
     }
 
@@ -373,6 +397,50 @@ public class MainActivity extends AppCompatActivity {
                     case "season1":
                         try {
                             InputStream inputStream = assetManager.open("favorites/season1_favorites.png");
+                            Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                            RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), bitmap);
+                            roundedBitmapDrawable.setCornerRadius(20); // Здесь можно указать радиус закругления
+                            favorites_icon_Button.setBackground(roundedBitmapDrawable);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        break;
+                    case "Книги":
+                        try {
+                            InputStream inputStream = assetManager.open("favorites/books_favorites.jpg");
+                            Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                            RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), bitmap);
+                            roundedBitmapDrawable.setCornerRadius(20); // Здесь можно указать радиус закругления
+                            favorites_icon_Button.setBackground(roundedBitmapDrawable);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        break;
+                    case "Москва":
+                        try {
+                            InputStream inputStream = assetManager.open("favorites/moscow_favorites.jpg");
+                            Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                            RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), bitmap);
+                            roundedBitmapDrawable.setCornerRadius(20); // Здесь можно указать радиус закругления
+                            favorites_icon_Button.setBackground(roundedBitmapDrawable);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        break;
+                    case "Фильмы":
+                        try {
+                            InputStream inputStream = assetManager.open("favorites/films_favorites.jpg");
+                            Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                            RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), bitmap);
+                            roundedBitmapDrawable.setCornerRadius(20); // Здесь можно указать радиус закругления
+                            favorites_icon_Button.setBackground(roundedBitmapDrawable);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        break;
+                    case "Санкт Петербург":
+                        try {
+                            InputStream inputStream = assetManager.open("favorites/sankt_petersburg_favorites.jpg");
                             Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
                             RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), bitmap);
                             roundedBitmapDrawable.setCornerRadius(20); // Здесь можно указать радиус закругления
@@ -545,6 +613,54 @@ public class MainActivity extends AppCompatActivity {
                 case "Калининград":
                     try {
                         InputStream inputStream = assetManager.open("category_small/kaliningrad.png");
+                        Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                        RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), bitmap);
+                        roundedBitmapDrawable.setCornerRadius(20); // Здесь можно указать радиус закругления
+                        backGroundImageView.setImageDrawable(roundedBitmapDrawable);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    //blockLayout.setBackgroundResource(R.drawable.template_cooking);
+                    break;
+                case "Фильмы":
+                    try {
+                        InputStream inputStream = assetManager.open("category_small/films.png");
+                        Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                        RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), bitmap);
+                        roundedBitmapDrawable.setCornerRadius(20); // Здесь можно указать радиус закругления
+                        backGroundImageView.setImageDrawable(roundedBitmapDrawable);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    //blockLayout.setBackgroundResource(R.drawable.template_cooking);
+                    break;
+                case "Книги":
+                    try {
+                        InputStream inputStream = assetManager.open("category_small/books.png");
+                        Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                        RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), bitmap);
+                        roundedBitmapDrawable.setCornerRadius(20); // Здесь можно указать радиус закругления
+                        backGroundImageView.setImageDrawable(roundedBitmapDrawable);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    //blockLayout.setBackgroundResource(R.drawable.template_cooking);
+                    break;
+                case "Москва":
+                    try {
+                        InputStream inputStream = assetManager.open("category_small/moscow.png");
+                        Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                        RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), bitmap);
+                        roundedBitmapDrawable.setCornerRadius(20); // Здесь можно указать радиус закругления
+                        backGroundImageView.setImageDrawable(roundedBitmapDrawable);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    //blockLayout.setBackgroundResource(R.drawable.template_cooking);
+                    break;
+                case "Санкт Петербург":
+                    try {
+                        InputStream inputStream = assetManager.open("category_small/sankt_petersburg.png");
                         Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
                         RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), bitmap);
                         roundedBitmapDrawable.setCornerRadius(20); // Здесь можно указать радиус закругления

@@ -131,7 +131,11 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
                                 String description = document.getString("desc");
                                 //String description = document.getString("desc");
                                 System.out.println("description" + desc);
-                                descMessage.setText(description);
+                                if(achievePrice < 1){
+                                    descMessage.setText(description);
+                                }else {
+                                    descMessage.setText(description + " (+" + achievePrice + " ОС).");
+                                }
                             }
                         } else {
                             Log.d(TAG, "Ошибка получения достижений из Firestorm: ", task.getException());
@@ -274,11 +278,11 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
         delButton.setVisibility(View.GONE); // скрываем кнопку
         addButton.setVisibility(View.VISIBLE); // отображаем кнопку
     }
-    public void addScore(String uid, long achievePrice) {
+    private void addScore(String uid, long achievePrice) {
         // Получаем ссылку на коллекцию пользователей
         CollectionReference usersRef = FirebaseFirestore.getInstance().collection("Users");
 
-        long standardPrice = 10;
+        long standardPrice = 1;
         if(achievePrice > 0){
             standardPrice = achievePrice;
         }
@@ -299,7 +303,7 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
 
         CollectionReference usersRef = FirebaseFirestore.getInstance().collection("Users");
 
-        long standardPrice = 10;
+        long standardPrice = 1;
         if(achievePrice > 0){
             standardPrice = achievePrice;
         }
@@ -350,7 +354,7 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
                 achieveMap.put(achieveName, newFav);
                 userAchievements.put("favorites", achieveMap);
                 usersRef.set(userAchievements);
-                Toast.makeText(this, "Достижение добавлено в профиль", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Достижение добавлено в избранное", Toast.LENGTH_SHORT).show();
                 changeStrokeColor();
 
             });

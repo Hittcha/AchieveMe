@@ -99,7 +99,7 @@
 
                 <TextView
                     android:id="@+id/friendsList2"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="24dp"
                     android:layout_marginTop="16dp"
                     android:layout_marginEnd="32dp"
@@ -111,15 +111,13 @@
 
                 <TextView
                     android:id="@+id/subscriptionsList2"
-                    android:layout_width="95dp"
+                    android:layout_width="86dp"
                     android:layout_height="24dp"
-                    android:layout_marginStart="92dp"
                     android:layout_marginTop="16dp"
                     android:text="Подписчики"
                     android:textColor="@color/white"
                     android:textSize="15sp"
                     app:layout_constraintEnd_toStartOf="@+id/friendsList2"
-                    app:layout_constraintHorizontal_bias="0.051"
                     app:layout_constraintStart_toEndOf="@+id/scoreTextView2"
                     app:layout_constraintTop_toBottomOf="@+id/welcome_message" />
 

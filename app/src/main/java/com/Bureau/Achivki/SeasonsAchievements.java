@@ -88,6 +88,8 @@ public class SeasonsAchievements extends AppCompatActivity {
         achieveListButton = findViewById(R.id.imageButtonAchieveList);
         ImageView backgroundImage = findViewById(R.id.season_category_background);
 
+        p(0,0);
+
         try {
             InputStream ims = getAssets().open("season_challenge/summer_challenge_background.png");
             Drawable drawableBackground = Drawable.createFromStream(ims, null);
@@ -145,7 +147,6 @@ public class SeasonsAchievements extends AppCompatActivity {
 
         db = FirebaseFirestore.getInstance();
 
-        //System.out.println("11111111111111111111111111111111111111111111111111111111 " + currentUser.getUid());
 
         DocumentReference mAuthDocRef = db.collection("Users").document(currentUser.getUid());
 
@@ -320,142 +321,35 @@ public class SeasonsAchievements extends AppCompatActivity {
         });
     }
 
-    private void checkStatus(String achievementName, String categoryName, String name, boolean proof){
-        FirebaseAuth mAuth = FirebaseAuth.getInstance();
-        FirebaseUser currentUser = mAuth.getCurrentUser();
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        DocumentReference userRef = db.collection("Users").document(currentUser.getUid());
+        if (requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
 
-        List<String> achievementNames = new ArrayList<>();
+            //перезагружаем список ачивок и обновляем счетсчик
 
-        // String confirmed = "sfd";
+            count = 0;
+            achievedone = 0;
 
-        userRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                Map<String, Object> userData = documentSnapshot.getData();
-                Map<String, Object> achievements = (Map<String, Object>) userData.get("userAchievements");
+            LinearLayout parentLayout = findViewById(R.id.scrollView1);
+            parentLayout.removeAllViews();
 
-                for (Map.Entry<String, Object> entry : achievements.entrySet()) {
-                    Map<String, Object> achievement = (Map<String, Object>) entry.getValue();
+            FirebaseAuth mAuth = FirebaseAuth.getInstance();
+            FirebaseUser currentUser = mAuth.getCurrentUser();
 
-                    if (achievement.get("name").equals(achievementName)) {
-                        Boolean confirmed = (Boolean) achievement.get("confirmed");
-                        Boolean proofsended = (Boolean) achievement.get("proofsended");
-                        //System.out.println(confirmed);
-                        if(confirmed == true){
-                            System.out.println("confirmed");
-                            createButton(achievementName,"green", categoryName, name, proof);
-                        }else if (proofsended == true) {
-                            createButton(achievementName,"yellow", categoryName, name, proof);
-                            System.out.println("proofsended");
-                            //createButton(achievementName, "green", categoryName, name, proof);
-                        }else{
-                            createButton(achievementName,"black", categoryName, name, proof);
-                            System.out.println("not ");
-                        }
-                    }
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            DocumentReference mAuthDocRef = db.collection("Users").document(currentUser.getUid());
 
-                    //createAchieveButton(name, desc);
+            mAuthDocRef.get().addOnSuccessListener(documentSnapshot -> {
+                if (documentSnapshot.exists()) {
+                    createAchieveList(currentUser.getUid());
+                } else {
+                    // документ не найден
                 }
-                // Здесь можно продолжить работу с полученным Map достижений
-            }
-        });
-    }
-
-
-
-    private void createButton(String name, String color, String categoryName, String username, boolean proof) {
-        LinearLayout layout = findViewById(R.id.scrollView1);
-        Button button = new Button(SeasonsAchievements.this);
-        button.setText(name);
-        button.setBackgroundColor(Color.BLUE);
-
-        boolean received;
-
-        // Получаем ссылку на коллекцию "Users"
-        CollectionReference usersRef = FirebaseFirestore.getInstance().collection("Users");
-
-        // Создаем запрос, который возвращает только документы, у которых есть достижение "красноярск"
-        //Query query = usersRef.whereEqualTo("userAchievements.Путешествие в Скандинавию.name", name);
-
-        //System.out.println(query);
-
-        FirebaseAuth mAuth = FirebaseAuth.getInstance();
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        DocumentReference userRef = db.collection("Users").document(currentUser.getUid());
-
-        List<String> achievementNames = new ArrayList<>();
-        // String confirmed = "sfd";
-
-       /* userRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                Map<String, Object> userData = documentSnapshot.getData();
-                Map<String, Object> achievements = (Map<String, Object>) userData.get("userAchievements");
-
-                for (Map.Entry<String, Object> entry : achievements.entrySet()) {
-                    Map<String, Object> achievement = (Map<String, Object>) entry.getValue();
-
-                    if (achievement.get("name").equals(name)) {
-                       Boolean confirmed = (Boolean) achievement.get("confirmed");
-                        System.out.println(confirmed);
-
-                    }
-
-                    //createAchieveButton(name, desc);
-                }
-                // Здесь можно продолжить работу с полученным Map достижений
-            }
-        });*/
-
-        // здесь можно добавить дополнительные параметры для кнопки, например, размеры, цвет, обработчик нажатия и т.д.
-
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.MATCH_PARENT
-        );
-        layoutParams.setMargins(20, 20, 20, 20);
-        button.setBackgroundColor(Color.GREEN);
-
-        if (color == "green"){
-            button.setBackgroundResource(R.drawable.achievebackgroundgreen);
-            received = true;
-        }else if(color == "yellow"){
-            button.setBackgroundResource(R.drawable.achievebackgroundyellow);
-            received = true;
-        }else{
-            button.setBackgroundResource(R.drawable.achievebackground);
-            received = false;
+            });
         }
-
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Обработка нажатия кнопки
-                Intent intent = new Intent(SeasonsAchievements.this, SeasonAchievementsDescriptionActivity.class);
-                intent.putExtra("Achieve_key", name);
-                intent.putExtra("Category_key", categoryName);
-                intent.putExtra("Is_Received", received);
-                intent.putExtra("User_name", username);
-                intent.putExtra("ProofNeeded", proof);
-                startActivity(intent);
-            }
-        });
-
-
-        button.setLayoutParams(layoutParams);
-
-        button.setTag(name);
-        //button.setBackgroundResource(R.drawable.achievebackground);
-
-        LinearLayout scrollView = findViewById(R.id.scrollView1);
-        scrollView.addView(button);
-
     }
+
     public void p(int a, int count){
         progressBar = findViewById(R.id.progressBar);
         progressBar.setMax(count);

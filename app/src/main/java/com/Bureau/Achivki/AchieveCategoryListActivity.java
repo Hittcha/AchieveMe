@@ -56,6 +56,8 @@ public class AchieveCategoryListActivity extends AppCompatActivity {
         Intent intentMain = getIntent();
         String categoryName = intentMain.getStringExtra("Category_key");
 
+        p(0,0);
+
 
         TextView categoryNameTextView = findViewById(R.id.categoryNameTextView);
         categoryNameTextView.setText(categoryName);
@@ -142,6 +144,42 @@ public class AchieveCategoryListActivity extends AppCompatActivity {
                     throw new RuntimeException(e);
                 }
                 break;
+            case "Фильмы":
+                try {
+                    InputStream ims = getAssets().open("category_small/films.png");
+                    Drawable drawableBackground = Drawable.createFromStream(ims, null);
+                    backgroundImage.setImageDrawable(drawableBackground);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                break;
+            case "Книги":
+                try {
+                    InputStream ims = getAssets().open("category_small/books.png");
+                    Drawable drawableBackground = Drawable.createFromStream(ims, null);
+                    backgroundImage.setImageDrawable(drawableBackground);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                break;
+            case "Москва":
+                try {
+                    InputStream ims = getAssets().open("category_small/moscow.png");
+                    Drawable drawableBackground = Drawable.createFromStream(ims, null);
+                    backgroundImage.setImageDrawable(drawableBackground);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                break;
+            case "Санкт Петербург":
+                try {
+                    InputStream ims = getAssets().open("category_small/sankt_petersburg.png");
+                    Drawable drawableBackground = Drawable.createFromStream(ims, null);
+                    backgroundImage.setImageDrawable(drawableBackground);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                break;
             default:
                 topConstraintLayout.setBackground(null);
                 break;
@@ -166,7 +204,7 @@ public class AchieveCategoryListActivity extends AppCompatActivity {
         });
     }
 
-    public void p(int a, int count){
+    private void p(int a, int count){
         ProgressBar progressBar = findViewById(R.id.progressBar);
         progressBar.setMax(count);
         progressBar.setProgress(a);
@@ -218,14 +256,16 @@ public class AchieveCategoryListActivity extends AppCompatActivity {
                             boolean collectable = false;
                             long achieveCount = 0;
                             long doneCount = 0;
-                            String countDesc = "";
+                            String countDesc = "Выполнено";
                             long dayLimit = 0;
 
                             if (document.contains("collectable")) {
                                 collectable = Boolean.TRUE.equals(document.getBoolean("collectable"));
                                 achieveCount = document.getLong("count");
                                 dayLimit = document.getLong("dayLimit");
-                                countDesc = document.getString("countDesc");
+                                if (document.contains("countDesc")) {
+                                    countDesc = document.getString("countDesc");
+                                }
                                 System.out.println("collectable " + collectable);
                             } else {
                                 // Обработка ситуации, когда поле отсутствует
@@ -288,7 +328,11 @@ public class AchieveCategoryListActivity extends AppCompatActivity {
                                 progressDesc.setVisibility(View.VISIBLE);
                                 progress.setMax((int)achieveCount);
                                 progress.setProgress((int) doneCount);
-                                progressDesc.setText(countDesc + ": " + (int) doneCount + " из " + (int) achieveCount);
+                                if(countDesc.equals(null)){
+                                    progressDesc.setText("\nВыполнено " + doneCount + " из " + achieveCount);
+                                }else {
+                                    progressDesc.setText(countDesc + ": " + (int) doneCount + " из " + (int) achieveCount);
+                                }
                             }
 
                             TextView AchieveNameTextView = blockLayout.findViewById(R.id.achieveName_blockTextView);
@@ -301,6 +345,7 @@ public class AchieveCategoryListActivity extends AppCompatActivity {
                             long finalDayLimit = dayLimit;
                             long finalAchieveCount = achieveCount;
                             String finalCountDesc = countDesc;
+                            long finalDoneCount = doneCount;
                             blockLayout.setOnClickListener(v -> {
                                 Intent intent;
                                 // Обработка нажатия кнопки
@@ -319,6 +364,7 @@ public class AchieveCategoryListActivity extends AppCompatActivity {
                                 intent.putExtra("achievePrice", finalAchievePrice);
                                 intent.putExtra("isFavorites", finalIsFavorites);
                                 intent.putExtra("countDesc", finalCountDesc);
+                                intent.putExtra("doneCount", finalDoneCount);
                                 startActivityForResult(intent, REQUEST_CODE);
                             });
                         }

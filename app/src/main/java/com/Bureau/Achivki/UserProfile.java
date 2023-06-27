@@ -89,6 +89,8 @@ public class UserProfile extends AppCompatActivity {
     private DrawerLayout drawerLayout;
     Intent intent;
 
+    private FirebaseAuth firebaseAuth;
+
     private static final int PERMISSION_REQUEST_CODE = 100;
 
 
@@ -114,6 +116,8 @@ public class UserProfile extends AppCompatActivity {
             return false;
         });
 
+        firebaseAuth = FirebaseAuth.getInstance();
+
         //Выкидное меню
         drawerLayout = findViewById(R.id.drawer_layout);
         ImageButton btnOpenMenu = findViewById(R.id.btn_open_menu);
@@ -126,15 +130,25 @@ public class UserProfile extends AppCompatActivity {
                 case R.id.nav_item1:
                     // Действие при выборе настройки 1
                     intent = new Intent(UserProfile.this, SuggestAchieveActivity.class);
+                    startActivity(intent);
                     break;
                 case R.id.nav_item2:
                     // Действие при выборе настройки 2
                     intent = new Intent(UserProfile.this, MyAchievementsActivity.class);
+                    startActivity(intent);
+                    break;
+                case R.id.nav_item3:
+                    // Действие при выборе настройки 1
+                    intent = new Intent(UserProfile.this, AppInfoActivity.class);
+                    startActivity(intent);
+                    break;
+                case R.id.nav_item4:
+                    // Действие при выборе настройки 3
+                    showSignOutConfirmationDialog();
                     break;
             }
             // Закрытие меню после выбора пункта
             drawerLayout.closeDrawer(GravityCompat.END);
-            startActivity(intent);
             return true;
         });
 
@@ -304,6 +318,21 @@ public class UserProfile extends AppCompatActivity {
             if (imageUri != null) {
                 try {
                     InputStream inputStream = getContentResolver().openInputStream(imageUri);
+
+                    if (inputStream != null) {
+                        long fileSizeInBytes = inputStream.available();
+                        long fileSizeInMegabytes = fileSizeInBytes / (1024 * 1024);
+                        //inputStream.close();
+
+                        System.out.println("fileSizeInMegabytes: " + fileSizeInMegabytes);
+
+                        if (fileSizeInMegabytes > 5) {
+                            // Файл превышает 5 мегабайт, выдаем ошибку
+                            Toast.makeText(this, "Выбранное изображение слишком большое. Максимальный размер - 5 МБ", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                    }
+
                     Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
                     Bitmap circleBitmap = getCircleBitmap(bitmap);
                     profileImageView.setImageBitmap(circleBitmap);
@@ -312,6 +341,8 @@ public class UserProfile extends AppCompatActivity {
                     saveAvatarToLocalFiles(bitmap);
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
                 }
             }
         }
@@ -359,10 +390,10 @@ public class UserProfile extends AppCompatActivity {
 
         uploadTask.addOnFailureListener(exception -> {
             // Handle unsuccessful uploads
-            Toast.makeText(UserProfile.this, "Failed to upload image", Toast.LENGTH_SHORT).show();
+            Toast.makeText(UserProfile.this, "Ошибка загрузки изображения", Toast.LENGTH_SHORT).show();
         }).addOnSuccessListener(taskSnapshot -> {
             // Handle successful uploads
-            Toast.makeText(UserProfile.this, "Image uploaded successfully", Toast.LENGTH_SHORT).show();
+            Toast.makeText(UserProfile.this, "Изображение успешно загружено", Toast.LENGTH_SHORT).show();
         });
     }
 
@@ -852,6 +883,35 @@ public class UserProfile extends AppCompatActivity {
         }else{
             selectImageFromLibrary();
         }
+    }
+
+    private void showSignOutConfirmationDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Выход из профиля");
+        builder.setMessage("Вы уверены, что хотите выйти из профиля?");
+
+        builder.setPositiveButton("Да", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                signOut();
+            }
+        });
+
+        builder.setNegativeButton("Нет", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    private void signOut() {
+        firebaseAuth.signOut();
+        Intent intent = new Intent(this, StartMainActivity.class);
+        startActivity(intent);
     }
 
 

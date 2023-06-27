@@ -18,6 +18,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -25,10 +27,11 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
 import java.util.Map;
+import java.util.Set;
 
 public class OtherUserAchievements extends AppCompatActivity {
 
-    private String userName;
+    //private String userName;
 
     private static final int REQUEST_CODE = 10;
 
@@ -58,36 +61,44 @@ public class OtherUserAchievements extends AppCompatActivity {
 
         DocumentReference mAuthDocRef = db.collection("Users").document(userToken);
 
+        createAchieveBlock();
 
-        /*mAuthDocRef.get().addOnSuccessListener(documentSnapshot -> {
-            if (documentSnapshot.exists()) {
-                userName = documentSnapshot.getString("name");
-                getSupportActionBar().setTitle("Достижения " + userName);
+        ImageButton leaderListButton = findViewById(R.id.imageButtonLeaderList);
+        leaderListButton.setOnClickListener(v -> {
+            Intent intent = new Intent(OtherUserAchievements.this, LeaderBoardActivity.class);
+            startActivity(intent);
+        });
+        ImageButton menuButton = findViewById(R.id.imageButtonMenu);
+        menuButton.setOnClickListener(v -> {
+            Intent intent = new Intent(OtherUserAchievements.this, MainActivity.class);
+            startActivity(intent);
+        });
+        ImageButton favoritesButton = findViewById(R.id.imageButtonFavorites);
+        favoritesButton.setOnClickListener(v -> {
+            Intent intent = new Intent(OtherUserAchievements.this, ListOfFavoritesActivity.class);
+            startActivity(intent);
+        });
+        ImageButton achieveListButton = findViewById(R.id.imageButtonAchieveList);
+        achieveListButton.setOnClickListener(v -> {
+            Intent intent = new Intent(OtherUserAchievements.this, AchieveListActivity.class);
+            startActivity(intent);
+        });
 
-                Map<String, Object> userData = documentSnapshot.getData();
-                Map<String, Object> achievements = (Map<String, Object>) userData.get("userAchievements");
-                for (Map.Entry<String, Object> entry : achievements.entrySet()) {
-                    Map<String, Object> achievement = (Map<String, Object>) entry.getValue();
-                    String key = entry.getKey();
-                    System.out.println("key: " + key);
-                    String achievementName = (String) achievement.get("name");
-                    Boolean confirmed = (Boolean) achievement.get("confirmed");
-                    Boolean proofSended = (Boolean) achievement.get("proofsended");
+        ImageButton usersListButton = findViewById(R.id.imageButtonUsersList);
+        usersListButton.setOnClickListener(v -> {
+            Intent intent = new Intent(OtherUserAchievements.this, UsersListActivity.class);
+            startActivity(intent);
+        });
+    }
 
+    private void createAchieveBlock(){
+        Intent intentOtherUser = getIntent();
+        String userToken = intentOtherUser.getStringExtra("User_token");
 
-                    if(confirmed == true){
-                        createAchieveBlock(achievementName, "green");
-                    }else if (proofSended == true) {
-                        createAchieveBlock(achievementName, "yellow");
-                    }else{
-                        createAchieveBlock(achievementName, "black");
-                    }
-                }
-            } else {
-                // документ не найден
-                Toast.makeText(OtherUserAchievements.this, "Документ не найден", Toast.LENGTH_SHORT).show();
-            }
-        });*/
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        DocumentReference mAuthDocRef = db.collection("Users").document(userToken);
+
 
         mAuthDocRef.get().addOnSuccessListener(documentSnapshot -> {
             if (documentSnapshot.exists()) {
@@ -151,7 +162,7 @@ public class OtherUserAchievements extends AppCompatActivity {
                     }
 
                     blockLayout.setOnClickListener(v -> {
-                        checkAchieve(achievementName, received, achievementCategory);
+                        checkAchieve(achievementName, achievementCategory);
                     });
 
                     if(collectable){
@@ -180,56 +191,10 @@ public class OtherUserAchievements extends AppCompatActivity {
                 Toast.makeText(this, "Документ не найден", Toast.LENGTH_SHORT).show();
             }
         });
-
-        ImageButton leaderListButton = findViewById(R.id.imageButtonLeaderList);
-        leaderListButton.setOnClickListener(v -> {
-            Intent intent = new Intent(OtherUserAchievements.this, LeaderBoardActivity.class);
-            startActivity(intent);
-        });
-        ImageButton menuButton = findViewById(R.id.imageButtonMenu);
-        menuButton.setOnClickListener(v -> {
-            Intent intent = new Intent(OtherUserAchievements.this, MainActivity.class);
-            startActivity(intent);
-        });
-        ImageButton favoritesButton = findViewById(R.id.imageButtonFavorites);
-        favoritesButton.setOnClickListener(v -> {
-            Intent intent = new Intent(OtherUserAchievements.this, ListOfFavoritesActivity.class);
-            startActivity(intent);
-        });
-        ImageButton achieveListButton = findViewById(R.id.imageButtonAchieveList);
-        achieveListButton.setOnClickListener(v -> {
-            Intent intent = new Intent(OtherUserAchievements.this, AchieveListActivity.class);
-            startActivity(intent);
-        });
-
-        ImageButton usersListButton = findViewById(R.id.imageButtonUsersList);
-        usersListButton.setOnClickListener(v -> {
-            Intent intent = new Intent(OtherUserAchievements.this, UsersListActivity.class);
-            startActivity(intent);
-        });
     }
 
-    private void createAchieveBlock(String achievementName, String color) {
-        LinearLayout parentLayout = findViewById(R.id.scrollView);
-        ConstraintLayout blockLayout;
 
-        if (color == "green") {
-            blockLayout = (ConstraintLayout) LayoutInflater.from(OtherUserAchievements.this)
-                    .inflate(R.layout.block_achieve_green, parentLayout, false);
-        } else if (color == "yellow") {
-            blockLayout = (ConstraintLayout) LayoutInflater.from(OtherUserAchievements.this)
-                    .inflate(R.layout.block_achieve_yellow, parentLayout, false);
-        } else {
-            blockLayout = (ConstraintLayout) LayoutInflater.from(OtherUserAchievements.this)
-                    .inflate(R.layout.block_achieve, parentLayout, false);
-        }
-
-        TextView AchieveNameTextView = blockLayout.findViewById(R.id.achieveName_blockTextView);
-        AchieveNameTextView.setText(achievementName);
-        parentLayout.addView(blockLayout);
-    }
-
-    private void checkAchieve(String achieveName, boolean received, String category){
+    private void checkAchieve(String achieveName, String category){
 
         // Получение ссылки на коллекцию достижений
         CollectionReference achievementsCollectionRef;
@@ -240,72 +205,157 @@ public class OtherUserAchievements extends AppCompatActivity {
             achievementsCollectionRef = FirebaseFirestore.getInstance().collection("Achievements");
         }
 
-        Query categoryQuery = achievementsCollectionRef.whereEqualTo("name", achieveName);
-        categoryQuery.get().addOnSuccessListener(querySnapshot -> {
-            for (DocumentSnapshot document : querySnapshot.getDocuments()) {
-                // Получаем имя достижения из документа
-                String achievementName = document.getString("name");
+        CollectionReference usersCollectionRef = FirebaseFirestore.getInstance().collection("Users");
 
-                boolean proof = Boolean.TRUE.equals(document.getBoolean("proof"));
-                boolean collectable = false;
-                long achieveCount = 0;
-                long doneCount = 0;
-                String countDesc = "";
-                long dayLimit = 0;
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
 
-                if (document.contains("collectable")) {
-                    collectable = Boolean.TRUE.equals(document.getBoolean("collectable"));
-                    achieveCount = document.getLong("count");
-                    dayLimit = document.getLong("dayLimit");
-                    countDesc = document.getString("countDesc");
-                    System.out.println("collectable " + collectable);
-                } else {
-                    // Обработка ситуации, когда поле отсутствует
-                    System.out.println("not collectable " + collectable);
+        // Получение документа пользователя из коллекции Users
+        DocumentReference userDocRef = usersCollectionRef.document(currentUser.getUid());
+        userDocRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot userDocSnapshot = task.getResult();
+                if (userDocSnapshot.exists()) {
+                    // Получение Map UserAchieve пользователя
+                    Map<String, Object> userAchieveMap = (Map<String, Object>) userDocSnapshot.get("userAchievements");
+                    // Получение достижений пользователя
+                    Set<String> userAchievements = userAchieveMap.keySet();
+
+                    // Получение Map UserAchieve пользователя
+                    Map<String, Object> userFavoritesMap = (Map<String, Object>) userDocSnapshot.get("favorites");
+                    // Получение достижений пользователя
+                    Set<String> userFavorites = userFavoritesMap.keySet();
+
+                    Query categoryQuery = achievementsCollectionRef.whereEqualTo("name", achieveName);
+                    categoryQuery.get().addOnSuccessListener(querySnapshot -> {
+                        for (DocumentSnapshot document : querySnapshot.getDocuments()) {
+                            // Получаем имя достижения из документа
+                            String achievementName = document.getString("name");
+
+                            boolean proof = Boolean.TRUE.equals(document.getBoolean("proof"));
+                            boolean collectable = false;
+                            long achieveCount = 0;
+                            long doneCount = 0;
+                            String countDesc = "";
+                            long dayLimit = 0;
+
+                            if (document.contains("collectable")) {
+                                collectable = Boolean.TRUE.equals(document.getBoolean("collectable"));
+                                achieveCount = document.getLong("count");
+                                dayLimit = document.getLong("dayLimit");
+                                countDesc = document.getString("countDesc");
+                                System.out.println("collectable " + collectable);
+                            } else {
+                                // Обработка ситуации, когда поле отсутствует
+                                System.out.println("not collectable " + collectable);
+                            }
+
+                            long achievePrice = 0;
+                            if (document.contains("price")) {
+                                achievePrice = document.getLong("price");
+                                System.out.println("price " + achievePrice);
+                            }
+
+                            String categoryName = document.getString("category");
+                            boolean isUserAchieve = false;
+                            if (categoryName.equals("userAchieve")) {
+                                isUserAchieve = true;
+                            }
+
+                            boolean finalCollectable = collectable;
+                            long finalAchievePrice = achievePrice;
+                            long finalDayLimit = dayLimit;
+                            long finalAchieveCount = achieveCount;
+
+
+                            boolean isFavorites = false;
+                            if (userFavorites.contains(achievementName)) {
+                                isFavorites = true;
+                            }
+                            System.out.println("isFavorites " + isFavorites);
+
+                            boolean received;
+                            if (userAchievements.contains(achievementName)) {
+                                System.out.println("Достижение \"" + achievementName + "\" есть и у пользователя, и в категории " + categoryName);
+                                Map<String, Object> achievementMap = (Map<String, Object>) userAchieveMap.get(achievementName);
+
+                                Boolean confirmed = (Boolean) achievementMap.get("confirmed");
+                                Boolean proofsended = (Boolean) achievementMap.get("proofsended");
+
+                                if (document.contains("collectable")) {
+                                    doneCount = (long) achievementMap.get("doneCount");
+                                }
+                                if (Boolean.TRUE.equals(confirmed)) {
+                                    System.out.println("confirmed");
+                                    received = true;
+                                } else if (Boolean.TRUE.equals(proofsended)) {
+                                    received = true;
+                                    System.out.println("proofsended");
+                                } else {
+                                    received = false;
+                                    System.out.println("not ");
+                                }
+                            } else {
+                                received = false;
+                                System.out.println("Нет " + achievementName);
+                            }
+
+
+                            Intent intent;
+                            // Обработка нажатия кнопки
+                            if (finalCollectable) {
+                                intent = new Intent(this, AchievementWithProgressActivity.class);
+                            } else {
+                                intent = new Intent(this, AchievementDescriptionActivity.class);
+                            }
+                            intent.putExtra("Achieve_key", achievementName);
+                            intent.putExtra("Category_key", categoryName);
+                            intent.putExtra("Is_Received", received);
+                            intent.putExtra("ProofNeeded", proof);
+                            intent.putExtra("collectable", finalCollectable);
+                            intent.putExtra("achieveCount", finalAchieveCount);
+                            intent.putExtra("dayLimit", finalDayLimit);
+                            intent.putExtra("achievePrice", finalAchievePrice);
+                            intent.putExtra("isFavorites", isFavorites);
+                            intent.putExtra("isUserAchieve", isUserAchieve);
+                            startActivityForResult(intent, REQUEST_CODE);
+                        }
+                    });
                 }
-
-                long achievePrice = 0;
-                if (document.contains("price")) {
-                    achievePrice = document.getLong("price");
-                    System.out.println("price " + achievePrice);
-                }
-
-                String categoryName = document.getString("category");
-                boolean isUserAchieve = false;
-                if (categoryName.equals("userAchieve")){
-                    isUserAchieve = true;
-                }
-
-                boolean finalCollectable = collectable;
-                long finalAchievePrice = achievePrice;
-                long finalDayLimit = dayLimit;
-                long finalAchieveCount = achieveCount;
-
-                //Тут нужно будет реализовать проверку на список избранного
-                boolean isFavorites = false;
-
-
-                Intent intent;
-                // Обработка нажатия кнопки
-                if (finalCollectable) {
-                    intent = new Intent(this, AchievementWithProgressActivity.class);
-                } else {
-                    intent = new Intent(this, AchievementDescriptionActivity.class);
-                }
-                intent.putExtra("Achieve_key", achievementName);
-                intent.putExtra("Category_key", categoryName);
-                intent.putExtra("Is_Received", received);
-                intent.putExtra("ProofNeeded", proof);
-                intent.putExtra("collectable", finalCollectable);
-                intent.putExtra("achieveCount", finalAchieveCount);
-                intent.putExtra("dayLimit", finalDayLimit);
-                intent.putExtra("achievePrice", finalAchievePrice);
-                intent.putExtra("isFavorites", isFavorites);
-                intent.putExtra("isUserAchieve", isUserAchieve);
-                startActivityForResult(intent, REQUEST_CODE);
             }
         });
 
+    }
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
+
+            //перезагружаем список ачивок и обновляем счетсчик
+
+
+            LinearLayout parentLayout = findViewById(R.id.scrollView);
+            parentLayout.removeAllViews();
+
+            FirebaseAuth mAuth = FirebaseAuth.getInstance();
+            FirebaseUser currentUser = mAuth.getCurrentUser();
+
+            System.out.println("sfadfsd fsdf sdf sdf sdf sdf sd");
+
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            DocumentReference mAuthDocRef = db.collection("Users").document(currentUser.getUid());
+
+            createAchieveBlock();
+
+            mAuthDocRef.get().addOnSuccessListener(documentSnapshot -> {
+                if (documentSnapshot.exists()) {
+                    //createAchieveList(currentUser.getUid());
+                } else {
+                    // документ не найден
+                }
+            });
+        }
     }
 
 
