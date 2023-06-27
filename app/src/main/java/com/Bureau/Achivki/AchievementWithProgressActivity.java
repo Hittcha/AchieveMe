@@ -147,10 +147,15 @@ public class AchievementWithProgressActivity extends AppCompatActivity {
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 String description = document.getString("desc");
 
-                                if(achievePrice < 1){
+                                if("desc".equals(null)){
                                     descMessage.setText(description + "\nВыполнено " + doneCount + " из " + achieveCount);
                                 }else {
-                                    descMessage.setText(description + " (+" + achievePrice + " ОС)." + "\nВыполнено " + doneCount + " из " + achieveCount);
+
+                                    if (achievePrice < 1) {
+                                        descMessage.setText(description + "\nВыполнено " + doneCount + " из " + achieveCount);
+                                    } else {
+                                        descMessage.setText(description + " (+" + achievePrice + " ОС)." + "\nВыполнено " + doneCount + " из " + achieveCount);
+                                    }
                                 }
                             }
                         } else {
@@ -341,7 +346,6 @@ public class AchievementWithProgressActivity extends AppCompatActivity {
         } catch (ParseException e) {
             e.printStackTrace();
         }
-
         return false;
     }
 
@@ -351,54 +355,6 @@ public class AchievementWithProgressActivity extends AppCompatActivity {
         addButton.setVisibility(View.GONE); // отображаем кнопку
     }
 
-    /*public void addScore(String uid) {
-        // Get a reference to the user document
-        DocumentReference userDocRef = FirebaseFirestore.getInstance().collection("Users").document(uid);
-
-        userDocRef.get().addOnSuccessListener(documentSnapshot -> {
-            if (documentSnapshot.exists()) {
-                // Retrieve the current score value from the document
-                int currentScore = documentSnapshot.getLong("score").intValue();
-
-                // Increment the score by 10
-                int newScore = currentScore + 10;
-
-                // Update the score in the document
-                userDocRef.update("score", newScore)
-                        .addOnSuccessListener(aVoid -> {
-                            // Score updated successfully
-                            System.out.println("Score updated successfully. New score: " + newScore);
-                        })
-                        .addOnFailureListener(e -> {
-                            // Failed to update the score
-                            System.out.println("Failed to update score: " + e.getMessage());
-                        });
-            } else {
-                // User document does not exist
-                System.out.println("User document does not exist for UID: " + uid);
-            }
-        }).addOnFailureListener(e -> {
-            // Failed to retrieve the user document
-            System.out.println("Failed to retrieve user document: " + e.getMessage());
-        });
-    }
-
-    public void delScore(String uid){
-
-        // Получаем ссылку на коллекцию пользователей
-        CollectionReference usersRef = FirebaseFirestore.getInstance().collection("Users");
-
-        DocumentReference userDocRef = usersRef.document(uid);
-        userDocRef.update("score", FieldValue.increment(-10))
-                .addOnSuccessListener(aVoid -> {
-                    // Успешное обновление
-                    System.out.println("Успешное обновление счета");
-                })
-                .addOnFailureListener(e -> {
-                    // Обработка ошибки обновления
-                    System.out.println("Ошибка обновления счета: " + e.getMessage());
-                });
-    }*/
 
     private void addScore(String uid, long achievePrice) {
         // Получаем ссылку на коллекцию пользователей
@@ -407,7 +363,6 @@ public class AchievementWithProgressActivity extends AppCompatActivity {
         if(achievePrice > 0){
             standardPrice = achievePrice;
         }
-
 
 
         // Get a reference to the user document
@@ -427,6 +382,7 @@ public class AchievementWithProgressActivity extends AppCompatActivity {
                         .addOnSuccessListener(aVoid -> {
                             // Score updated successfully
                             System.out.println("Score updated successfully. New score: " + newScore);
+                            Toast.makeText(this, "Прогресс достижения обновлен", Toast.LENGTH_SHORT).show();
                         })
                         .addOnFailureListener(e -> {
                             // Failed to update the score
@@ -504,7 +460,7 @@ public class AchievementWithProgressActivity extends AppCompatActivity {
                 achieveMap.put(achieveName, newFav);
                 userAchievements.put("favorites", achieveMap);
                 usersRef.set(userAchievements);
-                Toast.makeText(this, "Достижение добавлено в профиль", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Достижение добавлено в избранное", Toast.LENGTH_SHORT).show();
                 changeStrokeColor();
             });
         }

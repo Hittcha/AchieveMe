@@ -354,7 +354,7 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
                 achieveMap.put(achieveName, newFav);
                 userAchievements.put("favorites", achieveMap);
                 usersRef.set(userAchievements);
-                Toast.makeText(this, "Достижение добавлено в профиль", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Достижение добавлено в избранное", Toast.LENGTH_SHORT).show();
                 changeStrokeColor();
 
             });

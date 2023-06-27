@@ -318,6 +318,21 @@ public class UserProfile extends AppCompatActivity {
             if (imageUri != null) {
                 try {
                     InputStream inputStream = getContentResolver().openInputStream(imageUri);
+
+                    if (inputStream != null) {
+                        long fileSizeInBytes = inputStream.available();
+                        long fileSizeInMegabytes = fileSizeInBytes / (1024 * 1024);
+                        //inputStream.close();
+
+                        System.out.println("fileSizeInMegabytes: " + fileSizeInMegabytes);
+
+                        if (fileSizeInMegabytes > 5) {
+                            // Файл превышает 5 мегабайт, выдаем ошибку
+                            Toast.makeText(this, "Выбранное изображение слишком большое. Максимальный размер - 5 МБ", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                    }
+
                     Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
                     Bitmap circleBitmap = getCircleBitmap(bitmap);
                     profileImageView.setImageBitmap(circleBitmap);
@@ -326,6 +341,8 @@ public class UserProfile extends AppCompatActivity {
                     saveAvatarToLocalFiles(bitmap);
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
                 }
             }
         }
@@ -373,10 +390,10 @@ public class UserProfile extends AppCompatActivity {
 
         uploadTask.addOnFailureListener(exception -> {
             // Handle unsuccessful uploads
-            Toast.makeText(UserProfile.this, "Failed to upload image", Toast.LENGTH_SHORT).show();
+            Toast.makeText(UserProfile.this, "Ошибка загрузки изображения", Toast.LENGTH_SHORT).show();
         }).addOnSuccessListener(taskSnapshot -> {
             // Handle successful uploads
-            Toast.makeText(UserProfile.this, "Image uploaded successfully", Toast.LENGTH_SHORT).show();
+            Toast.makeText(UserProfile.this, "Изображение успешно загружено", Toast.LENGTH_SHORT).show();
         });
     }
 

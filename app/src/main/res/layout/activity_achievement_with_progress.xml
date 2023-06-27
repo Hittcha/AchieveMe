@@ -65,16 +65,16 @@
                 android:id="@+id/AchieveName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textStyle="bold"
-                android:textColor="@color/white"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toTopOf="@id/guidline"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                android:text="@null"
-                android:textSize="20sp"
-                android:textAlignment="center"
                 android:maxWidth="190dp"
+                android:text="@null"
+                android:textAlignment="center"
+                android:textColor="@color/lowWhite"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toTopOf="@id/guidline"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
                 tools:text="Название ачивки" />
 
             <androidx.constraintlayout.widget.Guideline
@@ -101,15 +101,13 @@
                     android:id="@+id/desc_message"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:text="TextView"
-                    android:textSize="20sp"
-                    android:textColor="@color/white"
+                    android:textColor="@color/lowWhite"
+                    android:textSize="16sp"
                     app:layout_constraintBottom_toTopOf="@+id/submit_button"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.331"
-                    />
+                    app:layout_constraintVertical_bias="0.331" />
 
             </ScrollView>
             <Button

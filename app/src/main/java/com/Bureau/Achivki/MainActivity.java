@@ -124,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
         String userId = currentUser.getUid();
 
         //Проверка айди админа
-        if (userId.equals("IWIXASnDmoTJJxKAOCUxyRnxd0i1")){
+        if (userId.equals("oNJgYMcGVUg1vupBIWzT1fWdV372")){
             Button adminButton = findViewById(R.id.adminButton);
             adminButton.setVisibility(View.VISIBLE);
         }
@@ -624,7 +624,7 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case "Фильмы":
                     try {
-                        InputStream inputStream = assetManager.open("category_small/films.jpg");
+                        InputStream inputStream = assetManager.open("category_small/films.png");
                         Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
                         RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), bitmap);
                         roundedBitmapDrawable.setCornerRadius(20); // Здесь можно указать радиус закругления
@@ -636,7 +636,7 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case "Книги":
                     try {
-                        InputStream inputStream = assetManager.open("category_small/books.jpg");
+                        InputStream inputStream = assetManager.open("category_small/books.png");
                         Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
                         RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), bitmap);
                         roundedBitmapDrawable.setCornerRadius(20); // Здесь можно указать радиус закругления
@@ -648,7 +648,7 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case "Москва":
                     try {
-                        InputStream inputStream = assetManager.open("category_small/moscow.jpg");
+                        InputStream inputStream = assetManager.open("category_small/moscow.png");
                         Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
                         RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), bitmap);
                         roundedBitmapDrawable.setCornerRadius(20); // Здесь можно указать радиус закругления
@@ -660,7 +660,7 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case "Санкт Петербург":
                     try {
-                        InputStream inputStream = assetManager.open("category_small/sankt_petersburg.jpg");
+                        InputStream inputStream = assetManager.open("category_small/sankt_petersburg.png");
                         Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
                         RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), bitmap);
                         roundedBitmapDrawable.setCornerRadius(20); // Здесь можно указать радиус закругления
