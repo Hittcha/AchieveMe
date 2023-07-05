@@ -23,6 +23,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -230,7 +231,8 @@ public class LeaderBoardActivity extends AppCompatActivity {
         });
 
     }
-    public void setImage(String a, int count, String token){
+
+    public void setImage(String a, int count, String token) {
 
         StorageReference storageRef = FirebaseStorage.getInstance().getReference();
         StorageReference imageRef1 = storageRef.child(a);
@@ -247,20 +249,11 @@ public class LeaderBoardActivity extends AppCompatActivity {
             if (mimeType != null && mimeType.startsWith("User")) {
                 imageRef1.getBytes(Long.MAX_VALUE).addOnSuccessListener(bytes -> {
                     Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                    Bitmap circleBitmap = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
-                    BitmapShader shader = new BitmapShader(bitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
-                    Paint paint = new Paint();
-                    paint.setShader(shader);
-
-                    Canvas canvas = new Canvas(circleBitmap);
-                    if (bitmap.getHeight() > bitmap.getWidth()){
-                        canvas.drawCircle(bitmap.getWidth() / 2f, bitmap.getHeight() / 2f, bitmap.getWidth() / 2f, paint);
-                    }else{
-                        canvas.drawCircle(bitmap.getWidth() / 2f, bitmap.getHeight() / 2f, bitmap.getHeight() / 2f, paint);
-                    }
+                    CircleTransform circleTransform = new CircleTransform();
+                    Bitmap circleBitmap = circleTransform.transform(bitmap);
                     imageUserButtons.get(count).setImageBitmap(circleBitmap);
                 }).addOnFailureListener(exception -> {
-                    // Handle any errors
+                    // Обработка ошибок
                 });
             }
         });
@@ -277,56 +270,35 @@ public class LeaderBoardActivity extends AppCompatActivity {
             Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
 
             // Преобразование Bitmap в круговой вид
-            Bitmap circleBitmap = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
-            BitmapShader shader = new BitmapShader(bitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
-            Paint paint = new Paint();
-            paint.setShader(shader);
-
-            Canvas canvas = new Canvas(circleBitmap);
-            if (bitmap.getHeight() > bitmap.getWidth()){
-                canvas.drawCircle(bitmap.getWidth() / 2f, bitmap.getHeight() / 2f, bitmap.getWidth() / 2f, paint);
-            }else{
-                canvas.drawCircle(bitmap.getWidth() / 2f, bitmap.getHeight() / 2f, bitmap.getHeight() / 2f, paint);
-            }
+            CircleTransform circleTransform = new CircleTransform();
+            Bitmap circleBitmap = circleTransform.transform(bitmap);
 
             // Установка кругового Bitmap в качестве изображения для кнопки
             userButton.setImageBitmap(circleBitmap);
         } catch (Exception e) {
             e.printStackTrace();
-            //setImage(profileImageUrl);
         }
     }
 
     public void setUserImage(String imageRef) {
-
         StorageReference storageRef = FirebaseStorage.getInstance().getReference();
         StorageReference imageRef1 = storageRef.child(imageRef);
 
         ImageButton userButton = findViewById(R.id.userAvatar);
-        imageRef1.getMetadata().addOnSuccessListener(storageMetadata -> {
-            String mimeType = storageMetadata.getName();
-            System.out.println("mimeType " + mimeType);
-            if (mimeType != null && mimeType.startsWith("User")) {
-                imageRef1.getBytes(Long.MAX_VALUE).addOnSuccessListener(bytes -> {
-                    Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                    Bitmap circleBitmap = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
-                    BitmapShader shader = new BitmapShader(bitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
-                    Paint paint = new Paint();
-                    paint.setShader(shader);
 
-                    Canvas canvas = new Canvas(circleBitmap);
-                    if (bitmap.getHeight() > bitmap.getWidth()){
-                        canvas.drawCircle(bitmap.getWidth() / 2f, bitmap.getHeight() / 2f, bitmap.getWidth() / 2f, paint);
-                    }else{
-                        canvas.drawCircle(bitmap.getWidth() / 2f, bitmap.getHeight() / 2f, bitmap.getHeight() / 2f, paint);
-                    }
-                    userButton.setImageBitmap(circleBitmap);
-                }).addOnFailureListener(exception -> {
-                    // Handle any errors
-                });
-            }
+        imageRef1.getDownloadUrl().addOnSuccessListener(uri -> {
+            Picasso.get()
+                    .load(uri)
+                    .fit()
+                    .centerCrop()
+                    .transform(new CircleTransform()) // Применение скругления к изображению
+                    .into(userButton);
+        }).addOnFailureListener(exception -> {
+            // Обработка ошибок
         });
     }
+
+
     protected void onPause() {
         super.onPause();
         overridePendingTransition(0, 0);

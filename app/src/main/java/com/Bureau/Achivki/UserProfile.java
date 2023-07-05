@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapShader;
@@ -72,10 +73,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+
 
 
 public class UserProfile extends AppCompatActivity {
@@ -348,6 +352,7 @@ public class UserProfile extends AppCompatActivity {
         }
     }
 
+
     public static Bitmap getCircleBitmap(Bitmap bitmap) {
         Bitmap output = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(output);
@@ -417,7 +422,7 @@ public class UserProfile extends AppCompatActivity {
         }
     }
 
-    public void setImage(String imageRef) {
+    /*public void setImage(String imageRef) {
 
         StorageReference storageRef = FirebaseStorage.getInstance().getReference();
         StorageReference imageRef1 = storageRef.child(imageRef);
@@ -446,9 +451,33 @@ public class UserProfile extends AppCompatActivity {
                 });
             }
         });
+    }*/
+
+    public void setImage(String imageRef) {
+        StorageReference storageRef = FirebaseStorage.getInstance().getReference();
+        StorageReference imageRef1 = storageRef.child(imageRef);
+
+        ImageView userButton = findViewById(R.id.image_view);
+        imageRef1.getMetadata().addOnSuccessListener(storageMetadata -> {
+            String mimeType = storageMetadata.getName();
+            System.out.println("mimeType " + mimeType);
+            if (mimeType != null && mimeType.startsWith("User")) {
+                imageRef1.getBytes(Long.MAX_VALUE).addOnSuccessListener(bytes -> {
+                    Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+
+                    CircleTransform circleTransform = new CircleTransform();
+                    Bitmap circleBitmap = circleTransform.transform(bitmap);
+
+                    userButton.setImageBitmap(circleBitmap);
+                }).addOnFailureListener(exception -> {
+                    // Обработка ошибок
+                });
+            }
+        });
     }
 
-    private void loadAvatarFromLocalFiles() {
+
+    /*private void loadAvatarFromLocalFiles() {
         ImageView userButton = findViewById(R.id.image_view);
 
         try {
@@ -476,7 +505,29 @@ public class UserProfile extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }*/
+
+    private void loadAvatarFromLocalFiles() {
+        ImageView userButton = findViewById(R.id.image_view);
+
+        try {
+            // Создание файла с указанным именем в локальной директории приложения
+            File file = new File(this.getFilesDir(), "UserAvatar");
+
+            // Чтение файла в виде Bitmap
+            Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
+
+            // Преобразование Bitmap в круговой вид (если необходимо)
+            CircleTransform circleTransform = new CircleTransform();
+            Bitmap circleBitmap = circleTransform.transform(bitmap);
+
+            // Установка кругового Bitmap в качестве изображения для ImageView
+            userButton.setImageBitmap(circleBitmap);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
+
 
     private void createImageBlock(String url, Long likes, ArrayList people, String userName, String key, String achname, String time, String status){
         LinearLayout parentLayout = findViewById(R.id.scrollView);
@@ -879,9 +930,11 @@ public class UserProfile extends AppCompatActivity {
             } else {
                 // Если разрешение есть, вызываем окно выбора фотографий
                 selectImageFromLibrary();
+                //loadfile();
             }
         }else{
             selectImageFromLibrary();
+            //loadfile();
         }
     }
 

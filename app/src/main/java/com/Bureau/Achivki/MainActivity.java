@@ -11,6 +11,7 @@ import android.graphics.BitmapShader;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Shader;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -42,6 +43,8 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -149,6 +152,7 @@ public class MainActivity extends AppCompatActivity {
         File file = new File(this.getFilesDir(), "UserAvatar");
                     if (file.exists()) {
                         loadAvatarFromLocalFiles();
+                        System.out.println(" fasdf sdf dsf dsgf sdgf dsg sdfg sd");
                     }
 
         DocumentReference mAuthDocRef = db.collection("Users").document(currentUser.getUid());
@@ -175,10 +179,11 @@ public class MainActivity extends AppCompatActivity {
                 editor.apply();
 
                 //listOfFavorites();
-                setImage(profileImageUrl);
+                //setImage(profileImageUrl);
 
                 //Если аватар не сохранен локально - то грузим его с клауда и сохраняем
                 if (!file.exists()) {
+                    System.out.println("1 fasdf sdf dsf dsgf sdgf dsg sdfg sd");
                     setImage(profileImageUrl);
                 }
 
@@ -223,8 +228,13 @@ public class MainActivity extends AppCompatActivity {
 
         ImageButton favoritesButton = findViewById(R.id.imageButtonFavorites);
 
-        favoritesButton.setOnClickListener(v -> {
+        /*favoritesButton.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, ListOfFavoritesActivity.class);
+            startActivity(intent);
+        });*/
+
+        favoritesButton.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, MainActivity2.class);
             startActivity(intent);
         });
 
@@ -686,7 +696,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void setImage(String imageRef) {
+    /*public void setImage(String imageRef) {
 
         StorageReference storageRef = FirebaseStorage.getInstance().getReference();
 
@@ -722,9 +732,44 @@ public class MainActivity extends AppCompatActivity {
                 });
             }
         });
+    }*/
+
+    public void setImage(String imageRef) {
+        StorageReference storageRef = FirebaseStorage.getInstance().getReference();
+        StorageReference imageRef1 = storageRef.child(imageRef);
+
+        ImageButton userButton = findViewById(R.id.userButton);
+        imageRef1.getDownloadUrl().addOnSuccessListener(uri -> {
+            Picasso.get()
+                    .load(uri)
+                    .fit()
+                    .centerCrop()
+                    .transform(new CircleTransform())
+                    .into(userButton);
+
+            // Сохранение изображения в локальные файлы, если оно еще не сохранено
+            File file = new File(this.getFilesDir(), "UserAvatar");
+            if (!file.exists()) {
+                imageRef1.getMetadata().addOnSuccessListener(storageMetadata -> {
+                    String mimeType = storageMetadata.getName();
+                    System.out.println("mimeType " + mimeType);
+                    if (mimeType != null && mimeType.startsWith("User")) {
+                        imageRef1.getBytes(Long.MAX_VALUE).addOnSuccessListener(bytes -> {
+                            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                            saveAvatarToLocalFiles(bitmap);
+                        }).addOnFailureListener(exception -> {
+                            // Handle any errors
+                        });
+                    }
+                });
+            }
+        }).addOnFailureListener(exception -> {
+            // Обработка ошибки загрузки изображения
+        });
     }
 
-    private void loadAvatarFromLocalFiles() {
+
+    /*private void loadAvatarFromLocalFiles() {
         ImageButton userButton = findViewById(R.id.userButton);
 
         try {
@@ -753,7 +798,50 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
             //setImage(profileImageUrl);
         }
+    }*/
+
+    /*private void loadAvatarFromLocalFiles() {
+        ImageButton userButton = findViewById(R.id.userButton);
+
+        try {
+            // Создание файла с указанным именем в локальной директории приложения
+            File file = new File(this.getFilesDir(), "UserAvatar");
+
+            // Загрузка изображения из файла с использованием Picasso
+            Picasso.get()
+                    .load(file)
+                    .fit()
+                    .centerCrop()
+                    .transform(new CircleTransform())
+                    .into(userButton);
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Обработка ошибки загрузки изображения из локальных файлов
+            // setImage(profileImageUrl);
+        }
+    }*/
+
+    private void loadAvatarFromLocalFiles() {
+        ImageView userButton = findViewById(R.id.userButton);
+
+        try {
+            // Создание файла с указанным именем в локальной директории приложения
+            File file = new File(this.getFilesDir(), "UserAvatar");
+
+            // Чтение файла в виде Bitmap
+            Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
+
+            // Преобразование Bitmap в круговой вид (если необходимо)
+            CircleTransform circleTransform = new CircleTransform();
+            Bitmap circleBitmap = circleTransform.transform(bitmap);
+
+            // Установка кругового Bitmap в качестве изображения для ImageView
+            userButton.setImageBitmap(circleBitmap);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
+
 
     private void saveAvatarToLocalFiles(Bitmap bitmap){
         //final long MAX_DOWNLOAD_SIZE = 1024 * 1024; // Максимальный размер файла для загрузки

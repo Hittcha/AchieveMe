@@ -121,7 +121,7 @@ public class OtherUserFriends extends AppCompatActivity {
         });
     }
 
-    public void createFriendBlock(String name, String avatarUrl, String  key){
+    /*public void createFriendBlock(String name, String avatarUrl, String  key){
         LinearLayout parentLayout = findViewById(R.id.scrollView);
 
 
@@ -172,7 +172,46 @@ public class OtherUserFriends extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }*/
+
+    public void createFriendBlock(String name, String avatarUrl, String key) {
+        LinearLayout parentLayout = findViewById(R.id.scrollView);
+
+        ConstraintLayout blockFriends = (ConstraintLayout) LayoutInflater.from(OtherUserFriends.this)
+                .inflate(R.layout.block_friends, parentLayout, false);
+
+        TextView usernameTextView = blockFriends.findViewById(R.id.userName);
+        usernameTextView.setText(name);
+
+        parentLayout.addView(blockFriends);
+
+        Button delButton = blockFriends.findViewById(R.id.delete_button);
+        delButton.setVisibility(View.GONE);
+
+        ImageButton imageUserButton = blockFriends.findViewById(R.id.imageUserButton);
+        imageUserButton.setOnClickListener(v -> {
+            Intent intent = new Intent(OtherUserFriends.this, OtherUserActivity.class);
+            intent.putExtra("User_token", key);
+            startActivity(intent);
+        });
+
+        StorageReference storageRef = FirebaseStorage.getInstance().getReference();
+        StorageReference userImageRef = storageRef.child(avatarUrl);
+        try {
+            final File localFile = File.createTempFile("images", "jpg");
+            userImageRef.getFile(localFile).addOnSuccessListener(taskSnapshot -> {
+                Bitmap bitmap = BitmapFactory.decodeFile(localFile.getAbsolutePath());
+
+                CircleTransform circleTransform = new CircleTransform();
+                Bitmap circleBitmap = circleTransform.transform(bitmap);
+
+                imageUserButton.setImageBitmap(circleBitmap);
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
+
 
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {

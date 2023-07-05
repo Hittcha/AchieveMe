@@ -46,6 +46,10 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
     private Button confirmButton;
     private FirebaseAuth mAuth;
 
+    private boolean isAdded = false;
+    private boolean isDeleted = false;
+
+
 
     @SuppressLint({"MissingInflatedId", "ClickableViewAccessibility"})
     @Override
@@ -62,6 +66,9 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
         Intent intentFromMain = getIntent();
         String achieveName = intentFromMain.getStringExtra("Achieve_key");
         String categoryName = intentFromMain.getStringExtra("Category_key");
+
+        int blockPosition = intentFromMain.getIntExtra("blockPosition", 0);
+
         Long achievePrice = intentFromMain.getLongExtra("achievePrice", 0);
 
         Window window = getWindow();
@@ -161,7 +168,25 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
 
         backButton.setOnClickListener(v -> {
 
+            /*Intent resultIntent = new Intent();
+            setResult(RESULT_OK, resultIntent);
+            finish();*/
+            /*Intent resultIntent = new Intent();
+            resultIntent.putExtra("Is_Received", true);
+            resultIntent.putExtra("Block_Position", blockPosition);
+            setResult(RESULT_OK, resultIntent);
+            finish();*/
+
             Intent resultIntent = new Intent();
+
+            if (isAdded) {
+                resultIntent.putExtra("Is_Added", true);
+                resultIntent.putExtra("Block_Position", blockPosition);
+            } else if (isDeleted) {
+                resultIntent.putExtra("Is_Cancelled", true);
+                resultIntent.putExtra("Block_Position", blockPosition);
+            }
+
             setResult(RESULT_OK, resultIntent);
             finish();
 
@@ -177,6 +202,10 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
 
 
         addButton.setOnClickListener(v -> {
+
+            //isProofSended = true;
+            isAdded = true;
+            isDeleted = false;
 
             if (proof) {
                 showProofButton();
@@ -232,6 +261,9 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
             }
         });
         delButton.setOnClickListener(v -> {
+
+            isDeleted = true;
+            isAdded = false;
 
             mAuth = FirebaseAuth.getInstance();
             FirebaseUser currentUser = mAuth.getCurrentUser();
