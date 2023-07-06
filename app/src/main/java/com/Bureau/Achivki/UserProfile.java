@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapShader;
@@ -72,10 +73,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+
 
 
 public class UserProfile extends AppCompatActivity {
@@ -88,6 +92,8 @@ public class UserProfile extends AppCompatActivity {
     private FirebaseStorage storage;
     private DrawerLayout drawerLayout;
     Intent intent;
+
+    private FirebaseAuth firebaseAuth;
 
     private static final int PERMISSION_REQUEST_CODE = 100;
 
@@ -114,6 +120,8 @@ public class UserProfile extends AppCompatActivity {
             return false;
         });
 
+        firebaseAuth = FirebaseAuth.getInstance();
+
         //Выкидное меню
         drawerLayout = findViewById(R.id.drawer_layout);
         ImageButton btnOpenMenu = findViewById(R.id.btn_open_menu);
@@ -126,15 +134,25 @@ public class UserProfile extends AppCompatActivity {
                 case R.id.nav_item1:
                     // Действие при выборе настройки 1
                     intent = new Intent(UserProfile.this, SuggestAchieveActivity.class);
+                    startActivity(intent);
                     break;
                 case R.id.nav_item2:
                     // Действие при выборе настройки 2
                     intent = new Intent(UserProfile.this, MyAchievementsActivity.class);
+                    startActivity(intent);
+                    break;
+                case R.id.nav_item3:
+                    // Действие при выборе настройки 1
+                    intent = new Intent(UserProfile.this, AppInfoActivity.class);
+                    startActivity(intent);
+                    break;
+                case R.id.nav_item4:
+                    // Действие при выборе настройки 3
+                    showSignOutConfirmationDialog();
                     break;
             }
             // Закрытие меню после выбора пункта
             drawerLayout.closeDrawer(GravityCompat.END);
-            startActivity(intent);
             return true;
         });
 
@@ -304,6 +322,21 @@ public class UserProfile extends AppCompatActivity {
             if (imageUri != null) {
                 try {
                     InputStream inputStream = getContentResolver().openInputStream(imageUri);
+
+                    if (inputStream != null) {
+                        long fileSizeInBytes = inputStream.available();
+                        long fileSizeInMegabytes = fileSizeInBytes / (1024 * 1024);
+                        //inputStream.close();
+
+                        System.out.println("fileSizeInMegabytes: " + fileSizeInMegabytes);
+
+                        if (fileSizeInMegabytes > 5) {
+                            // Файл превышает 5 мегабайт, выдаем ошибку
+                            Toast.makeText(this, "Выбранное изображение слишком большое. Максимальный размер - 5 МБ", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                    }
+
                     Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
                     Bitmap circleBitmap = getCircleBitmap(bitmap);
                     profileImageView.setImageBitmap(circleBitmap);
@@ -312,10 +345,13 @@ public class UserProfile extends AppCompatActivity {
                     saveAvatarToLocalFiles(bitmap);
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
                 }
             }
         }
     }
+
 
     public static Bitmap getCircleBitmap(Bitmap bitmap) {
         Bitmap output = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
@@ -359,10 +395,10 @@ public class UserProfile extends AppCompatActivity {
 
         uploadTask.addOnFailureListener(exception -> {
             // Handle unsuccessful uploads
-            Toast.makeText(UserProfile.this, "Failed to upload image", Toast.LENGTH_SHORT).show();
+            Toast.makeText(UserProfile.this, "Ошибка загрузки изображения", Toast.LENGTH_SHORT).show();
         }).addOnSuccessListener(taskSnapshot -> {
             // Handle successful uploads
-            Toast.makeText(UserProfile.this, "Image uploaded successfully", Toast.LENGTH_SHORT).show();
+            Toast.makeText(UserProfile.this, "Изображение успешно загружено", Toast.LENGTH_SHORT).show();
         });
     }
 
@@ -386,7 +422,7 @@ public class UserProfile extends AppCompatActivity {
         }
     }
 
-    public void setImage(String imageRef) {
+    /*public void setImage(String imageRef) {
 
         StorageReference storageRef = FirebaseStorage.getInstance().getReference();
         StorageReference imageRef1 = storageRef.child(imageRef);
@@ -415,9 +451,33 @@ public class UserProfile extends AppCompatActivity {
                 });
             }
         });
+    }*/
+
+    public void setImage(String imageRef) {
+        StorageReference storageRef = FirebaseStorage.getInstance().getReference();
+        StorageReference imageRef1 = storageRef.child(imageRef);
+
+        ImageView userButton = findViewById(R.id.image_view);
+        imageRef1.getMetadata().addOnSuccessListener(storageMetadata -> {
+            String mimeType = storageMetadata.getName();
+            System.out.println("mimeType " + mimeType);
+            if (mimeType != null && mimeType.startsWith("User")) {
+                imageRef1.getBytes(Long.MAX_VALUE).addOnSuccessListener(bytes -> {
+                    Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+
+                    CircleTransform circleTransform = new CircleTransform();
+                    Bitmap circleBitmap = circleTransform.transform(bitmap);
+
+                    userButton.setImageBitmap(circleBitmap);
+                }).addOnFailureListener(exception -> {
+                    // Обработка ошибок
+                });
+            }
+        });
     }
 
-    private void loadAvatarFromLocalFiles() {
+
+    /*private void loadAvatarFromLocalFiles() {
         ImageView userButton = findViewById(R.id.image_view);
 
         try {
@@ -445,7 +505,29 @@ public class UserProfile extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }*/
+
+    private void loadAvatarFromLocalFiles() {
+        ImageView userButton = findViewById(R.id.image_view);
+
+        try {
+            // Создание файла с указанным именем в локальной директории приложения
+            File file = new File(this.getFilesDir(), "UserAvatar");
+
+            // Чтение файла в виде Bitmap
+            Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
+
+            // Преобразование Bitmap в круговой вид (если необходимо)
+            CircleTransform circleTransform = new CircleTransform();
+            Bitmap circleBitmap = circleTransform.transform(bitmap);
+
+            // Установка кругового Bitmap в качестве изображения для ImageView
+            userButton.setImageBitmap(circleBitmap);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
+
 
     private void createImageBlock(String url, Long likes, ArrayList people, String userName, String key, String achname, String time, String status){
         LinearLayout parentLayout = findViewById(R.id.scrollView);
@@ -848,10 +930,41 @@ public class UserProfile extends AppCompatActivity {
             } else {
                 // Если разрешение есть, вызываем окно выбора фотографий
                 selectImageFromLibrary();
+                //loadfile();
             }
         }else{
             selectImageFromLibrary();
+            //loadfile();
         }
+    }
+
+    private void showSignOutConfirmationDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Выход из профиля");
+        builder.setMessage("Вы уверены, что хотите выйти из профиля?");
+
+        builder.setPositiveButton("Да", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                signOut();
+            }
+        });
+
+        builder.setNegativeButton("Нет", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    private void signOut() {
+        firebaseAuth.signOut();
+        Intent intent = new Intent(this, StartMainActivity.class);
+        startActivity(intent);
     }
 
 

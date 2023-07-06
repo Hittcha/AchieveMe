@@ -11,33 +11,27 @@ import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 
 public class MyAchievementsActivity extends AppCompatActivity {
 
-    private static final int REQUEST_CODE = 10;
-    private FirebaseAuth mAuth;
+    private static final int REQUEST_CODE = 101111;
+    //private FirebaseAuth mAuth;
 
 
 
@@ -117,8 +111,6 @@ public class MyAchievementsActivity extends AppCompatActivity {
         ImageButton usersListButton = findViewById(R.id.imageButtonUsersList);
         usersListButton.setOnClickListener(v -> {
             Intent intent = new Intent(MyAchievementsActivity.this, UsersListActivity.class);
-            //User user = new User("Имя пользователя", 1);
-            //intent.putExtra("user", user);
             startActivity(intent);
         });
     }
@@ -258,88 +250,13 @@ public class MyAchievementsActivity extends AppCompatActivity {
                             intent.putExtra("achievePrice", 1L);
                             intent.putExtra("isFavorites", false);
                             intent.putExtra("isUserAchieve", true);
-                            //parentLayout.removeView(blockLayout);
                             startActivityForResult(intent, REQUEST_CODE);
-
                         });
-
                     }
-
                 }
             }
         });
     }
-
-    /*private void createAchieveButton(String achieveName, String achievementDesc) {
-
-        LinearLayout parentLayout = findViewById(R.id.scrollView);
-
-        //Button btnAdd = findViewById(R.id.btn_add);
-
-        ConstraintLayout blockLayout = (ConstraintLayout) LayoutInflater.from(MyAchievementsActivity.this)
-                .inflate(R.layout.block_layout, parentLayout, false);
-
-        TextView usernameTextView = blockLayout.findViewById(R.id.username);
-        TextView balanceTextView = blockLayout.findViewById(R.id.balance);
-        //String achievementDesc;
-
-        // Задайте текст для TextView в соответствии с данными пользователя
-
-
-
-        balanceTextView.setText(achievementDesc);
-
-
-        ImageButton deleteAch = blockLayout.findViewById(R.id.deleteAch);
-
-        deleteAch.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                FirebaseFirestore db = FirebaseFirestore.getInstance();
-                CollectionReference usersCollection = db.collection("Users");
-                mAuth = FirebaseAuth.getInstance();
-                FirebaseUser currentUser = mAuth.getCurrentUser();
-                DocumentReference userDocRef = usersCollection.document(currentUser.getUid());
-
-                userDocRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                    @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        Map<String, Object> userData = documentSnapshot.getData();
-                        Map<String, Object> achievements = (Map<String, Object>) userData.get("achieve");
-                        // Здесь можно продолжить работу с полученным Map достижений
-                        String achievementNameToRemove = achieveName;
-                        achievements.remove(achievementNameToRemove);
-
-                        userDocRef.set(userData).addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
-                                // Достижение успешно удалено
-                                //Context context;
-                                Toast.makeText(MyAchievementsActivity.this, "Достижение успешно удалено", Toast.LENGTH_SHORT).show();
-                                recreate();
-                            }
-                        }).addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                // Обработка ошибки при удалении достижения
-                                Toast.makeText(MyAchievementsActivity.this, "Ошибка при удалении достижения", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                    }
-                });
-            }
-        });
-
-        usernameTextView.setText(achieveName);
-
-        parentLayout.addView(blockLayout);
-
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-        );
-    }*/
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -355,6 +272,7 @@ public class MyAchievementsActivity extends AppCompatActivity {
             FirebaseAuth mAuth = FirebaseAuth.getInstance();
             FirebaseUser currentUser = mAuth.getCurrentUser();
 
+
             FirebaseFirestore db = FirebaseFirestore.getInstance();
             DocumentReference mAuthDocRef = db.collection("Users").document(currentUser.getUid());
 
@@ -367,7 +285,6 @@ public class MyAchievementsActivity extends AppCompatActivity {
             });
         }
     }
-
     protected void onPause() {
         super.onPause();
         overridePendingTransition(0, 0);

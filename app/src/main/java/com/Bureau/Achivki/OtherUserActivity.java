@@ -19,6 +19,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -30,6 +31,7 @@ import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
@@ -59,6 +61,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -79,6 +82,11 @@ public class OtherUserActivity extends AppCompatActivity {
     private boolean liked;
     private FirebaseAuth mAuth;
     private ToggleButton subscribeButton;
+
+    private List<Map.Entry<String, Object>> allAchievements = new ArrayList<>(); // Список всех достижений
+    private int blockCount = 0;
+    private List<Map.Entry<String, Object>> sortedAchievements;
+    private HashSet<String> createdBlocks;
 
 
     @Override
@@ -106,6 +114,7 @@ public class OtherUserActivity extends AppCompatActivity {
         });
 
 
+
         Intent intent = getIntent();
         String userToken = intent.getStringExtra("User_token");
 
@@ -126,6 +135,13 @@ public class OtherUserActivity extends AppCompatActivity {
         String myID = currentUser.getUid();
         DocumentReference mAuthDocRef = db.collection("Users").document(currentUser.getUid());
 
+
+        ScrollView scrollView = findViewById(R.id.scrollView1);
+
+
+        sortedAchievements = new ArrayList<>();
+        createdBlocks = new HashSet<>();
+
         mAuthDocRef.get().addOnSuccessListener(documentSnapshot -> {
             if (documentSnapshot.exists()) {
                 userName = documentSnapshot.getString("name");
@@ -133,60 +149,61 @@ public class OtherUserActivity extends AppCompatActivity {
 
             myprofileImageUrl = documentSnapshot.getString("profileImageUrl");
 
+            mAuthDocRefOther.get().addOnSuccessListener(documentSnapshot1 -> {
+                if (documentSnapshot1.exists()) {
+                    otherUserName = documentSnapshot1.getString("name");
 
-            mAuthDocRefOther.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                @Override
-                public void onSuccess(DocumentSnapshot documentSnapshot) {
-                    if (documentSnapshot.exists()) {
-                        otherUserName = documentSnapshot.getString("name");
+                    profileImageUrl = documentSnapshot1.getString("profileImageUrl");
 
-                        profileImageUrl = documentSnapshot.getString("profileImageUrl");
+                    userScore = documentSnapshot1.getLong("score");
 
-                        userScore = documentSnapshot.getLong("score");
+                    userSubs = documentSnapshot1.getLong("subs");
 
-                        userSubs = documentSnapshot.getLong("subs");
+                    String userKey = mAuthDocRefOther.getId();
 
-                        String userKey = mAuthDocRefOther.getId();
+                    userFriends = documentSnapshot1.getLong("friendscount");
 
-                        userFriends = documentSnapshot.getLong("friendscount");
+                    friendsCountText.setText("" + userFriends);
 
-                        friendsCountText.setText("" + userFriends);
+                    subsCountText.setText("" + userSubs);
 
-                        subsCountText.setText("" + userSubs);
+                    setSubscribeButton(otherUserName, myID, userKey, profileImageUrl, mAuthDocRef, userName, mAuthDocRefOther, myprofileImageUrl);
 
-                        setSubscribeButton(otherUserName, myID, userKey, profileImageUrl, mAuthDocRef, userName, mAuthDocRefOther, myprofileImageUrl);
+                    welcomeMessage.setText(otherUserName);
+                    userScoreText.setText("" + userScore);
+                    //userScore.
+                    // использовать имя пользователя
+                    //listoffavorites(otherUserName, userToken);
+                    setImage(profileImageUrl);
 
-                        welcomeMessage.setText(otherUserName);
-                        userScoreText.setText("" + userScore);
-                        //userScore.
-                        // использовать имя пользователя
-                        //listoffavorites(otherUserName, userToken);
-                        setImage(profileImageUrl);
+                    Map<String, Object> userData = documentSnapshot1.getData();
+                    Map<String, Object> achievements = (Map<String, Object>) userData.get("userPhotos");
 
+                    sortedAchievements.addAll(achievements.entrySet());
 
-                        Map<String, Object> userData = documentSnapshot.getData();
-                        Map<String, Object> achievements = (Map<String, Object>) userData.get("userPhotos");
+                    // Sort the achievements by time
+                    Collections.sort(sortedAchievements, (entry1, entry2) -> {
+                        Map<String, Object> achievement1 = (Map<String, Object>) entry1.getValue();
+                        Map<String, Object> achievement2 = (Map<String, Object>) entry2.getValue();
+                        String time1 = (String) achievement1.get("time");
+                        String time2 = (String) achievement2.get("time");
+                        if (time1 == null && time2 == null) {
+                            return 0; // Both times are null, consider them equal
+                        } else if (time1 == null) {
+                            return -1; // time1 is null, consider it smaller than time2
+                        } else if (time2 == null) {
+                            return 1; // time2 is null, consider it smaller than time1
+                        } else {
+                            return time2.compareTo(time1);
+                        }
+                    });
 
-                        List<Map.Entry<String, Object>> sortedAchievements = new ArrayList<>(achievements.entrySet());
+                    int maxBlocks = blockCount + 2; // Количество блоков для создания (на 2 больше текущего значения)
+                    int index = 0; // Индекс для отслеживания количества созданных блоков
 
-                        // Sort the achievements by time
-                        Collections.sort(sortedAchievements, (entry1, entry2) -> {
-                            Map<String, Object> achievement1 = (Map<String, Object>) entry1.getValue();
-                            Map<String, Object> achievement2 = (Map<String, Object>) entry2.getValue();
-                            String time1 = (String) achievement1.get("time");
-                            String time2 = (String) achievement2.get("time");
-                            if (time1 == null && time2 == null) {
-                                return 0; // Both times are null, consider them equal
-                            } else if (time1 == null) {
-                                return -1; // time1 is null, consider it smaller than time2
-                            } else if (time2 == null) {
-                                return 1; // time2 is null, consider it smaller than time1
-                            } else {
-                                return time2.compareTo(time1);
-                            }
-                        });
-
-                        for (Map.Entry<String, Object> entry : sortedAchievements) {
+                    for (Map.Entry<String, Object> entry : sortedAchievements) {
+                        if (index >= blockCount && index < maxBlocks) {
+                            // Ваш код создания блока
                             Map<String, Object> achievement = (Map<String, Object>) entry.getValue();
                             String key = entry.getKey();
                             System.out.println("key: " + key);
@@ -204,14 +221,52 @@ public class OtherUserActivity extends AppCompatActivity {
                             System.out.println("likes: " + likes);
                             System.out.println("url: " + url);
 
-                            createImageBlock(url, likes, people, userToken, key ,userName, time, achname, status);
-                        }
+                            createImageBlock(url, likes, people, userToken, key, userName, time, achname, status);
 
-                    } else {
-                        // документ не найден
+                            createdBlocks.add(key);
+                        }
+                        index++;
                     }
+                } else {
+                    // документ не найден
                 }
             });
+        });
+
+        scrollView.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
+            @Override
+            public void onScrollChanged() {
+                int scrollY = scrollView.getScrollY();
+                int scrollViewHeight = scrollView.getChildAt(0).getHeight();
+                int scrollViewVisibleHeight = scrollView.getHeight();
+
+                if (scrollY + scrollViewVisibleHeight >= scrollViewHeight) {
+                    int startIndex = blockCount; // Начальный индекс новых блоков
+                    int endIndex = Math.min(blockCount + 2, sortedAchievements.size()); // Конечный индекс новых блоков
+
+                    for (int i = startIndex; i < endIndex; i++) {
+                        Map.Entry<String, Object> entry = sortedAchievements.get(i);
+                        String key = entry.getKey();
+
+                        if (!createdBlocks.contains(key)) {
+                            // Создание нового блока только если его еще нет на экране
+                            Map<String, Object> achievement = (Map<String, Object>) entry.getValue();
+                            Long likes = (Long) achievement.get("likes");
+                            String url = (String) achievement.get("url");
+                            String achname = (String) achievement.get("name");
+                            String time = (String) achievement.get("time");
+                            String status = (String) achievement.get("status");
+                            ArrayList<String> people = (ArrayList<String>) achievement.get("like");
+
+                            createImageBlock(url, likes, people, userToken, key, userName, time, achname, status);
+
+                            createdBlocks.add(key); // Добавляем идентификатор блока в множество созданных блоков
+                        }
+                    }
+
+                    blockCount += 2; // Увеличиваем blockCount только после создания новых блоков
+                }
+            }
         });
 
         ImageButton leaderListButton = findViewById(R.id.imageButtonLeaderList);
@@ -220,13 +275,17 @@ public class OtherUserActivity extends AppCompatActivity {
         ImageButton achieveListButton = findViewById(R.id.imageButtonAchieveList);
         TextView achieveListTextView = findViewById(R.id.scoreTextView2);
 
-        achieveListTextView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(OtherUserActivity.this, OtherUserAchievements.class);
-                intent.putExtra("User_token", userToken);
-                startActivity(intent);
-            }
+        Button userAchievementsButton = findViewById(R.id.userAchievementsButton);
+        userAchievementsButton.setOnClickListener(v -> {
+            Intent intent111 = new Intent(OtherUserActivity.this, OtherUserAchievements.class);
+            intent111.putExtra("User_token", userToken);
+            startActivity(intent111);
+        });
+
+        achieveListTextView.setOnClickListener(v -> {
+            Intent intent18 = new Intent(OtherUserActivity.this, OtherUserAchievements.class);
+            intent18.putExtra("User_token", userToken);
+            startActivity(intent18);
         });
 
         TextView friendsListTextView = findViewById(R.id.friendsList2);
@@ -265,8 +324,6 @@ public class OtherUserActivity extends AppCompatActivity {
         ImageButton usersListButton = findViewById(R.id.imageButtonUsersList);
         usersListButton.setOnClickListener(v -> {
             Intent intent17 = new Intent(OtherUserActivity.this, UsersListActivity.class);
-            //User user = new User("Имя пользователя", 1);
-            //intent.putExtra("user", user);
             startActivity(intent17);
         });
 
@@ -386,7 +443,7 @@ public class OtherUserActivity extends AppCompatActivity {
         });
     }
 
-    public void setImage(String imageRef) {
+    /*public void setImage(String imageRef) {
 
         StorageReference storageRef = FirebaseStorage.getInstance().getReference();
         StorageReference imageRef1 = storageRef.child(imageRef);
@@ -416,7 +473,32 @@ public class OtherUserActivity extends AppCompatActivity {
                 });
             }
         });
+    }*/
+
+    public void setImage(String imageRef) {
+        StorageReference storageRef = FirebaseStorage.getInstance().getReference();
+        StorageReference imageRef1 = storageRef.child(imageRef);
+        System.out.println("URL " + imageRef1);
+
+        ImageButton userButton = findViewById(R.id.userButton);
+        imageRef1.getMetadata().addOnSuccessListener(storageMetadata -> {
+            String mimeType = storageMetadata.getName();
+            System.out.println("mimeType " + mimeType);
+            if (mimeType != null && mimeType.startsWith("User")) {
+                imageRef1.getBytes(Long.MAX_VALUE).addOnSuccessListener(bytes -> {
+                    Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+
+                    CircleTransform circleTransform = new CircleTransform();
+                    Bitmap circleBitmap = circleTransform.transform(bitmap);
+
+                    userButton.setImageBitmap(circleBitmap);
+                }).addOnFailureListener(exception -> {
+                    // Обработка ошибок
+                });
+            }
+        });
     }
+
 
 
     private void createImageBlock(String url, Long likes, ArrayList people, String otherUserName, String key, String userToken, String time, String achname, String status){

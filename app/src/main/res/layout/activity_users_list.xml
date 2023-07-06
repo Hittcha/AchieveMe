@@ -51,7 +51,7 @@
             android:layout_weight="1"
             android:background="@null"
             android:scaleType="center"
-            app:srcCompat="@drawable/otherusers" />
+            app:srcCompat="@drawable/otherusersclicked" />
 
         <ImageButton
             android:id="@+id/imageButtonAchieveList"

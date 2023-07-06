@@ -46,6 +46,10 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
     private Button confirmButton;
     private FirebaseAuth mAuth;
 
+    private boolean isAdded = false;
+    private boolean isDeleted = false;
+
+
 
     @SuppressLint({"MissingInflatedId", "ClickableViewAccessibility"})
     @Override
@@ -62,6 +66,9 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
         Intent intentFromMain = getIntent();
         String achieveName = intentFromMain.getStringExtra("Achieve_key");
         String categoryName = intentFromMain.getStringExtra("Category_key");
+
+        int blockPosition = intentFromMain.getIntExtra("blockPosition", 0);
+
         Long achievePrice = intentFromMain.getLongExtra("achievePrice", 0);
 
         Window window = getWindow();
@@ -131,7 +138,11 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
                                 String description = document.getString("desc");
                                 //String description = document.getString("desc");
                                 System.out.println("description" + desc);
-                                descMessage.setText(description);
+                                if(achievePrice < 1){
+                                    descMessage.setText(description);
+                                }else {
+                                    descMessage.setText(description + " (+" + achievePrice + " ОС).");
+                                }
                             }
                         } else {
                             Log.d(TAG, "Ошибка получения достижений из Firestorm: ", task.getException());
@@ -157,7 +168,25 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
 
         backButton.setOnClickListener(v -> {
 
+            /*Intent resultIntent = new Intent();
+            setResult(RESULT_OK, resultIntent);
+            finish();*/
+            /*Intent resultIntent = new Intent();
+            resultIntent.putExtra("Is_Received", true);
+            resultIntent.putExtra("Block_Position", blockPosition);
+            setResult(RESULT_OK, resultIntent);
+            finish();*/
+
             Intent resultIntent = new Intent();
+
+            if (isAdded) {
+                resultIntent.putExtra("Is_Added", true);
+                resultIntent.putExtra("Block_Position", blockPosition);
+            } else if (isDeleted) {
+                resultIntent.putExtra("Is_Cancelled", true);
+                resultIntent.putExtra("Block_Position", blockPosition);
+            }
+
             setResult(RESULT_OK, resultIntent);
             finish();
 
@@ -173,6 +202,10 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
 
 
         addButton.setOnClickListener(v -> {
+
+            //isProofSended = true;
+            isAdded = true;
+            isDeleted = false;
 
             if (proof) {
                 showProofButton();
@@ -229,6 +262,9 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
         });
         delButton.setOnClickListener(v -> {
 
+            isDeleted = true;
+            isAdded = false;
+
             mAuth = FirebaseAuth.getInstance();
             FirebaseUser currentUser = mAuth.getCurrentUser();
             FirebaseFirestore db12 = FirebaseFirestore.getInstance();
@@ -274,11 +310,11 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
         delButton.setVisibility(View.GONE); // скрываем кнопку
         addButton.setVisibility(View.VISIBLE); // отображаем кнопку
     }
-    public void addScore(String uid, long achievePrice) {
+    private void addScore(String uid, long achievePrice) {
         // Получаем ссылку на коллекцию пользователей
         CollectionReference usersRef = FirebaseFirestore.getInstance().collection("Users");
 
-        long standardPrice = 10;
+        long standardPrice = 1;
         if(achievePrice > 0){
             standardPrice = achievePrice;
         }
@@ -299,7 +335,7 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
 
         CollectionReference usersRef = FirebaseFirestore.getInstance().collection("Users");
 
-        long standardPrice = 10;
+        long standardPrice = 1;
         if(achievePrice > 0){
             standardPrice = achievePrice;
         }
@@ -350,7 +386,7 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
                 achieveMap.put(achieveName, newFav);
                 userAchievements.put("favorites", achieveMap);
                 usersRef.set(userAchievements);
-                Toast.makeText(this, "Достижение добавлено в профиль", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Достижение добавлено в избранное", Toast.LENGTH_SHORT).show();
                 changeStrokeColor();
 
             });

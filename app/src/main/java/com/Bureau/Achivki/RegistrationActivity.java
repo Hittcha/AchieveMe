@@ -3,6 +3,7 @@ package com.Bureau.Achivki;
 import static android.content.ContentValues.TAG;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -70,6 +71,11 @@ public class RegistrationActivity extends AppCompatActivity {
                                 Map<String, Object> subscribers = new HashMap<>();
                                 Map<String, Object> friends = new HashMap<>();
                                 Map<String, Object> favorites = new HashMap<>();
+
+                                SharedPreferences sharedPreferences = getSharedPreferences("User_Data", MODE_PRIVATE);
+                                SharedPreferences.Editor editor = sharedPreferences.edit();
+                                editor.putString("Name", name);
+                                editor.apply();
 
 
                                 if (currentUser != null) {

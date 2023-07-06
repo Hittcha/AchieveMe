@@ -19,9 +19,16 @@
         android:theme="@style/Theme.AppCompat.Light.NoActionBar"
         tools:targetApi="31">
         <activity
+            android:name=".MainActivity2"
+            android:exported="false" />
+        <activity
+            android:name=".AppInfoActivity"
+            android:exported="false"
+            android:theme="@style/AchievementDialog" />
+        <activity
             android:name=".ReportActivity"
             android:exported="false"
-            android:theme="@style/AchievementDialog"/>
+            android:theme="@style/AchievementDialog" />
         <activity
             android:name=".AdminActivity"
             android:exported="false" />

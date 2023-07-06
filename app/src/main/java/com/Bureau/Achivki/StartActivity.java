@@ -20,7 +20,7 @@ import java.util.Random;
 
 public class StartActivity extends AppCompatActivity {
 
-    private final String appVersion = "0.25";
+    private final String appVersion = "0.31";
 
 
     @Override

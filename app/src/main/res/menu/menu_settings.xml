@@ -7,5 +7,12 @@
         <item
             android:id="@+id/nav_item2"
             android:title="Созданные достижения" />
+        <item
+            android:id="@+id/nav_item3"
+            android:title="О приложении" />
+        <item
+            android:id="@+id/nav_item4"
+            android:textColor="@color/red"
+            android:title="Выйти из профиля" />
     </group>
 </menu>
