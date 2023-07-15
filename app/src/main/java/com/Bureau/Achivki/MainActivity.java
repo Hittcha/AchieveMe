@@ -5,6 +5,7 @@ import static android.content.ContentValues.TAG;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.AssetManager;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapShader;
@@ -13,16 +14,24 @@ import android.graphics.Paint;
 import android.graphics.Shader;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.ScrollView;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -64,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
 
     private NestedScrollView nestedScrollView;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -102,6 +112,14 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
         });*/
+        WindowCalculation windowCalculation = new WindowCalculation(this);
+        int screenHeight = windowCalculation.WindowCalculationHeight();
+
+        Resources resources = getResources();
+        LinearLayout linearLayout = findViewById(R.id.activityMain_linearLayoutTop);
+        ViewGroup.LayoutParams layoutParams = (LinearLayout.LayoutParams) linearLayout.getLayoutParams();
+        layoutParams.height = screenHeight - 180;
+        Log.d("РАЗРЕШЕНИЕ", String.valueOf(screenHeight));
 
 
         SharedPreferences sharedPreferences = getSharedPreferences("User_Data", MODE_PRIVATE);
@@ -138,7 +156,7 @@ public class MainActivity extends AppCompatActivity {
 
         TextView friendsListText = findViewById(R.id.friendsList);
         TextView subscriptionsListText = findViewById(R.id.subscriptionsList);
-        TextView scoreText = findViewById(R.id.scoreTextView);
+//        TextView scoreText = findViewById(R.id.scoreTextView);
 
         TextView userScoreText = findViewById(R.id.userScore);
         TextView userSubsText = findViewById(R.id.subsCountTextView);
@@ -178,7 +196,7 @@ public class MainActivity extends AppCompatActivity {
                 editor.putLong("Friends", userFriends);
                 editor.apply();
 
-                //listOfFavorites();
+                listOfFavorites();
                 //setImage(profileImageUrl);
 
                 //Если аватар не сохранен локально - то грузим его с клауда и сохраняем
@@ -192,15 +210,39 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // переключение между вкладками
+        TextView textViewSeason = findViewById(R.id.textViewSeason);
+        TextView textViewNewCategory = findViewById(R.id.textViewNewCategory);
+        TextView textViewFavorites = findViewById(R.id.textViewFavorites);
+        ScrollView scrollViewSeason = findViewById(R.id.scrollView_season);
+        ScrollView scrollViewNewCategory = findViewById(R.id.scrollView_newCategory);
+        ScrollView scrollViewFavorites = findViewById(R.id.scrollView_Favorites);
+
+        textViewSeason.setOnClickListener(v -> {
+            scrollViewSeason.setVisibility(View.VISIBLE);
+            scrollViewNewCategory.setVisibility(View.GONE);
+            scrollViewFavorites.setVisibility(View.GONE);
+        });
+        textViewNewCategory.setOnClickListener(v -> {
+            scrollViewSeason.setVisibility(View.GONE);
+            scrollViewNewCategory.setVisibility(View.VISIBLE);
+            scrollViewFavorites.setVisibility(View.GONE);
+        });
+        textViewFavorites.setOnClickListener(v -> {
+            scrollViewSeason.setVisibility(View.GONE);
+            scrollViewNewCategory.setVisibility(View.GONE);
+            scrollViewFavorites.setVisibility(View.VISIBLE);
+        });
+
         friendsListText.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, MyFriendsList.class);
             startActivity(intent);
         });
 
-        scoreText.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, MyCompletedAchievements.class);
-            startActivity(intent);
-        });
+//        scoreText.setOnClickListener(v -> {
+//            Intent intent = new Intent(MainActivity.this, MyCompletedAchievements.class);
+//            startActivity(intent);
+//        });
 
         subscriptionsListText.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, MySubscriptionsActivity.class);
@@ -242,7 +284,7 @@ public class MainActivity extends AppCompatActivity {
         ImageButton leaderListButton = findViewById(R.id.imageButtonLeaderList);
         ImageButton menuButton = findViewById(R.id.imageButtonMenu);
         ImageButton achieveListButton = findViewById(R.id.imageButtonAchieveList);
-        ImageButton buttonSeasonAchieve = findViewById(R.id.imageButtonSeasonAchieve);
+//        ImageButton buttonSeasonAchieve = findViewById(R.id.imageButtonSeasonAchieve);
         ImageButton usersListButton = findViewById(R.id.imageButtonUsersList);
 
 
@@ -253,10 +295,10 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        buttonSeasonAchieve.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, SeasonsAchievements.class);
-            startActivity(intent);
-        });
+//        buttonSeasonAchieve.setOnClickListener(v -> {
+//            Intent intent = new Intent(MainActivity.this, SeasonsAchievements.class);
+//            startActivity(intent);
+//        });
 
         leaderListButton.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, LeaderBoardActivity.class);
@@ -306,10 +348,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void listOfFavorites() {
-
-        LinearLayout parentLayout = findViewById(R.id.favoritesLinearLayout);
-        parentLayout.removeAllViews();
-
         AssetManager assetManager = getAssets();
 
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
@@ -326,27 +364,77 @@ public class MainActivity extends AppCompatActivity {
             // Получение достижений пользователя
             Set<String> userAchievements = userAchieveMap.keySet();
 
+            TableLayout tableLayout = new TableLayout(MainActivity.this);
+            TableLayout.LayoutParams tableLayoutParams = new TableLayout.LayoutParams(
+                    TableLayout.LayoutParams.MATCH_PARENT,
+                    TableLayout.LayoutParams.MATCH_PARENT
+            );
+            tableLayout.setLayoutParams(tableLayoutParams);
+
+            WindowCalculation windowCalculation = new WindowCalculation(this);
+            int screenWeight = windowCalculation.WindowCalculationWeight();
+
+            // Рассчитываем ширину блока на основе размера экрана
+            int blockWidth = (screenWeight / 3) - 25;
+            TableRow currentRow = null; // Текущая строка для добавления blockLayout
+            int blockCount = 0; // Счетчик для отслеживания количества blockLayout в текущей строке
+
             for (Map.Entry<String, Object> entry : fav.entrySet()) {
                 Map<String, Object> achievement = (Map<String, Object>) entry.getValue();
 
                 String achname = (String) achievement.get("name");
                 String category = (String) achievement.get("category");
 
-                ConstraintLayout blockLayout = (ConstraintLayout) LayoutInflater.from(MainActivity.this)
-                        .inflate(R.layout.block_favorites_icon, parentLayout, false);
+                View blockLayout = LayoutInflater.from(MainActivity.this)
+                        .inflate(R.layout.block_achieve_category_list, currentRow, false);
 
-                TextView favorites_name_TextView = blockLayout.findViewById(R.id.favorites_name_TextView);
+                TextView favorites_name_TextView = blockLayout.findViewById(R.id.categoryNameTextView);
 
-                Button favorites_icon_Button = blockLayout.findViewById(R.id.favorites_icon_Button);
+                ImageView favorites_icon_Button = blockLayout.findViewById(R.id.block_category_imageview);
 
-                favorites_name_TextView.setText(achname);
+                int maxTextLength = 13;
 
-                parentLayout.addView(blockLayout);
+                assert achname != null;
+                if (achname.length() > maxTextLength) {
+                    String truncatedText = achname.substring(0, maxTextLength) + "…";
+                    favorites_name_TextView.setText(truncatedText);
+                    favorites_name_TextView.setEllipsize(TextUtils.TruncateAt.END);
+                } else {
+                    favorites_name_TextView.setText(achname);
+                    favorites_name_TextView.setEllipsize(null);
+                }
+
+
+                if (blockCount == 0) {
+                    // Создать новую строку, если текущая строка пустая
+                    currentRow = new TableRow(MainActivity.this);
+                    tableLayout.addView(currentRow);
+                }
+
+                // Создать новый blockLayout с названием достижения и установить ширину и высоту
+
+                TableRow.LayoutParams blockLayoutParams = new TableRow.LayoutParams(
+                        blockWidth,
+                        blockWidth
+                );
+                blockLayoutParams.setMargins(12, 12, 12, 12); // Устанавливаем отступы между блоками
+                blockLayout.setLayoutParams(blockLayoutParams);
+
+                currentRow.addView(blockLayout);
+                blockCount++;
+
+                // Создать новую строку, если в текущей строке уже есть два blockLayout
+                if (blockCount == 3) {
+                    blockCount = 0;
+                    currentRow = null;
+                }
 
                 LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.WRAP_CONTENT,
                         LinearLayout.LayoutParams.WRAP_CONTENT
                 );
+
+                layoutParams.setMargins(20, 20, 20, 20);
 
                 switch (category) {
                     case "Красноярск":
@@ -354,7 +442,7 @@ public class MainActivity extends AppCompatActivity {
                             InputStream inputStream = getAssets().open("favorites/krasnoyarsk_favorites.png");
                             Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
                             RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), bitmap);
-                            roundedBitmapDrawable.setCornerRadius(20); // Здесь можно указать радиус закругления
+                            roundedBitmapDrawable.setCornerRadius(30); // Здесь можно указать радиус закругления
                             favorites_icon_Button.setBackground(roundedBitmapDrawable);
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -365,7 +453,7 @@ public class MainActivity extends AppCompatActivity {
                             InputStream inputStream = assetManager.open("favorites/food_and_drink_favorites.png");
                             Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
                             RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), bitmap);
-                            roundedBitmapDrawable.setCornerRadius(20); // Здесь можно указать радиус закругления
+                            roundedBitmapDrawable.setCornerRadius(30); // Здесь можно указать радиус закругления
                             favorites_icon_Button.setBackground(roundedBitmapDrawable);
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -376,7 +464,7 @@ public class MainActivity extends AppCompatActivity {
                             InputStream inputStream = assetManager.open("favorites/traveling_favorites.png");
                             Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
                             RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), bitmap);
-                            roundedBitmapDrawable.setCornerRadius(20); // Здесь можно указать радиус закругления
+                            roundedBitmapDrawable.setCornerRadius(30); // Здесь можно указать радиус закругления
                             favorites_icon_Button.setBackground(roundedBitmapDrawable);
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -387,7 +475,7 @@ public class MainActivity extends AppCompatActivity {
                             InputStream inputStream = assetManager.open("favorites/cooking_favorites.png");
                             Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
                             RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), bitmap);
-                            roundedBitmapDrawable.setCornerRadius(20); // Здесь можно указать радиус закругления
+                            roundedBitmapDrawable.setCornerRadius(30); // Здесь можно указать радиус закругления
                             favorites_icon_Button.setBackground(roundedBitmapDrawable);
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -398,7 +486,7 @@ public class MainActivity extends AppCompatActivity {
                             InputStream inputStream = assetManager.open("favorites/kaliningrad_favorites.png");
                             Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
                             RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), bitmap);
-                            roundedBitmapDrawable.setCornerRadius(20); // Здесь можно указать радиус закругления
+                            roundedBitmapDrawable.setCornerRadius(30); // Здесь можно указать радиус закругления
                             favorites_icon_Button.setBackground(roundedBitmapDrawable);
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -409,7 +497,7 @@ public class MainActivity extends AppCompatActivity {
                             InputStream inputStream = assetManager.open("favorites/season1_favorites.png");
                             Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
                             RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), bitmap);
-                            roundedBitmapDrawable.setCornerRadius(20); // Здесь можно указать радиус закругления
+                            roundedBitmapDrawable.setCornerRadius(30); // Здесь можно указать радиус закругления
                             favorites_icon_Button.setBackground(roundedBitmapDrawable);
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -420,7 +508,7 @@ public class MainActivity extends AppCompatActivity {
                             InputStream inputStream = assetManager.open("favorites/books_favorites.jpg");
                             Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
                             RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), bitmap);
-                            roundedBitmapDrawable.setCornerRadius(20); // Здесь можно указать радиус закругления
+                            roundedBitmapDrawable.setCornerRadius(30); // Здесь можно указать радиус закругления
                             favorites_icon_Button.setBackground(roundedBitmapDrawable);
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -431,7 +519,7 @@ public class MainActivity extends AppCompatActivity {
                             InputStream inputStream = assetManager.open("favorites/moscow_favorites.jpg");
                             Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
                             RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), bitmap);
-                            roundedBitmapDrawable.setCornerRadius(20); // Здесь можно указать радиус закругления
+                            roundedBitmapDrawable.setCornerRadius(30); // Здесь можно указать радиус закругления
                             favorites_icon_Button.setBackground(roundedBitmapDrawable);
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -442,7 +530,7 @@ public class MainActivity extends AppCompatActivity {
                             InputStream inputStream = assetManager.open("favorites/films_favorites.jpg");
                             Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
                             RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), bitmap);
-                            roundedBitmapDrawable.setCornerRadius(20); // Здесь можно указать радиус закругления
+                            roundedBitmapDrawable.setCornerRadius(30); // Здесь можно указать радиус закругления
                             favorites_icon_Button.setBackground(roundedBitmapDrawable);
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -453,7 +541,7 @@ public class MainActivity extends AppCompatActivity {
                             InputStream inputStream = assetManager.open("favorites/sankt_petersburg_favorites.jpg");
                             Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
                             RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), bitmap);
-                            roundedBitmapDrawable.setCornerRadius(20); // Здесь можно указать радиус закругления
+                            roundedBitmapDrawable.setCornerRadius(30); // Здесь можно указать радиус закругления
                             favorites_icon_Button.setBackground(roundedBitmapDrawable);
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -466,9 +554,9 @@ public class MainActivity extends AppCompatActivity {
                 favorites_icon_Button.setOnClickListener(v -> {
                     // Обработка нажатия кнопки
                     CollectionReference achievementsCollectionRef;
-                    if (category.equals("season1")){
+                    if (category.equals("season1")) {
                         achievementsCollectionRef = FirebaseFirestore.getInstance().collection("SeasonAchievements");
-                    }else {
+                    } else {
                         achievementsCollectionRef = FirebaseFirestore.getInstance().collection("Achievements");
                     }
                     Query categoryQuery = achievementsCollectionRef.whereEqualTo("name", achname);
@@ -510,7 +598,7 @@ public class MainActivity extends AppCompatActivity {
                                 intent.putExtra("ProofNeeded", proof);
                                 intent.putExtra("isFavorites", true);
                                 startActivity(intent);
-                            }else{
+                            } else {
                                 intent.putExtra("dayLimit", dayLimit);
                                 intent.putExtra("achieveCount", achieveCount);
                                 intent.putExtra("collectable", collectable);
@@ -526,44 +614,102 @@ public class MainActivity extends AppCompatActivity {
                     });
                 });
             }
+            ScrollView parentLayout = findViewById(R.id.scrollView_Favorites);
 
-            ConstraintLayout blockLayout = (ConstraintLayout) LayoutInflater.from(MainActivity.this)
-                    .inflate(R.layout.block_favorites_icon, parentLayout, false);
+            parentLayout.addView(tableLayout);
+//            ConstraintLayout blockLayout = (ConstraintLayout) LayoutInflater.from(MainActivity.this)
+//                    .inflate(R.layout.block_favorites_icon, parentLayout, false);
+//
+//            TextView favorites_name_TextView = blockLayout.findViewById(R.id.favorites_name_TextView);
+//
+//            Button favorites_icon_Button = blockLayout.findViewById(R.id.favorites_icon_Button);
+//            favorites_icon_Button.setBackgroundResource(R.drawable.addfavoritesbutton);
+//
+//            favorites_name_TextView.setText("");
+//
+//            favorites_icon_Button.setOnClickListener(v -> {
+//                Intent intent = new Intent(MainActivity.this, AchieveListActivity.class);
+//                startActivity(intent);
+//
+//            });
 
-            TextView favorites_name_TextView = blockLayout.findViewById(R.id.favorites_name_TextView);
-
-            Button favorites_icon_Button = blockLayout.findViewById(R.id.favorites_icon_Button);
-            favorites_icon_Button.setBackgroundResource(R.drawable.addfavoritesbutton);
-
-            favorites_name_TextView.setText("");
-
-            favorites_icon_Button.setOnClickListener(v -> {
-                Intent intent = new Intent(MainActivity.this, AchieveListActivity.class);
-                startActivity(intent);
-
-            });
-
-            parentLayout.addView(blockLayout);
+//            parentLayout.addView(blockLayout);
         });
     }
 
     private void createCategoryBlock(List<String> achievementNames){
-        LinearLayout parentLayout = findViewById(R.id.scrollView1);
+
 
         AssetManager assetManager = getAssets();
+        // Создание таблицы
+        TableLayout tableLayout = new TableLayout(MainActivity.this);
+        TableLayout.LayoutParams tableLayoutParams = new TableLayout.LayoutParams(
+                TableLayout.LayoutParams.MATCH_PARENT,
+                TableLayout.LayoutParams.MATCH_PARENT
+        );
+        tableLayout.setLayoutParams(tableLayoutParams);
+
+        // Получение размера экрана
+        WindowCalculation windowCalculation = new WindowCalculation(this);
+        int screenWeight = windowCalculation.WindowCalculationWeight();
+
+        // Рассчитываем ширину блока на основе размера экрана
+        int blockWidth = (screenWeight / 3)-25; // Делим ширину экрана на 3
+        TableRow currentRow = null; // Текущая строка для добавления blockLayout
+        int blockCount = 0; // Счетчик для отслеживания количества blockLayout в текущей строке
 
         for (String name : achievementNames) {
 
-            ConstraintLayout blockLayout = (ConstraintLayout) LayoutInflater.from(MainActivity.this)
-                    .inflate(R.layout.block_category, parentLayout, false);
-
+//            ConstraintLayout blockLayout = (ConstraintLayout) LayoutInflater.from(MainActivity.this)
+//                    .inflate(R.layout.block_category, parentLayout, false);
+            View blockLayout = LayoutInflater.from(MainActivity.this)
+                    .inflate(R.layout.block_achieve_category_list, currentRow, false);
             TextView CategoryNameTextView = blockLayout.findViewById(R.id.categoryNameTextView);
 
             ImageView backGroundImageView = blockLayout.findViewById(R.id.block_category_imageview);
 
-            CategoryNameTextView.setText(name);
+            // Обрезаем название категории, если оно слишком большое
+            int maxTextLength = 9;
 
-            parentLayout.addView(blockLayout);
+            if (name.length() > maxTextLength) {
+                String truncatedText = name.substring(0, maxTextLength) + "…";
+                CategoryNameTextView.setText(truncatedText);
+                CategoryNameTextView.setEllipsize(TextUtils.TruncateAt.END);
+            } else {
+                CategoryNameTextView.setText(name);
+                CategoryNameTextView.setEllipsize(null);
+            }
+
+            if (blockCount == 0) {
+                // Создать новую строку, если текущая строка пустая
+                currentRow = new TableRow(MainActivity.this);
+                tableLayout.addView(currentRow);
+            }
+
+            // Создать новый blockLayout с названием достижения и установить ширину и высоту
+
+            TableRow.LayoutParams blockLayoutParams = new TableRow.LayoutParams(
+                    //TableRow.LayoutParams.MATCH_PARENT,
+                    blockWidth,
+                    blockWidth
+            );
+            blockLayoutParams.setMargins(12, 12, 12, 12); // Устанавливаем отступы между блоками
+            blockLayout.setLayoutParams(blockLayoutParams);
+
+            TextView favorites_name_TextView = blockLayout.findViewById(R.id.categoryNameTextView);
+            ImageView favorites_icon_Button = blockLayout.findViewById(R.id.block_category_imageview);
+
+//            favorites_name_TextView.setText(categoryName);
+            currentRow.addView(blockLayout);
+            blockCount++;
+
+            // Создать новую строку, если в текущей строке уже есть два blockLayout
+            if (blockCount == 3) {
+                blockCount = 0;
+                currentRow = null;
+            }
+
+//            parentLayout.addView(blockLayout);
 
             LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -578,7 +724,7 @@ public class MainActivity extends AppCompatActivity {
                         InputStream inputStream = getAssets().open("category_small/krasnoyarsk.png");
                         Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
                         RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), bitmap);
-                        roundedBitmapDrawable.setCornerRadius(20); // Здесь можно указать радиус закругления
+                        roundedBitmapDrawable.setCornerRadius(30); // Здесь можно указать радиус закругления
                         backGroundImageView.setImageDrawable(roundedBitmapDrawable);
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -589,7 +735,7 @@ public class MainActivity extends AppCompatActivity {
                         InputStream inputStream = assetManager.open("category_small/food and drink.png");
                         Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
                         RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), bitmap);
-                        roundedBitmapDrawable.setCornerRadius(20); // Здесь можно указать радиус закругления
+                        roundedBitmapDrawable.setCornerRadius(30); // Здесь можно указать радиус закругления
                         backGroundImageView.setImageDrawable(roundedBitmapDrawable);
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -601,7 +747,7 @@ public class MainActivity extends AppCompatActivity {
                         InputStream inputStream = assetManager.open("category_small/traveling.png");
                         Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
                         RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), bitmap);
-                        roundedBitmapDrawable.setCornerRadius(20); // Здесь можно указать радиус закругления
+                        roundedBitmapDrawable.setCornerRadius(30); // Здесь можно указать радиус закругления
                         backGroundImageView.setImageDrawable(roundedBitmapDrawable);
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -613,7 +759,7 @@ public class MainActivity extends AppCompatActivity {
                         InputStream inputStream = assetManager.open("category_small/cooking.png");
                         Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
                         RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), bitmap);
-                        roundedBitmapDrawable.setCornerRadius(20); // Здесь можно указать радиус закругления
+                        roundedBitmapDrawable.setCornerRadius(30); // Здесь можно указать радиус закругления
                         backGroundImageView.setImageDrawable(roundedBitmapDrawable);
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -625,7 +771,7 @@ public class MainActivity extends AppCompatActivity {
                         InputStream inputStream = assetManager.open("category_small/kaliningrad.png");
                         Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
                         RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), bitmap);
-                        roundedBitmapDrawable.setCornerRadius(20); // Здесь можно указать радиус закругления
+                        roundedBitmapDrawable.setCornerRadius(30); // Здесь можно указать радиус закругления
                         backGroundImageView.setImageDrawable(roundedBitmapDrawable);
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -637,7 +783,7 @@ public class MainActivity extends AppCompatActivity {
                         InputStream inputStream = assetManager.open("category_small/films.png");
                         Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
                         RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), bitmap);
-                        roundedBitmapDrawable.setCornerRadius(20); // Здесь можно указать радиус закругления
+                        roundedBitmapDrawable.setCornerRadius(30); // Здесь можно указать радиус закругления
                         backGroundImageView.setImageDrawable(roundedBitmapDrawable);
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -649,7 +795,7 @@ public class MainActivity extends AppCompatActivity {
                         InputStream inputStream = assetManager.open("category_small/books.png");
                         Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
                         RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), bitmap);
-                        roundedBitmapDrawable.setCornerRadius(20); // Здесь можно указать радиус закругления
+                        roundedBitmapDrawable.setCornerRadius(30); // Здесь можно указать радиус закругления
                         backGroundImageView.setImageDrawable(roundedBitmapDrawable);
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -661,7 +807,7 @@ public class MainActivity extends AppCompatActivity {
                         InputStream inputStream = assetManager.open("category_small/moscow.png");
                         Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
                         RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), bitmap);
-                        roundedBitmapDrawable.setCornerRadius(20); // Здесь можно указать радиус закругления
+                        roundedBitmapDrawable.setCornerRadius(30); // Здесь можно указать радиус закругления
                         backGroundImageView.setImageDrawable(roundedBitmapDrawable);
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -673,7 +819,7 @@ public class MainActivity extends AppCompatActivity {
                         InputStream inputStream = assetManager.open("category_small/sankt_petersburg.png");
                         Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
                         RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), bitmap);
-                        roundedBitmapDrawable.setCornerRadius(20); // Здесь можно указать радиус закругления
+                        roundedBitmapDrawable.setCornerRadius(30); // Здесь можно указать радиус закругления
                         backGroundImageView.setImageDrawable(roundedBitmapDrawable);
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -685,7 +831,7 @@ public class MainActivity extends AppCompatActivity {
                     break;
             }
 
-            blockLayout.setOnClickListener(v -> {
+            backGroundImageView.setOnClickListener(v -> {
                 // Обработка нажатия кнопки
                 System.out.println("Category_key  " + name);
                 Intent intent = new Intent(MainActivity.this, AchieveCategoryListActivity.class);
@@ -693,7 +839,10 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
 
             });
+
         }
+        ViewGroup parentLayout = findViewById(R.id.scrollView_newCategory);
+        parentLayout.addView(tableLayout);
     }
 
     /*public void setImage(String imageRef) {
@@ -869,6 +1018,6 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         overridePendingTransition(0, 0);
 
-        listOfFavorites();
+//        listOfFavorites();
     }
 }

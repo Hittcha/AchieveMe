@@ -28,6 +28,7 @@
     <color name="editTextColor">#585858</color>
     <color name="falseColor">#05000000</color>
     <color name="lowWhite">#CFCFCF</color>
+    <color name="categoryTextBack">#99000000</color>
 
     <color name="appBackGround">#1D1D1D</color>
     <color name="StatusBarColor">#4A4C4D</color>
