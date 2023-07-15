@@ -58,6 +58,7 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="colorPrimary">#4A4C4D</item>
+        <item name="fontFamily">@font/nunito_regular</item>
         <item name="android:textColorPrimary">#FFFFFF</item> <!-- Цвет текста -->
     </style>
     <style name="AchievementDialog" parent="Theme.AppCompat.Light.Dialog">
