@@ -75,7 +75,7 @@ public class NewslineActivity extends AppCompatActivity {
 
         DocumentReference mAuthDocRef = db.collection("UsersLogs").document("UsersPosts");
 
-        mAuthDocRef.get(Source.CACHE).addOnCompleteListener(task -> {
+        mAuthDocRef.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 DocumentSnapshot document = task.getResult();
                 if (document.exists()) {
