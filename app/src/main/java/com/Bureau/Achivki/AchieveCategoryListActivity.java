@@ -2,6 +2,7 @@ package com.Bureau.Achivki;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -147,7 +148,7 @@ public class AchieveCategoryListActivity extends AppCompatActivity {
                 break;
             case "Фильмы":
                 try {
-                    InputStream ims = getAssets().open("category_small/films.png");
+                    InputStream ims = getAssets().open("category_small/films2.jpg");
                     Drawable drawableBackground = Drawable.createFromStream(ims, null);
                     backgroundImage.setImageDrawable(drawableBackground);
                 } catch (IOException e) {
@@ -156,7 +157,7 @@ public class AchieveCategoryListActivity extends AppCompatActivity {
                 break;
             case "Книги":
                 try {
-                    InputStream ims = getAssets().open("category_small/books.png");
+                    InputStream ims = getAssets().open("category_small/books2.jpg");
                     Drawable drawableBackground = Drawable.createFromStream(ims, null);
                     backgroundImage.setImageDrawable(drawableBackground);
                 } catch (IOException e) {
@@ -165,7 +166,7 @@ public class AchieveCategoryListActivity extends AppCompatActivity {
                 break;
             case "Москва":
                 try {
-                    InputStream ims = getAssets().open("category_small/moscow.png");
+                    InputStream ims = getAssets().open("category_small/moscow2.jpg");
                     Drawable drawableBackground = Drawable.createFromStream(ims, null);
                     backgroundImage.setImageDrawable(drawableBackground);
                 } catch (IOException e) {
@@ -174,7 +175,7 @@ public class AchieveCategoryListActivity extends AppCompatActivity {
                 break;
             case "Санкт Петербург":
                 try {
-                    InputStream ims = getAssets().open("category_small/sankt_petersburg.png");
+                    InputStream ims = getAssets().open("category_small/sankt_petersburg2.jpg");
                     Drawable drawableBackground = Drawable.createFromStream(ims, null);
                     backgroundImage.setImageDrawable(drawableBackground);
                 } catch (IOException e) {
@@ -209,6 +210,16 @@ public class AchieveCategoryListActivity extends AppCompatActivity {
         ProgressBar progressBar = findViewById(R.id.progressBar);
         progressBar.setMax(count);
         progressBar.setProgress(a);
+
+        SharedPreferences sharedPreferences = getSharedPreferences("User_Data", MODE_PRIVATE);
+
+        Intent intentMain = getIntent();
+        String categoryName = intentMain.getStringExtra("Category_key");
+
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putLong(categoryName+"UserDoneScore", a);
+        editor.putLong(categoryName+"MaxScore", count);
+        editor.apply();
     }
 
     public void createAchieveList(String userId){

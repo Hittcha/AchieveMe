@@ -172,10 +172,10 @@ public class MainActivity extends AppCompatActivity {
 
         //Грузим аватар из локальных файлов, а если нет... то нет хэх
         File file = new File(this.getFilesDir(), "UserAvatar");
-                    if (file.exists()) {
-                        loadAvatarFromLocalFiles();
-                        System.out.println(" fasdf sdf dsf dsgf sdgf dsg sdfg sd");
-                    }
+        if (file.exists()) {
+            loadAvatarFromLocalFiles();
+            System.out.println(" fasdf sdf dsf dsgf sdgf dsg sdfg sd");
+        }
 
         DocumentReference mAuthDocRef = db.collection("Users").document(currentUser.getUid());
 
@@ -280,7 +280,7 @@ public class MainActivity extends AppCompatActivity {
         });*/
 
         favoritesButton.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, MainActivity2.class);
+            Intent intent = new Intent(MainActivity.this, NewslineActivity.class);
             startActivity(intent);
         });
 
@@ -762,6 +762,21 @@ public class MainActivity extends AppCompatActivity {
 
             TextView favorites_name_TextView = blockLayout.findViewById(R.id.categoryNameTextView);
             ImageView favorites_icon_Button = blockLayout.findViewById(R.id.block_category_imageview);
+
+
+            TextView categoryCount_TextView = blockLayout.findViewById(R.id.categoryCountText);
+            SharedPreferences sharedPreferences = getSharedPreferences("User_Data", MODE_PRIVATE);
+
+            long achieveCategoryUserDoneScore = sharedPreferences.getLong(name+"UserDoneScore", 0);
+            long achieveCategoryMaxScore = sharedPreferences.getLong(name+"MaxScore", 0);
+
+            if(achieveCategoryUserDoneScore != 0 && achieveCategoryMaxScore !=0) {
+                categoryCount_TextView.setText(achieveCategoryUserDoneScore + "/" + achieveCategoryMaxScore);
+            }else{
+                categoryCount_TextView.setText("");
+            }
+
+
 
 //            favorites_name_TextView.setText(categoryName);
             currentRow.addView(blockLayout);
