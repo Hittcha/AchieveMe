@@ -10,6 +10,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapShader;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Shader;
 import android.graphics.drawable.Drawable;
@@ -119,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
         WindowCalculation windowCalculation = new WindowCalculation(this);
         int screenHeight = windowCalculation.WindowCalculationHeight();
 
-        Resources resources = getResources();
+            // меняем длинну основого layout
         LinearLayout linearLayout = findViewById(R.id.activityMain_linearLayoutTop);
         ViewGroup.LayoutParams layoutParams = (LinearLayout.LayoutParams) linearLayout.getLayoutParams();
         layoutParams.height = screenHeight - 180;
@@ -226,16 +227,25 @@ public class MainActivity extends AppCompatActivity {
             scrollViewSeason.setVisibility(View.VISIBLE);
             scrollViewNewCategory.setVisibility(View.GONE);
             scrollViewFavorites.setVisibility(View.GONE);
+            textViewSeason.setTextColor(getResources().getColor(R.color.white));
+            textViewNewCategory.setTextColor(getResources().getColor(R.color.inactive_button));
+            textViewFavorites.setTextColor(getResources().getColor(R.color.inactive_button));
         });
         textViewNewCategory.setOnClickListener(v -> {
             scrollViewSeason.setVisibility(View.GONE);
             scrollViewNewCategory.setVisibility(View.VISIBLE);
             scrollViewFavorites.setVisibility(View.GONE);
+            textViewSeason.setTextColor(getResources().getColor(R.color.inactive_button));
+            textViewNewCategory.setTextColor(getResources().getColor(R.color.white));
+            textViewFavorites.setTextColor(getResources().getColor(R.color.inactive_button));
         });
         textViewFavorites.setOnClickListener(v -> {
             scrollViewSeason.setVisibility(View.GONE);
             scrollViewNewCategory.setVisibility(View.GONE);
             scrollViewFavorites.setVisibility(View.VISIBLE);
+            textViewSeason.setTextColor(getResources().getColor(R.color.inactive_button));
+            textViewNewCategory.setTextColor(getResources().getColor(R.color.inactive_button));
+            textViewFavorites.setTextColor(getResources().getColor(R.color.white));
         });
 
         friendsListText.setOnClickListener(v -> {

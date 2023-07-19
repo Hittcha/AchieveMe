@@ -33,4 +33,5 @@
     <color name="appBackGround">#1D1D1D</color>
     <color name="StatusBarColor">#4A4C4D</color>
     <color name="red">#FF0000</color>
+    <color name="inactive_button">#99FFFFFF</color>
 </resources>
