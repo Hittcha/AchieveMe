@@ -53,6 +53,9 @@ import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import com.caverock.androidsvg.SVG;
+import com.caverock.androidsvg.SVGImageView;
+import com.caverock.androidsvg.SVGParseException;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -539,9 +542,17 @@ public class UserProfile extends AppCompatActivity {
         TextView AchieveNameTextView = blockLayout.findViewById(R.id.achname);
         TextView DateTextView = blockLayout.findViewById(R.id.date);
         TextView likesTextView = blockLayout.findViewById(R.id.likesCount);
+        SVGImageView achieveIcon = blockLayout.findViewById(R.id.imageView_achieveIcon);
 
         likesTextView.setText(likes.toString());
 
+        try {
+            InputStream inputStream = getAssets().open("interface_icon/home.svg");
+            SVG svg = SVG.getFromInputStream(inputStream);
+            achieveIcon.setSVG(svg);
+        } catch (IOException | SVGParseException e) {
+            e.printStackTrace();
+        }
         DateTextView.setText(time);
 
         parentLayout.addView(blockLayout);
@@ -588,9 +599,9 @@ public class UserProfile extends AppCompatActivity {
 
         System.out.println("status " + status);
 
-        ImageView statusImageView = blockLayout.findViewById(R.id.statusImageView);
+//        ImageView statusImageView = blockLayout.findViewById(R.id.statusImageView);
 
-        statusImageView.setOnClickListener(v -> {
+        achieveIcon.setOnClickListener(v -> {
 
             FirebaseAuth mAuth = FirebaseAuth.getInstance();
             FirebaseUser currentUser = mAuth.getCurrentUser();
@@ -677,16 +688,16 @@ public class UserProfile extends AppCompatActivity {
 
         switch (status) {
             case "yellow":
-                statusImageView.setImageResource(R.drawable.galka_yellow);
+                achieveIcon.setBackgroundResource(R.drawable.galka_yellow);
                 break;
             case "green":
-                statusImageView.setImageResource(R.drawable.galka_green);
+                achieveIcon.setBackgroundResource(R.drawable.galka_green);
                 break;
             case "red":
-                statusImageView.setImageResource(R.drawable.galka_red);
+                achieveIcon.setBackgroundResource(R.drawable.galka_red);
                 break;
             default:
-                statusImageView.setImageResource(R.drawable.galka_grey);
+                achieveIcon.setBackgroundResource(R.drawable.galka_grey);
                 break;
         }
 

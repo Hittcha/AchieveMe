@@ -10,54 +10,46 @@
     <LinearLayout
         android:id="@+id/group_2"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="55dp"
         android:layout_gravity="bottom"
-        android:background="@drawable/rectangle_7_shape"
+        android:background="@null"
         app:layout_constraintBottom_toBottomOf="parent">
 
-        <ImageButton
+        <com.caverock.androidsvg.SVGImageView
             android:id="@+id/imageButtonMenu"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@null"
+            android:layout_height="55dp"
             android:scaleType="center"
-            app:srcCompat="@drawable/menuicon" />
+            android:layout_weight="1"
+            />
 
-        <ImageButton
+        <com.caverock.androidsvg.SVGImageView
             android:id="@+id/imageButtonLeaderList"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@null"
+            android:layout_height="55dp"
             android:scaleType="center"
-            android:src="@drawable/crownicon" />
+            android:layout_weight="1" />
 
-        <ImageButton
+        <com.caverock.androidsvg.SVGImageView
             android:id="@+id/imageButtonUsersList"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@null"
+            android:layout_height="55dp"
             android:scaleType="center"
-            app:srcCompat="@drawable/otherusers" />
+            android:layout_weight="1" />
 
-        <ImageButton
+        <com.caverock.androidsvg.SVGImageView
             android:id="@+id/imageButtonAchieveList"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@null"
+            android:layout_height="55dp"
             android:scaleType="center"
-            app:srcCompat="@drawable/achievelist" />
+            android:layout_weight="1" />
 
-        <ImageButton
+        <com.caverock.androidsvg.SVGImageView
             android:id="@+id/imageButtonFavorites"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@null"
-            app:srcCompat="@drawable/favoritesicon" />
+            android:layout_height="55dp"
+            android:scaleType="center"
+            android:layout_weight="1"/>
 
     </LinearLayout>
 
@@ -67,7 +59,6 @@
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@+id/group_2"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -80,131 +71,162 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/constraintLayout"
                 android:layout_width="match_parent"
-                android:layout_height="260dp"
+                android:layout_height="290dp"
                 android:layout_weight="1">
 
-                <Button
-                    android:id="@+id/userAchievementsButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="35dp"
-                    android:layout_marginStart="129dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:background="@drawable/other_user_achieve_button"
-                    android:textOff=""
-                    android:textOn=""
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.941"
-                    app:layout_constraintStart_toEndOf="@+id/subscribeButton"
-                    app:layout_constraintTop_toBottomOf="@+id/friendsCount" />
+<!--                <Button-->
+<!--                    android:id="@+id/userAchievementsButton"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="35dp"-->
+<!--                    android:layout_marginStart="129dp"-->
+<!--                    android:layout_marginTop="8dp"-->
+<!--                    android:layout_marginEnd="8dp"-->
+<!--                    android:background="@drawable/other_user_achieve_button"-->
+<!--                    android:textOff=""-->
+<!--                    android:textOn=""-->
+<!--                    app:layout_constraintEnd_toEndOf="parent"-->
+<!--                    app:layout_constraintHorizontal_bias="0.941"-->
+<!--                    app:layout_constraintStart_toEndOf="@+id/subscribeButton"-->
+<!--                    app:layout_constraintTop_toBottomOf="@+id/friendsCount" />-->
 
                 <TextView
                     android:id="@+id/friendsList2"
-                    android:layout_width="0dp"
-                    android:layout_height="24dp"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginEnd="32dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:text="Подписки"
                     android:textColor="@color/white"
-                    android:textSize="15sp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/welcome_message" />
+                    android:textSize="14sp"
+                    app:layout_constraintEnd_toEndOf="@id/friendsCount"
+                    app:layout_constraintStart_toStartOf="@id/friendsCount"
+                    app:layout_constraintTop_toBottomOf="@id/friendsCount"
+                    app:layout_constraintBottom_toBottomOf="@id/userButton" />
 
                 <TextView
                     android:id="@+id/subscriptionsList2"
-                    android:layout_width="86dp"
-                    android:layout_height="24dp"
-                    android:layout_marginTop="16dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:text="Подписчики"
+                    android:textSize="14sp"
                     android:textColor="@color/white"
-                    android:textSize="15sp"
-                    app:layout_constraintEnd_toStartOf="@+id/friendsList2"
-                    app:layout_constraintStart_toEndOf="@+id/scoreTextView2"
-                    app:layout_constraintTop_toBottomOf="@+id/welcome_message" />
-
-                <TextView
-                    android:id="@+id/scoreTextView2"
-                    android:layout_width="0dp"
-                    android:layout_height="24dp"
-                    android:layout_marginStart="32dp"
-                    android:layout_marginTop="16dp"
-                    android:text="Счет"
-                    android:textColor="@color/white"
-                    android:textSize="15sp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/welcome_message" />
-
+                    app:layout_constraintStart_toStartOf="@id/subsTextView"
+                    app:layout_constraintEnd_toEndOf="@id/subsTextView"
+                    app:layout_constraintTop_toBottomOf="@id/subsTextView"
+                    app:layout_constraintBottom_toBottomOf="@id/userButton"/>
 
                 <TextView
                     android:id="@+id/friendsCount"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="0"
+                    android:layout_width="80dp"
+                    android:layout_height="55dp"
+                    android:text="30"
+                    android:textSize="48sp"
                     android:textColor="@color/white"
-                    app:layout_constraintEnd_toEndOf="@+id/friendsList2"
-                    app:layout_constraintStart_toStartOf="@+id/friendsList2"
-                    app:layout_constraintTop_toBottomOf="@+id/friendsList2" />
+                    android:textAlignment="center"
+                    app:layout_constraintVertical_chainStyle="packed"
+                    app:layout_constraintStart_toEndOf="@id/userButton"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/userButton"
+                    app:layout_constraintBottom_toTopOf="@id/friendsList2" />
 
                 <ImageButton
                     android:id="@+id/userButton"
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentTop="true"
-                    android:layout_alignParentRight="true"
-                    android:layout_alignParentBottom="true"
-                    android:layout_marginTop="16dp"
+                    android:layout_width="130dp"
+                    android:layout_height="130dp"
                     android:background="@drawable/ellipse_1_shape"
-                    android:baselineAligned="false"
                     android:scaleType="centerCrop"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.498"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    android:layout_marginTop="15dp"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/subscriptionsList2"
+                    app:layout_constraintEnd_toStartOf="@id/friendsList2"
+                    app:layout_constraintBottom_toTopOf="@id/welcome_message"/>
 
                 <TextView
                     android:id="@+id/welcome_message"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="name"
+                    android:text="John Massovich"
                     android:textColor="@color/white"
-                    android:textSize="20sp"
-                    app:layout_constraintEnd_toEndOf="parent"
+                    android:textSize="36sp"
+                    app:layout_constraintHorizontal_chainStyle="packed"
+                    app:layout_constraintTop_toBottomOf="@id/userButton"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/userButton" />
+                    app:layout_constraintEnd_toStartOf="@id/subscribeButton"
+                    app:layout_constraintBottom_toTopOf="@id/location_textview" />
+
+                <com.caverock.androidsvg.SVGImageView
+                    android:id="@+id/location_icon"
+                    android:layout_width="24dp"
+                    android:layout_height="32dp"
+                    android:paddingEnd="5dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/location_textview"
+                    app:layout_constraintBottom_toBottomOf="@id/location_textview"
+                    app:layout_constraintTop_toTopOf="@id/location_textview"
+                    app:layout_constraintHorizontal_chainStyle="packed"
+                    />
+
+                <TextView
+                    android:id="@+id/location_textview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Россия, Красноярск"
+                    android:textColor="@color/white"
+                    android:textSize="16sp"
+                    app:layout_constraintStart_toEndOf="@id/location_icon"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/welcome_message"
+                    app:layout_constraintBottom_toTopOf="@id/scoreText"
+                    android:textAlignment="center"
+                    />
 
                 <TextView
                     android:id="@+id/scoreText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="0"
-                    android:textColor="@color/white"
-                    app:layout_constraintEnd_toEndOf="@+id/scoreTextView2"
-                    app:layout_constraintStart_toStartOf="@+id/scoreTextView2"
-                    app:layout_constraintTop_toBottomOf="@+id/scoreTextView2" />
+                    android:text=" 223"
+                    android:textSize="24sp"
+                    android:textColor="#F5C566"
+                    app:layout_constraintStart_toEndOf="@id/score_cup"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/location_textview"
+                    app:layout_constraintBottom_toBottomOf="parent"/>
+                <com.caverock.androidsvg.SVGImageView
+                    android:id="@+id/score_cup"
+                    android:layout_width="24dp"
+                    android:layout_height="32dp"
+                    app:layout_constraintHorizontal_chainStyle="packed"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/scoreText"
+                    app:layout_constraintBottom_toBottomOf="@id/scoreText"
+                    app:layout_constraintTop_toTopOf="@id/scoreText"
+                    />
 
                 <ToggleButton
                     android:id="@+id/subscribeButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="35dp"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="8dp"
-                    android:background="@drawable/subbutton"
+                    android:background="@drawable/podpisat"
                     android:textOff=""
                     android:textOn=""
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/scoreText" />
+                    app:layout_constraintStart_toEndOf="@id/welcome_message"
+                    app:layout_constraintTop_toTopOf="@id/welcome_message"
+                    app:layout_constraintBottom_toBottomOf="@id/welcome_message"
+                    app:layout_constraintEnd_toEndOf="parent"/>
 
                 <TextView
                     android:id="@+id/subsTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="0"
+                    android:layout_width="82dp"
+                    android:layout_height="55dp"
+                    android:text="12k"
+                    android:textAlignment="center"
                     android:textColor="@color/white"
-                    app:layout_constraintEnd_toEndOf="@+id/subscriptionsList2"
-                    app:layout_constraintStart_toStartOf="@+id/subscriptionsList2"
-                    app:layout_constraintTop_toBottomOf="@+id/subscriptionsList2" />
+                    android:textSize="48sp"
+                    app:layout_constraintBottom_toTopOf="@id/subscriptionsList2"
+                    app:layout_constraintEnd_toStartOf="@id/userButton"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/userButton"
+                    app:layout_constraintVertical_chainStyle="packed" />
 
                 <ImageButton
                     android:id="@+id/imageButtonBack"
@@ -220,39 +242,84 @@
                     app:srcCompat="@drawable/ic_back_arrow" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <HorizontalScrollView
-                android:id="@+id/favoritesScrollView"
-                android:layout_width="match_parent"
-                android:layout_height="106dp"
-                android:layout_marginStart="2dp"
-                android:layout_marginTop="0dp"
-                android:layout_marginEnd="0dp"
-                android:visibility="gone"
-                tools:visibility="visible">
-
-                <LinearLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/favoritesLinearLayout"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
                     android:orientation="horizontal">
 
-                    <ImageButton
-                        android:id="@+id/imageButton11"
-                        android:layout_width="94dp"
-                        android:layout_height="94dp"
-                        android:layout_marginStart="4dp"
+                    <TextView
+                        android:id="@+id/textViewBest"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:text="Избранное"
+                        android:textColor="@color/white"
+                        android:textSize="20sp"
+                        android:clickable="true"
+                        android:gravity="center"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toStartOf="@id/dot"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"/>
 
-                        android:layout_marginTop="4dp"
+                    <View
+                        android:id="@+id/dot"
+                        android:layout_width="6dp"
+                        android:layout_height="6dp"
+                        android:background="@drawable/ellipse_12"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        />
 
-                        android:layout_marginEnd="4dp"
-                        android:layout_marginBottom="4dp"
-                        android:layout_weight="1"
-                        android:background="@drawable/addfavoritesbutton"
-                        android:visibility="gone"
-                        tools:visibility="visible" />
+                    <TextView
+                        android:id="@+id/textViewAchieve"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:text="Достижения"
+                        android:textColor="@color/inactive_button"
+                        android:textSize="20sp"
+                        android:clickable="true"
+                        android:gravity="center"
+                        app:layout_constraintStart_toEndOf="@id/dot"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        />
 
-                </LinearLayout>
-            </HorizontalScrollView>
+<!--                    <ImageButton-->
+<!--                        android:id="@+id/imageButton11"-->
+<!--                        android:layout_width="94dp"-->
+<!--                        android:layout_height="94dp"-->
+<!--                        android:layout_marginStart="4dp"-->
+
+<!--                        android:layout_marginTop="4dp"-->
+
+<!--                        android:layout_marginEnd="4dp"-->
+<!--                        android:layout_marginBottom="4dp"-->
+<!--                        android:layout_weight="1"-->
+<!--                        android:background="@drawable/addfavoritesbutton"-->
+<!--                        android:visibility="gone"-->
+<!--                        tools:visibility="visible" />-->
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            <LinearLayout
+                android:id="@+id/linearLayout_best"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/linearLayout_achieve"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone"
+                tools:visibility="visible">
+            </LinearLayout>
+
+
         </LinearLayout>
     </ScrollView>
 

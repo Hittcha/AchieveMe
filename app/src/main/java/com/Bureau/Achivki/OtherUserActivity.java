@@ -42,6 +42,9 @@ import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
 
+import com.caverock.androidsvg.SVG;
+import com.caverock.androidsvg.SVGImageView;
+import com.caverock.androidsvg.SVGParseException;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.navigation.NavigationView;
@@ -135,6 +138,23 @@ public class OtherUserActivity extends AppCompatActivity {
         String myID = currentUser.getUid();
         DocumentReference mAuthDocRef = db.collection("Users").document(currentUser.getUid());
 
+        TextView favoriteButton = findViewById(R.id.textViewBest);
+        TextView achieveButton = findViewById(R.id.textViewAchieve);
+        LinearLayout bestLinearLayout = findViewById(R.id.linearLayout_best);
+        LinearLayout achieveLinearLayout = findViewById(R.id.linearLayout_achieve);
+
+        favoriteButton.setOnClickListener(v -> {
+            favoriteButton.setTextColor(getResources().getColor(R.color.white));
+            achieveButton.setTextColor(getResources().getColor(R.color.inactive_button));
+            bestLinearLayout.setVisibility(View.VISIBLE);
+            achieveLinearLayout.setVisibility(View.GONE);
+        });
+        achieveButton.setOnClickListener(v -> {
+            favoriteButton.setTextColor(getResources().getColor(R.color.inactive_button));
+            achieveButton.setTextColor(getResources().getColor(R.color.white));
+            bestLinearLayout.setVisibility(View.GONE);
+            achieveLinearLayout.setVisibility(View.VISIBLE);
+        });
 
         ScrollView scrollView = findViewById(R.id.scrollView1);
 
@@ -269,18 +289,19 @@ public class OtherUserActivity extends AppCompatActivity {
             }
         });
 
-        ImageButton leaderListButton = findViewById(R.id.imageButtonLeaderList);
-        ImageButton menuButton = findViewById(R.id.imageButtonMenu);
-        ImageButton favoritesButton = findViewById(R.id.imageButtonFavorites);
-        ImageButton achieveListButton = findViewById(R.id.imageButtonAchieveList);
-        TextView achieveListTextView = findViewById(R.id.scoreTextView2);
+        SVGImageView usersListButton = findViewById(R.id.imageButtonUsersList);
+        SVGImageView leaderListButton = findViewById(R.id.imageButtonLeaderList);
+        SVGImageView menuButton = findViewById(R.id.imageButtonMenu);
+        SVGImageView favoritesButton = findViewById(R.id.imageButtonFavorites);
+        SVGImageView achieveListButton = findViewById(R.id.imageButtonAchieveList);
+        TextView achieveListTextView = findViewById(R.id.scoreText);
 
-        Button userAchievementsButton = findViewById(R.id.userAchievementsButton);
-        userAchievementsButton.setOnClickListener(v -> {
-            Intent intent111 = new Intent(OtherUserActivity.this, OtherUserAchievements.class);
-            intent111.putExtra("User_token", userToken);
-            startActivity(intent111);
-        });
+//        Button userAchievementsButton = findViewById(R.id.userAchievementsButton);
+//        userAchievementsButton.setOnClickListener(v -> {
+//            Intent intent111 = new Intent(OtherUserActivity.this, OtherUserAchievements.class);
+//            intent111.putExtra("User_token", userToken);
+//            startActivity(intent111);
+//        });
 
         achieveListTextView.setOnClickListener(v -> {
             Intent intent18 = new Intent(OtherUserActivity.this, OtherUserAchievements.class);
@@ -321,11 +342,69 @@ public class OtherUserActivity extends AppCompatActivity {
             startActivity(intent16);
         });
 
-        ImageButton usersListButton = findViewById(R.id.imageButtonUsersList);
+
         usersListButton.setOnClickListener(v -> {
             Intent intent17 = new Intent(OtherUserActivity.this, UsersListActivity.class);
             startActivity(intent17);
         });
+
+        // выставляем иконки
+        try {
+            InputStream inputStream = getAssets().open("interface_icon/kubok.svg");
+            SVG svg = SVG.getFromInputStream(inputStream);
+            SVGImageView svgImageView = findViewById(R.id.score_cup);
+            svgImageView.setSVG(svg);
+        } catch (IOException | SVGParseException e) {
+            e.printStackTrace();
+        }
+        try {
+            InputStream inputStream = getAssets().open("interface_icon/mesto.svg");
+            SVG svg = SVG.getFromInputStream(inputStream);
+            SVGImageView svgImageView = findViewById(R.id.location_icon);
+            svgImageView.setSVG(svg);
+        } catch (IOException | SVGParseException e) {
+            e.printStackTrace();
+        }
+        try {
+            InputStream inputStream = getAssets().open("interface_icon/home.svg");
+            SVG svg = SVG.getFromInputStream(inputStream);
+            SVGImageView svgImageView = findViewById(R.id.imageButtonMenu);
+            svgImageView.setSVG(svg);
+        } catch (IOException | SVGParseException e) {
+            e.printStackTrace();
+        }
+        try {
+            InputStream inputStream = getAssets().open("interface_icon/rate.svg");
+            SVG svg = SVG.getFromInputStream(inputStream);
+            SVGImageView svgImageView = findViewById(R.id.imageButtonLeaderList);
+            svgImageView.setSVG(svg);
+        } catch (IOException | SVGParseException e) {
+            e.printStackTrace();
+        }
+        try {
+            InputStream inputStream = getAssets().open("interface_icon/chel.svg");
+            SVG svg = SVG.getFromInputStream(inputStream);
+            SVGImageView svgImageView = findViewById(R.id.imageButtonUsersList);
+            svgImageView.setSVG(svg);
+        } catch (IOException | SVGParseException e) {
+            e.printStackTrace();
+        }
+        try {
+            InputStream inputStream = getAssets().open("interface_icon/kubok niz.svg");
+            SVG svg = SVG.getFromInputStream(inputStream);
+            SVGImageView svgImageView = findViewById(R.id.imageButtonAchieveList);
+            svgImageView.setSVG(svg);
+        } catch (IOException | SVGParseException e) {
+            e.printStackTrace();
+        }
+        try {
+            InputStream inputStream = getAssets().open("interface_icon/Star 1.svg");
+            SVG svg = SVG.getFromInputStream(inputStream);
+            SVGImageView svgImageView = findViewById(R.id.imageButtonFavorites);
+            svgImageView.setSVG(svg);
+        } catch (IOException | SVGParseException e) {
+            e.printStackTrace();
+        }
 
     }
 
@@ -340,14 +419,13 @@ public class OtherUserActivity extends AppCompatActivity {
             Map<String, Object> friendMap = (Map<String, Object>) friends.get("friends");
 
 
-
             subscribeButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     if (isChecked) {
                         //subscribeButton.setBackgroundResource(R.drawable.likeimageclicked);
 
-                        subscribeButton.setBackgroundResource(R.drawable.subbuttonclicked);
+                        subscribeButton.setBackgroundResource(R.drawable.podpisan);
                         System.out.println("Подписан " + otherID);
                         //addLike(userName, key);
 
@@ -370,7 +448,7 @@ public class OtherUserActivity extends AppCompatActivity {
 
                     } else {
 
-                        subscribeButton.setBackgroundResource(R.drawable.subbutton);
+                        subscribeButton.setBackgroundResource(R.drawable.podpisat);
 
                         friendMap.remove(otherID);
 
@@ -514,6 +592,15 @@ public class OtherUserActivity extends AppCompatActivity {
         TextView AchieveNameTextView = blockLayout.findViewById(R.id.achname);
         TextView DateTextView = blockLayout.findViewById(R.id.date);
         TextView likesTextView = blockLayout.findViewById(R.id.likesCount);
+        SVGImageView achieveIcon = blockLayout.findViewById(R.id.imageView_achieveIcon);
+
+        try {
+            InputStream inputStream = getAssets().open("interface_icon/home.svg");
+            SVG svg = SVG.getFromInputStream(inputStream);
+            achieveIcon.setSVG(svg);
+        } catch (IOException | SVGParseException e) {
+            e.printStackTrace();
+        }
 
         likesTextView.setText(likes.toString());
         DateTextView.setText(time);
@@ -523,6 +610,7 @@ public class OtherUserActivity extends AppCompatActivity {
         liked = false;
 
         ToggleButton likeButton = blockLayout.findViewById(R.id.toggleButton2);
+
 
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -565,9 +653,9 @@ public class OtherUserActivity extends AppCompatActivity {
 
         System.out.println("status " + status);
 
-        ImageView statusImageView = blockLayout.findViewById(R.id.statusImageView);
+//        ImageView statusImageView = blockLayout.findViewById(R.id.statusImageView);
 
-        statusImageView.setOnClickListener(v -> {
+        achieveIcon.setOnClickListener(v -> {
 
             FirebaseAuth mAuth = FirebaseAuth.getInstance();
             FirebaseUser currentUser = mAuth.getCurrentUser();
@@ -654,16 +742,16 @@ public class OtherUserActivity extends AppCompatActivity {
 
         switch (status) {
             case "yellow":
-                statusImageView.setImageResource(R.drawable.galka_yellow);
+                achieveIcon.setBackgroundResource(R.drawable.galka_yellow);
                 break;
             case "green":
-                statusImageView.setImageResource(R.drawable.galka_green);
+                achieveIcon.setBackgroundResource(R.drawable.galka_green);
                 break;
             case "red":
-                statusImageView.setImageResource(R.drawable.galka_red);
+                achieveIcon.setBackgroundResource(R.drawable.galka_red);
                 break;
             default:
-                statusImageView.setImageResource(R.drawable.galka_grey);
+                achieveIcon.setBackgroundResource(R.drawable.galka_grey);
                 break;
         }
 
