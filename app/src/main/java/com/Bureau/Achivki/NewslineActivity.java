@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,6 +24,8 @@ import android.widget.ToggleButton;
 import com.caverock.androidsvg.SVG;
 import com.caverock.androidsvg.SVGImageView;
 import com.caverock.androidsvg.SVGParseException;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -174,7 +177,7 @@ public class NewslineActivity extends AppCompatActivity {
             likeButton.setBackgroundResource(R.drawable.likeimage); // Установка фона для невыделенного состояния
         }
 
-        if(checkIfLikedLocally(userName, otherUserToken+"_"+achname)==true){
+       /* if(checkIfLikedLocally(userName, otherUserToken+"_"+achname)==true){
             likeButton.setChecked(true);
             int score = Integer.parseInt(likesTextView.getText().toString());
             score++;
@@ -182,7 +185,7 @@ public class NewslineActivity extends AppCompatActivity {
             likeButton.setBackgroundResource(R.drawable.likeimageclicked);
         }else{
             // likeButton.setChecked(false);
-        }
+        }*/
 
         likeButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
@@ -210,7 +213,7 @@ public class NewslineActivity extends AppCompatActivity {
 
 //        ImageView statusImageView = blockLayout.findViewById(R.id.statusImageView);
 
-        achieveIcon.setOnClickListener(v -> {
+        /*achieveIcon.setOnClickListener(v -> {
 
             FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
@@ -288,7 +291,7 @@ public class NewslineActivity extends AppCompatActivity {
                     });
                 }
             });
-        });
+        });*/
 
         if(status == null){
             status = "grey";
@@ -316,13 +319,28 @@ public class NewslineActivity extends AppCompatActivity {
         StorageReference storageRef = storage.getReference();
         StorageReference imageRef = storageRef.child(url);
         // Получение URL изображения
-        imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+        /*imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
             // URL изображения
             String imageUrl = uri.toString();
 
             // Отображение изображения с использованием Picasso
             Picasso.get()
                     .load(imageUrl)
+                    .into(imageView);
+            imageView.setAdjustViewBounds(true);
+        }).addOnFailureListener(e -> {
+            // Обработка ошибки загрузки изображения
+        });*/
+
+        imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+            // URL изображения
+            String imageUrl = uri.toString();
+
+            // Отображение уменьшенного изображения с использованием Picasso
+            Picasso.get()
+                    .load(imageUrl)
+                    .resize(500, 500) // Указываем желаемый размер
+                    .centerCrop() // Обрезаем изображение по центру
                     .into(imageView);
             imageView.setAdjustViewBounds(true);
         }).addOnFailureListener(e -> {
@@ -375,49 +393,12 @@ public class NewslineActivity extends AppCompatActivity {
 
     }
 
-    /*public void addLike(String userName, String key, String userToken){
-
-        // Получаем ссылку на коллекцию пользователей
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        DocumentReference usersRef = db.collection("Users").document(userToken);
-
-        //DocumentReference usersRef1 = db.collection("UsersLogs").document("UsersPosts");
-
-        System.out.println("-------------------------------------------------- ");
-        System.out.println("userName " + userName);
-        System.out.println("key " + key);
-        System.out.println("userToken " + userToken);
-
-        usersRef.get().addOnSuccessListener(documentSnapshot -> {
-            Map<String, Object> userAchievements = documentSnapshot.getData();
-            Map<String, Object> achieveMap = (Map<String, Object>) userAchievements.get("userPhotos");
-            Map<String, Object> achieveMap1 = (Map<String, Object>) achieveMap.get(key);
-            ArrayList<String> people = (ArrayList<String>) achieveMap1.get("like");
-            Long likes = (Long) achieveMap1.get("likes");
-
-            if (people.contains(userName)) {
-                // Если Map achieve не существует, создаем его
-            }else{
-                people.add(userName);
-
-                achieveMap1.put("like", people);
-                likes = Long.valueOf(people.size());
-            }
-
-            achieveMap1.put("likes", likes);
-
-            usersRef.set(userAchievements);
-
-        });
-
-    }*/
-
     public void addLike(String userName, String key, String userToken) {
         // Получаем ссылку на коллекцию пользователей
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference usersRef = db.collection("Users").document(userToken);
 
-        //DocumentReference usersRef1 = db.collection("UsersLogs").document("UsersPosts");
+        DocumentReference lentaRef = db.collection("UsersLogs").document("UsersPosts");
 
         System.out.println("-------------------------------------------------- ");
         System.out.println("userName " + userName);
@@ -440,7 +421,7 @@ public class NewslineActivity extends AppCompatActivity {
                 likes = Long.valueOf(people.size());
 
                 // Сохраняем информацию о лайке в SharedPreferences
-                saveLikeLocally(userName, userToken+"_"+key, true);
+                //saveLikeLocally(userName, userToken+"_"+key, true);
             }
 
             achieveMap1.put("likes", likes);
@@ -448,10 +429,58 @@ public class NewslineActivity extends AppCompatActivity {
             usersRef.set(userAchievements);
 
         });
+
+        lentaRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                if (documentSnapshot.exists()) {
+                    // Получаем Map из документа с именем "dasda_123"
+                    Map<String, Object> achieveMap1 = (Map<String, Object>) documentSnapshot.get(userToken + "_" + key);
+
+                    if (achieveMap1 != null) {
+                        // Извлекаем ArrayList<String> по ключу "like"
+                        ArrayList<String> people = (ArrayList<String>) achieveMap1.get("like");
+                        Long likes = (Long) achieveMap1.get("likes");
+
+                        // Используем полученный список
+                        if (people != null) {
+                            // Делаем что-то с people ArrayList<String>
+                            people.add(userName);
+                            likes = Long.valueOf(people.size());
+                            achieveMap1.put("likes", likes);
+
+                            // Обновляем Map с измененным списком в документе
+                            lentaRef.update(userToken + "_" + key, achieveMap1)
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            // Документ успешно обновлен
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            // Обработка ошибки при обновлении документа
+                                        }
+                                    });
+                        }
+                    }
+                } else {
+                    // Документ не существует
+                }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                // Обработка ошибки
+            }
+        });
     }
     public void delLike(String userName, String key, String userToken) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference usersRef = db.collection("Users").document(userToken);
+
+        DocumentReference lentaRef = db.collection("UsersLogs").document("UsersPosts");
 
         System.out.println("userName " + userName);
         usersRef.get().addOnSuccessListener(documentSnapshot -> {
@@ -467,12 +496,57 @@ public class NewslineActivity extends AppCompatActivity {
                 likes = Long.valueOf(people.size());
 
                 // Сохраняем информацию о удаленном лайке в SharedPreferences
-                saveLikeLocally(userName, userToken+"_"+key, false);
+                //saveLikeLocally(userName, userToken+"_"+key, false);
             }
 
             achieveMap1.put("likes", likes);
 
             usersRef.set(userAchievements);
+        });
+        lentaRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                if (documentSnapshot.exists()) {
+                    // Получаем Map из документа с именем "dasda_123"
+                    Map<String, Object> achieveMap1 = (Map<String, Object>) documentSnapshot.get(userToken + "_" + key);
+
+                    if (achieveMap1 != null) {
+                        // Извлекаем ArrayList<String> по ключу "like"
+                        ArrayList<String> people = (ArrayList<String>) achieveMap1.get("like");
+                        Long likes = (Long) achieveMap1.get("likes");
+
+                        // Используем полученный список
+                        if (people != null) {
+                            // Делаем что-то с people ArrayList<String>
+                            people.remove(userName);
+                            likes = Long.valueOf(people.size());
+                            achieveMap1.put("likes", likes);
+
+                            // Обновляем Map с измененным списком в документе
+                            lentaRef.update(userToken + "_" + key, achieveMap1)
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            // Документ успешно обновлен
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            // Обработка ошибки при обновлении документа
+                                        }
+                                    });
+                        }
+                    }
+                } else {
+                    // Документ не существует
+                }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                // Обработка ошибки
+            }
         });
     }
 
@@ -488,6 +562,14 @@ public class NewslineActivity extends AppCompatActivity {
     private boolean checkIfLikedLocally(String userName, String key) {
         SharedPreferences sharedPreferences = getSharedPreferences("Likes", Context.MODE_PRIVATE);
         return sharedPreferences.getBoolean(userName + "_" + key, false);
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
 }

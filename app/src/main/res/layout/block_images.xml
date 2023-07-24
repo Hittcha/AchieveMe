@@ -54,12 +54,13 @@
             android:id="@+id/date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:elevation="1dp"
             android:text="Date"
             android:textColor="@color/white"
             android:textSize="15sp"
-            app:layout_constraintTop_toBottomOf="@id/achname"
+            android:visibility="gone"
             app:layout_constraintStart_toStartOf="@id/achname"
-            android:elevation="1dp"/>
+            app:layout_constraintTop_toBottomOf="@id/achname" />
 
         <ImageView
             android:id="@+id/imageView3"

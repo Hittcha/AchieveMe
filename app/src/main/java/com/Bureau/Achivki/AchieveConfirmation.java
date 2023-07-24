@@ -235,12 +235,12 @@ public class AchieveConfirmation extends AppCompatActivity {
                 // Если разрешение есть, вызываем окно выбора фотографий
                 selectImageFromLibrary();
                 //loadPhotosFromGallery();
-                loadfile();
+                //loadfile();
             }
         }else{
             selectImageFromLibrary();
             //loadPhotosFromGallery();
-            loadfile();
+            //loadfile();
         }
     }
 
@@ -638,51 +638,6 @@ public class AchieveConfirmation extends AppCompatActivity {
             e.printStackTrace();
         }
         return false;
-    }
-
-    private void loadfile() {
-        // Определить начальную и конечную даты периода
-        Calendar startDate = Calendar.getInstance();
-        startDate.set(Calendar.YEAR, 2023);
-        startDate.set(Calendar.MONTH, Calendar.JULY);
-        startDate.set(Calendar.DAY_OF_MONTH, 1);
-        startDate.set(Calendar.HOUR_OF_DAY, 0);
-        startDate.set(Calendar.MINUTE, 0);
-        startDate.set(Calendar.SECOND, 0);
-
-        Calendar endDate = Calendar.getInstance();
-        endDate.set(Calendar.YEAR, 2023);
-        endDate.set(Calendar.MONTH, Calendar.AUGUST);
-        endDate.set(Calendar.DAY_OF_MONTH, 31);
-        endDate.set(Calendar.HOUR_OF_DAY, 23);
-        endDate.set(Calendar.MINUTE, 59);
-        endDate.set(Calendar.SECOND, 59);
-
-        // Выбрать фотографии, снятые в заданном периоде времени
-        /*String[] projection = {MediaStore.Images.Media.DATA, MediaStore.Images.Media.DATE_TAKEN};
-        String selection = MediaStore.Images.Media.DATE_TAKEN + " >= ? AND " + MediaStore.Images.Media.DATE_TAKEN + " <= ?";
-        String[] selectionArgs = {String.valueOf(startDate.getTimeInMillis()), String.valueOf(endDate.getTimeInMillis())};
-        Cursor cursor = getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, selection, selectionArgs, null);*/
-
-        String[] projection = {MediaStore.Images.Media.DATA, MediaStore.Images.Media.DATE_ADDED};
-        String selection = MediaStore.Images.Media.DATE_ADDED + " >= ? AND " + MediaStore.Images.Media.DATE_ADDED + " <= ?";
-        String[] selectionArgs = {String.valueOf(startDate.getTimeInMillis() / 1000), String.valueOf(endDate.getTimeInMillis() / 1000)};
-        Cursor cursor = getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, selection, selectionArgs, null);
-
-
-        //Cursor cursor = getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, selection, selectionArgs, null);
-
-
-        // Обработать результаты выборки
-        while (cursor.moveToNext()) {
-            String imagePath = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA));
-            Uri imageUri = Uri.fromFile(new File(imagePath));
-
-
-            // Загрузить фотографию в хранилище
-            StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("photos/" + imageUri.getLastPathSegment());
-            UploadTask uploadTask = storageRef.putFile(imageUri);
-        }
     }
 
     private void closeWindow() {
