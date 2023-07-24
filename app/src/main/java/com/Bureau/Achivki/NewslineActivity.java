@@ -20,6 +20,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
+import com.caverock.androidsvg.SVG;
+import com.caverock.androidsvg.SVGImageView;
+import com.caverock.androidsvg.SVGParseException;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -33,6 +36,8 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
@@ -129,10 +134,19 @@ public class NewslineActivity extends AppCompatActivity {
         TextView AchieveNameTextView = blockLayout.findViewById(R.id.achname);
         TextView DateTextView = blockLayout.findViewById(R.id.date);
         TextView likesTextView = blockLayout.findViewById(R.id.likesCount);
+        SVGImageView achieveIcon = blockLayout.findViewById(R.id.imageView_achieveIcon);
 
         likesTextView.setText(likes.toString());
 
         DateTextView.setText(time);
+
+        try {
+            InputStream inputStream = getAssets().open("interface_icon/home.svg");
+            SVG svg = SVG.getFromInputStream(inputStream);
+            achieveIcon.setSVG(svg);
+        } catch (IOException | SVGParseException e) {
+            e.printStackTrace();
+        }
 
         parentLayout.addView(blockLayout);
         boolean liked = false;
@@ -194,9 +208,9 @@ public class NewslineActivity extends AppCompatActivity {
 
         System.out.println("status " + status);
 
-        ImageView statusImageView = blockLayout.findViewById(R.id.statusImageView);
+//        ImageView statusImageView = blockLayout.findViewById(R.id.statusImageView);
 
-        statusImageView.setOnClickListener(v -> {
+        achieveIcon.setOnClickListener(v -> {
 
             FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
@@ -282,16 +296,16 @@ public class NewslineActivity extends AppCompatActivity {
 
         switch (status) {
             case "yellow":
-                statusImageView.setImageResource(R.drawable.galka_yellow);
+                achieveIcon.setBackgroundResource(R.drawable.galka_yellow);
                 break;
             case "green":
-                statusImageView.setImageResource(R.drawable.galka_green);
+                achieveIcon.setBackgroundResource(R.drawable.galka_green);
                 break;
             case "red":
-                statusImageView.setImageResource(R.drawable.galka_red);
+                achieveIcon.setBackgroundResource(R.drawable.galka_red);
                 break;
             default:
-                statusImageView.setImageResource(R.drawable.galka_grey);
+                achieveIcon.setBackgroundResource(R.drawable.galka_grey);
                 break;
         }
 
