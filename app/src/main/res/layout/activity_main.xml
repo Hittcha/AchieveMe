@@ -1,20 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#1D1D1D"
-    android:orientation="vertical"
     tools:context=".MainActivity">
 
 
     <LinearLayout
             android:id="@+id/activityMain_linearLayoutTop"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="parent"
-            android:orientation="vertical">
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/view_palka"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -149,7 +151,7 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <HorizontalScrollView
+            <HorizontalScrollView
             android:id="@+id/horizontal_menu"
             android:layout_width="match_parent"
             android:layout_height="40dp"
@@ -206,29 +208,21 @@
             </LinearLayout>
 
         </HorizontalScrollView>
-        <ScrollView
+            <ScrollView
             android:id="@+id/scrollView_season"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="visible">
-
-        </ScrollView>
-        <ScrollView
+            android:visibility="visible"/>
+            <ScrollView
             android:id="@+id/scrollView_newCategory"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="gone">
-
-        </ScrollView>
-        <ScrollView
+            android:visibility="gone"/>
+            <ScrollView
             android:id="@+id/scrollView_Favorites"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="gone">
-
-        </ScrollView>
-
-
+            android:visibility="gone"/>
 
         <Button
             android:id="@+id/adminButton"
@@ -241,11 +235,13 @@
 
     </LinearLayout>
     <View
+        android:id="@+id/view_palka"
         android:layout_width="match_parent"
         android:layout_height="2dp"
         android:layout_marginStart="14dp"
         android:layout_marginEnd="14dp"
-        android:background="@drawable/rectangle_7_shape"/>
+        android:background="@drawable/rectangle_7_shape"
+        app:layout_constraintBottom_toTopOf="@id/group_2"/>
 
     <LinearLayout
         android:id="@+id/group_2"
@@ -293,5 +289,5 @@
 
     </LinearLayout>
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -606,6 +606,12 @@ public class OtherUserActivity extends AppCompatActivity {
         DateTextView.setText(time);
         AchieveNameTextView.setText(achname);
 
+        // изменение размера textview названия ачивки
+
+        WindowCalculation windowCalculation = new WindowCalculation(this);
+        double textWeight = windowCalculation.WindowCalculationWeight() * 0.6;
+        AchieveNameTextView.setWidth((int) textWeight);
+
         parentLayout.addView(blockLayout);
         liked = false;
 

@@ -74,6 +74,18 @@
             app:layout_constraintBottom_toBottomOf="parent"
             tools:srcCompat="@tools:sample/avatars"
             android:elevation="0dp"/>
+<!--        <ImageView-->
+<!--            android:id="@+id/imageView_Blur"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="match_parent"-->
+<!--            android:maxHeight="500dp"-->
+<!--            android:scaleType="centerCrop"-->
+<!--            app:layout_constraintTop_toTopOf="parent"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--            tools:srcCompat="@tools:sample/avatars"-->
+<!--            android:elevation="0dp"/>-->
 
         <TextView
             android:id="@+id/likesCount"

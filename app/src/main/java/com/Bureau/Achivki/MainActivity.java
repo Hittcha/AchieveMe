@@ -117,14 +117,14 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
         });*/
-        WindowCalculation windowCalculation = new WindowCalculation(this);
-        int screenHeight = windowCalculation.WindowCalculationHeight();
-
-            // меняем длинну основого layout
-        LinearLayout linearLayout = findViewById(R.id.activityMain_linearLayoutTop);
-        ViewGroup.LayoutParams layoutParams = (LinearLayout.LayoutParams) linearLayout.getLayoutParams();
-        layoutParams.height = screenHeight - 180;
-        Log.d("РАЗРЕШЕНИЕ", String.valueOf(screenHeight));
+//        WindowCalculation windowCalculation = new WindowCalculation(this);
+//        int screenHeight = windowCalculation.WindowCalculationHeight();
+//
+//            // меняем длинну основого layout
+//        LinearLayout linearLayout = findViewById(R.id.activityMain_linearLayoutTop);
+//        ViewGroup.LayoutParams layoutParams = (LinearLayout.LayoutParams) linearLayout.getLayoutParams();
+//        layoutParams.height = screenHeight - 180;
+//        Log.d("РАЗРЕШЕНИЕ", String.valueOf(screenHeight));
 
 
         SharedPreferences sharedPreferences = getSharedPreferences("User_Data", MODE_PRIVATE);

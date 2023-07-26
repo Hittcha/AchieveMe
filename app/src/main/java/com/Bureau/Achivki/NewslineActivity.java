@@ -12,6 +12,7 @@ import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -143,6 +144,14 @@ public class NewslineActivity extends AppCompatActivity {
 
         DateTextView.setText(time);
 
+        // изменение размера textview названия ачивки
+        WindowCalculation windowCalculation = new WindowCalculation(this);
+        double textWeight = windowCalculation.WindowCalculationWeight() * 0.55;
+        ViewGroup.LayoutParams textViewLayoutParams = AchieveNameTextView.getLayoutParams();
+        textViewLayoutParams.width = (int) textWeight;
+        AchieveNameTextView.setLayoutParams(textViewLayoutParams);
+        AchieveNameTextView.requestLayout();
+
         try {
             InputStream inputStream = getAssets().open("interface_icon/home.svg");
             SVG svg = SVG.getFromInputStream(inputStream);
@@ -208,6 +217,7 @@ public class NewslineActivity extends AppCompatActivity {
         });
 
         ImageView imageView = blockLayout.findViewById(R.id.imageView3);
+//        ImageView blurImage = blockLayout.findViewById(R.id.imageView_Blur);
 
         System.out.println("status " + status);
 
@@ -336,13 +346,20 @@ public class NewslineActivity extends AppCompatActivity {
             // URL изображения
             String imageUrl = uri.toString();
 
+//            Picasso.get()
+//                    .load(imageUrl)
+//                    .transform(new PhotoBlur(this, 25))
+//                    .into(blurImage);
+//            blurImage.setAdjustViewBounds(true);
+
             // Отображение уменьшенного изображения с использованием Picasso
             Picasso.get()
                     .load(imageUrl)
-                    .resize(500, 500) // Указываем желаемый размер
-                    .centerCrop() // Обрезаем изображение по центру
+//                    .resize(500, 500) // Указываем желаемый размер
+//                    .centerCrop() // Обрезаем изображение по центру
                     .into(imageView);
             imageView.setAdjustViewBounds(true);
+
         }).addOnFailureListener(e -> {
             // Обработка ошибки загрузки изображения
         });

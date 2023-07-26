@@ -7,14 +7,71 @@
     android:background="#1D1D1D"
     tools:context=".LeaderBoardActivity">
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/group_1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@+id/scrollView3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
+        <View
+            android:id="@+id/rectangle_6"
+            android:layout_width="wrap_content"
+            android:layout_height="100dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:background="@drawable/rectangle_6_shape" />
+
+        <ImageButton
+            android:id="@+id/userAvatar"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_marginStart="12dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:background="@drawable/ellipse_1_shape"
+            android:scaleType="centerCrop"
+            android:visibility="visible"
+            tools:visibility="visible" />
+
+        <TextView
+            android:id="@+id/userScore"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            app:layout_constraintTop_toBottomOf="@id/userName"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/userAvatar"
+            style="@style/leaderText"
+            android:text="Счет" />
+
+        <TextView
+            android:id="@+id/userName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            app:layout_constraintStart_toEndOf="@id/userAvatar"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/userScore"
+            style="@style/leaderText"
+            android:textStyle="bold"
+            android:text="TextView"
+            />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
     <ScrollView
         android:id="@+id/scrollView3"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/group_2"
+        app:layout_constraintBottom_toTopOf="@+id/view_palka"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/group_1">
@@ -171,7 +228,7 @@
                     tools:text="321"/>
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="80dp"
                 android:layout_marginStart="10dp"
@@ -215,9 +272,9 @@
                     app:layout_constraintStart_toEndOf="@id/imageUserButton4"
                     app:layout_constraintTop_toBottomOf="@id/textPlace4"
                     android:text="" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="80dp"
                 android:layout_marginStart="10dp"
@@ -261,9 +318,9 @@
                     app:layout_constraintStart_toEndOf="@id/imageUserButton5"
                     app:layout_constraintTop_toBottomOf="@id/textPlace5"
                     android:text="" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="80dp"
                 android:layout_marginStart="10dp"
@@ -307,125 +364,62 @@
                     app:layout_constraintStart_toEndOf="@id/imageUserButton6"
                     app:layout_constraintTop_toBottomOf="@id/textPlace6"
                     android:text="" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
         </LinearLayout>
 
 
     </ScrollView>
-
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/group_1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@+id/scrollView3"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <View
-            android:id="@+id/rectangle_6"
-            android:layout_width="wrap_content"
-            android:layout_height="100dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:background="@drawable/rectangle_6_shape" />
-
-        <ImageButton
-            android:id="@+id/userAvatar"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:layout_marginStart="12dp"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            android:background="@drawable/ellipse_1_shape"
-            android:scaleType="centerCrop"
-            android:visibility="visible"
-            tools:visibility="visible" />
-
-        <TextView
-            android:id="@+id/userScore"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            app:layout_constraintTop_toBottomOf="@id/userName"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@id/userAvatar"
-            style="@style/leaderText"
-            android:text="Счет" />
-
-        <TextView
-            android:id="@+id/userName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            app:layout_constraintStart_toEndOf="@id/userAvatar"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/userScore"
-            style="@style/leaderText"
-            android:textStyle="bold"
-            android:text="TextView"
-            />
-
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
+    <View
+        android:id="@+id/view_palka"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_marginStart="14dp"
+        android:layout_marginEnd="14dp"
+        android:background="@drawable/rectangle_7_shape"
+        app:layout_constraintBottom_toTopOf="@id/group_2"/>
     <LinearLayout
         android:id="@+id/group_2"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="55dp"
         android:layout_gravity="bottom"
-        android:background="@drawable/rectangle_7_shape"
+        android:background="@null"
         app:layout_constraintBottom_toBottomOf="parent">
 
-        <ImageButton
+        <com.caverock.androidsvg.SVGImageView
             android:id="@+id/imageButtonMenu"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@null"
+            android:layout_height="55dp"
             android:scaleType="center"
-            app:srcCompat="@drawable/menuicon" />
+            android:layout_weight="1"/>
 
-        <ImageButton
+        <com.caverock.androidsvg.SVGImageView
             android:id="@+id/imageButtonLeaderList"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@null"
+            android:layout_height="55dp"
             android:scaleType="center"
-            android:src="@drawable/crowniconclicked" />
+            android:layout_weight="1"/>
 
-        <ImageButton
+        <com.caverock.androidsvg.SVGImageView
             android:id="@+id/imageButtonUsersList"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@null"
+            android:layout_height="55dp"
             android:scaleType="center"
-            app:srcCompat="@drawable/otherusers" />
+            android:layout_weight="1"/>
 
-        <ImageButton
+        <com.caverock.androidsvg.SVGImageView
             android:id="@+id/imageButtonAchieveList"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@null"
+            android:layout_height="55dp"
             android:scaleType="center"
-            app:srcCompat="@drawable/achievelist" />
+            android:layout_weight="1"/>
 
-        <ImageButton
+        <com.caverock.androidsvg.SVGImageView
             android:id="@+id/imageButtonFavorites"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@null"
-            app:srcCompat="@drawable/favoritesicon" />
+            android:layout_height="55dp"
+            android:scaleType="center"
+            android:layout_weight="1"/>
 
     </LinearLayout>
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

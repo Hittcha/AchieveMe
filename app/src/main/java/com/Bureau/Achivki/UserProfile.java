@@ -29,6 +29,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -263,7 +264,7 @@ public class UserProfile extends AppCompatActivity {
             askPermission();
         });
 
-        TextView scoreText = findViewById(R.id.scoreTextView);
+        TextView scoreText = findViewById(R.id.userScore);
 
         friendsListText.setOnClickListener(v -> {
             Intent intent = new Intent(UserProfile.this, MyFriendsList.class);
@@ -280,35 +281,93 @@ public class UserProfile extends AppCompatActivity {
             startActivity(intent);
         });
 
-        ImageButton leaderListButton = findViewById(R.id.imageButtonLeaderList);
+        SVGImageView leaderListButton = findViewById(R.id.imageButtonLeaderList);
         leaderListButton.setOnClickListener(v -> {
             Intent intent = new Intent(UserProfile.this, LeaderBoardActivity.class);
             startActivity(intent);
         });
 
-        ImageButton menuButton = findViewById(R.id.imageButtonMenu);
+        SVGImageView menuButton = findViewById(R.id.imageButtonMenu);
         menuButton.setOnClickListener(v -> {
             Intent intent = new Intent(UserProfile.this, MainActivity.class);
             startActivity(intent);
         });
 
-        ImageButton achieveListButton = findViewById(R.id.imageButtonAchieveList);
+        SVGImageView achieveListButton = findViewById(R.id.imageButtonAchieveList);
         achieveListButton.setOnClickListener(v -> {
             Intent intent = new Intent(UserProfile.this, AchieveListActivity.class);
             startActivity(intent);
         });
 
-        ImageButton favoritesButton = findViewById(R.id.imageButtonFavorites);
+        SVGImageView favoritesButton = findViewById(R.id.imageButtonFavorites);
         favoritesButton.setOnClickListener(v -> {
             Intent intent = new Intent(UserProfile.this, ListOfFavoritesActivity.class);
             startActivity(intent);
         });
 
-        ImageButton usersListButton = findViewById(R.id.imageButtonUsersList);
+        SVGImageView usersListButton = findViewById(R.id.imageButtonUsersList);
         usersListButton.setOnClickListener(v -> {
             Intent intent = new Intent(UserProfile.this, UsersListActivity.class);
             startActivity(intent);
         });
+
+        // выставляем иконки
+        try {
+            InputStream inputStream = getAssets().open("interface_icon/kubok.svg");
+            SVG svg = SVG.getFromInputStream(inputStream);
+            SVGImageView svgImageView = findViewById(R.id.score_cup);
+            svgImageView.setSVG(svg);
+        } catch (IOException | SVGParseException e) {
+            e.printStackTrace();
+        }
+        try {
+            InputStream inputStream = getAssets().open("interface_icon/mesto.svg");
+            SVG svg = SVG.getFromInputStream(inputStream);
+            SVGImageView svgImageView = findViewById(R.id.location_icon);
+            svgImageView.setSVG(svg);
+        } catch (IOException | SVGParseException e) {
+            e.printStackTrace();
+        }
+        try {
+            InputStream inputStream = getAssets().open("interface_icon/home.svg");
+            SVG svg = SVG.getFromInputStream(inputStream);
+            SVGImageView svgImageView = findViewById(R.id.imageButtonMenu);
+            svgImageView.setSVG(svg);
+        } catch (IOException | SVGParseException e) {
+            e.printStackTrace();
+        }
+        try {
+            InputStream inputStream = getAssets().open("interface_icon/rate.svg");
+            SVG svg = SVG.getFromInputStream(inputStream);
+            SVGImageView svgImageView = findViewById(R.id.imageButtonLeaderList);
+            svgImageView.setSVG(svg);
+        } catch (IOException | SVGParseException e) {
+            e.printStackTrace();
+        }
+        try {
+            InputStream inputStream = getAssets().open("interface_icon/chel.svg");
+            SVG svg = SVG.getFromInputStream(inputStream);
+            SVGImageView svgImageView = findViewById(R.id.imageButtonUsersList);
+            svgImageView.setSVG(svg);
+        } catch (IOException | SVGParseException e) {
+            e.printStackTrace();
+        }
+        try {
+            InputStream inputStream = getAssets().open("interface_icon/kubok niz.svg");
+            SVG svg = SVG.getFromInputStream(inputStream);
+            SVGImageView svgImageView = findViewById(R.id.imageButtonAchieveList);
+            svgImageView.setSVG(svg);
+        } catch (IOException | SVGParseException e) {
+            e.printStackTrace();
+        }
+        try {
+            InputStream inputStream = getAssets().open("interface_icon/Star 1.svg");
+            SVG svg = SVG.getFromInputStream(inputStream);
+            SVGImageView svgImageView = findViewById(R.id.imageButtonFavorites);
+            svgImageView.setSVG(svg);
+        } catch (IOException | SVGParseException e) {
+            e.printStackTrace();
+        }
     }
 
     public void selectImageFromLibrary() {
@@ -546,6 +605,14 @@ public class UserProfile extends AppCompatActivity {
 
         likesTextView.setText(likes.toString());
 
+        // изменение размера textview названия ачивки
+        WindowCalculation windowCalculation = new WindowCalculation(this);
+        double textWeight = windowCalculation.WindowCalculationWeight() * 0.55;
+        ViewGroup.LayoutParams textViewLayoutParams = AchieveNameTextView.getLayoutParams();
+        textViewLayoutParams.width = (int) textWeight;
+        AchieveNameTextView.setLayoutParams(textViewLayoutParams);
+        AchieveNameTextView.requestLayout();
+
         try {
             InputStream inputStream = getAssets().open("interface_icon/home.svg");
             SVG svg = SVG.getFromInputStream(inputStream);
@@ -566,7 +633,6 @@ public class UserProfile extends AppCompatActivity {
                 LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
         );
-
         likeButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {

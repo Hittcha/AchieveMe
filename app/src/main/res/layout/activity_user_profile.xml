@@ -7,72 +7,13 @@
     android:layout_height="match_parent"
     tools:context=".UserProfile">
 
-    <!-- user / user -->
-
-    <!-- Ellipse 12 -->
-
-    <LinearLayout
-        android:id="@+id/group_2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:background="@drawable/rectangle_7_shape"
-        app:layout_constraintBottom_toBottomOf="parent">
-
-        <ImageButton
-            android:id="@+id/imageButtonMenu"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@null"
-            android:scaleType="center"
-            app:srcCompat="@drawable/menuicon" />
-
-        <ImageButton
-            android:id="@+id/imageButtonLeaderList"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@null"
-            android:scaleType="center"
-            android:src="@drawable/crownicon" />
-
-        <ImageButton
-            android:id="@+id/imageButtonUsersList"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@null"
-            android:scaleType="center"
-            app:srcCompat="@drawable/otherusers" />
-
-        <ImageButton
-            android:id="@+id/imageButtonAchieveList"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@null"
-            android:scaleType="center"
-            app:srcCompat="@drawable/achievelist" />
-
-        <ImageButton
-            android:id="@+id/imageButtonFavorites"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@null"
-            app:srcCompat="@drawable/favoritesicon" />
-
-    </LinearLayout>
-
-
     <androidx.drawerlayout.widget.DrawerLayout
         android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:fitsSystemWindows="true"
         app:elevation="200dp"
-        app:layout_constraintBottom_toTopOf="@+id/group_2"
+        app:layout_constraintBottom_toTopOf="@+id/view_palka"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -83,7 +24,6 @@
             android:layout_height="0dp"
             app:layout_constraintBottom_toTopOf="@+id/group_2"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
@@ -96,7 +36,8 @@
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/constraintLayout2"
                     android:layout_width="match_parent"
-                    android:layout_height="230dp">
+                    android:layout_height="290dp"
+                    android:layout_weight="1">
 
                     <ImageButton
                         android:id="@+id/imageButtonBack"
@@ -104,75 +45,107 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="16dp"
                         android:layout_marginTop="16dp"
-
                         android:backgroundTint="@color/appBackGround"
                         android:visibility="visible"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
                         app:srcCompat="@drawable/ic_back_arrow" />
-
-
                     <TextView
                         android:id="@+id/friendsList"
-                        android:layout_width="0dp"
-                        android:layout_height="24dp"
-                        android:layout_marginTop="16dp"
-                        android:layout_marginEnd="32dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:text="Подписки"
                         android:textColor="@color/white"
-                        android:textSize="15sp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/userName" />
+                        android:textSize="14sp"
+                        app:layout_constraintEnd_toEndOf="@id/friendsCountTextView"
+                        app:layout_constraintStart_toStartOf="@id/friendsCountTextView"
+                        app:layout_constraintTop_toBottomOf="@id/friendsCountTextView"
+                        app:layout_constraintBottom_toBottomOf="@id/image_view" />
 
                     <TextView
                         android:id="@+id/subscriptionsList"
-                        android:layout_width="95dp"
-                        android:layout_height="24dp"
-                        android:layout_marginTop="16dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:text="Подписчики"
+                        android:textSize="14sp"
                         android:textColor="@color/white"
-                        android:textSize="15sp"
-                        app:layout_constraintEnd_toStartOf="@+id/friendsList"
-                        app:layout_constraintHorizontal_bias="0.62"
-                        app:layout_constraintStart_toEndOf="@+id/scoreTextView"
-                        app:layout_constraintTop_toBottomOf="@+id/userName" />
+                        app:layout_constraintStart_toStartOf="@id/subsCountTextView"
+                        app:layout_constraintEnd_toEndOf="@id/subsCountTextView"
+                        app:layout_constraintTop_toBottomOf="@id/subsCountTextView"
+                        app:layout_constraintBottom_toBottomOf="@id/image_view" />
 
                     <ImageView
                         android:id="@+id/image_view"
-                        android:layout_width="100dp"
-                        android:layout_height="100dp"
-                        android:layout_marginTop="16dp"
-                        android:background="#1D1D1D"
-                        android:cropToPadding="true"
+                        android:layout_width="130dp"
+                        android:layout_height="130dp"
+                        android:background="@drawable/ellipse_1_shape"
                         android:scaleType="centerCrop"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.498"
-                        app:layout_constraintStart_toStartOf="parent"
+                        android:layout_marginTop="15dp"
                         app:layout_constraintTop_toTopOf="parent"
-                        app:srcCompat="@drawable/ellipse_12" />
+                        app:layout_constraintStart_toEndOf="@id/subscriptionsList"
+                        app:layout_constraintEnd_toStartOf="@id/friendsList"
+                        app:layout_constraintBottom_toTopOf="@id/userName"/>
 
                     <TextView
                         android:id="@+id/userName"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
+                        android:text="John Massovich"
                         android:textColor="@color/white"
-                        android:textSize="20sp"
-                        android:textStyle="bold"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.501"
+                        android:textSize="36sp"
+                        app:layout_constraintHorizontal_chainStyle="packed"
+                        app:layout_constraintTop_toBottomOf="@id/image_view"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/image_view" />
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintBottom_toTopOf="@id/location_textview" />
+                    <com.caverock.androidsvg.SVGImageView
+                        android:id="@+id/location_icon"
+                        android:layout_width="24dp"
+                        android:layout_height="32dp"
+                        android:paddingEnd="5dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toStartOf="@id/location_textview"
+                        app:layout_constraintBottom_toBottomOf="@id/location_textview"
+                        app:layout_constraintTop_toTopOf="@id/location_textview"
+                        app:layout_constraintHorizontal_chainStyle="packed"
+                        />
+
+                    <TextView
+                        android:id="@+id/location_textview"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Россия, Красноярск"
+                        android:textColor="@color/white"
+                        android:textSize="16sp"
+                        app:layout_constraintStart_toEndOf="@id/location_icon"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/userName"
+                        app:layout_constraintBottom_toTopOf="@id/userScore"
+                        android:textAlignment="center"
+                        />
+
+                    <com.caverock.androidsvg.SVGImageView
+                        android:id="@+id/score_cup"
+                        android:layout_width="24dp"
+                        android:layout_height="32dp"
+                        app:layout_constraintHorizontal_chainStyle="packed"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toStartOf="@id/userScore"
+                        app:layout_constraintBottom_toBottomOf="@id/userScore"
+                        app:layout_constraintTop_toTopOf="@id/userScore"
+                        />
 
                     <TextView
                         android:id="@+id/userScore"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="0"
-                        android:textColor="@color/white"
-                        app:layout_constraintEnd_toEndOf="@+id/scoreTextView"
-                        app:layout_constraintStart_toStartOf="@+id/scoreTextView"
-                        app:layout_constraintTop_toBottomOf="@+id/scoreTextView" />
+                        android:text=" 223"
+                        android:textSize="24sp"
+                        android:textColor="#F5C566"
+                        app:layout_constraintStart_toEndOf="@id/score_cup"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/location_textview"
+                        app:layout_constraintBottom_toBottomOf="parent"/>
 
                     <Button
                         android:id="@+id/BackButton"
@@ -196,17 +169,6 @@
                         app:layout_constraintVertical_bias="1.0"
                         app:srcCompat="@drawable/addprifileimagebutton" />
 
-                    <TextView
-                        android:id="@+id/scoreTextView"
-                        android:layout_width="0dp"
-                        android:layout_height="24dp"
-                        android:layout_marginStart="32dp"
-                        android:layout_marginTop="16dp"
-                        android:text="Счет"
-                        android:textColor="@color/white"
-                        android:textSize="15sp"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/userName" />
 
                     <ImageButton
                         android:id="@+id/btn_open_menu"
@@ -221,23 +183,31 @@
 
                     <TextView
                         android:id="@+id/friendsCountTextView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="0"
+                        android:layout_width="80dp"
+                        android:layout_height="55dp"
+                        android:text="30"
+                        android:textSize="48sp"
                         android:textColor="@color/white"
-                        app:layout_constraintEnd_toEndOf="@+id/friendsList"
-                        app:layout_constraintStart_toStartOf="@+id/friendsList"
-                        app:layout_constraintTop_toBottomOf="@+id/friendsList" />
+                        android:textAlignment="center"
+                        app:layout_constraintVertical_chainStyle="packed"
+                        app:layout_constraintStart_toEndOf="@id/image_view"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@id/image_view"
+                        app:layout_constraintBottom_toTopOf="@id/friendsList"/>
 
                     <TextView
                         android:id="@+id/subsCountTextView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="0"
+                        android:layout_width="82dp"
+                        android:layout_height="55dp"
+                        android:text="12k"
+                        android:textAlignment="center"
                         android:textColor="@color/white"
-                        app:layout_constraintEnd_toEndOf="@+id/subscriptionsList"
-                        app:layout_constraintStart_toStartOf="@+id/subscriptionsList"
-                        app:layout_constraintTop_toBottomOf="@+id/subscriptionsList" />
+                        android:textSize="48sp"
+                        app:layout_constraintBottom_toTopOf="@id/subscriptionsList"
+                        app:layout_constraintEnd_toStartOf="@id/image_view"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="@id/image_view"
+                        app:layout_constraintVertical_chainStyle="packed"/>
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -256,6 +226,57 @@
             app:menu="@menu/menu_settings" />
 
     </androidx.drawerlayout.widget.DrawerLayout>
+    <View
+        android:id="@+id/view_palka"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_marginStart="14dp"
+        android:layout_marginEnd="14dp"
+        android:background="@drawable/rectangle_7_shape"
+        app:layout_constraintBottom_toTopOf="@id/group_2"/>
+    <LinearLayout
+        android:id="@+id/group_2"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:layout_gravity="bottom"
+        android:background="@null"
+        app:layout_constraintBottom_toBottomOf="parent">
 
+        <com.caverock.androidsvg.SVGImageView
+            android:id="@+id/imageButtonMenu"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:scaleType="center"
+            android:layout_weight="1"/>
+
+        <com.caverock.androidsvg.SVGImageView
+            android:id="@+id/imageButtonLeaderList"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:scaleType="center"
+            android:layout_weight="1"/>
+
+        <com.caverock.androidsvg.SVGImageView
+            android:id="@+id/imageButtonUsersList"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:scaleType="center"
+            android:layout_weight="1"/>
+
+        <com.caverock.androidsvg.SVGImageView
+            android:id="@+id/imageButtonAchieveList"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:scaleType="center"
+            android:layout_weight="1"/>
+
+        <com.caverock.androidsvg.SVGImageView
+            android:id="@+id/imageButtonFavorites"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:scaleType="center"
+            android:layout_weight="1"/>
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
