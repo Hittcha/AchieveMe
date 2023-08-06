@@ -25,6 +25,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.caverock.androidsvg.SVG;
+import com.caverock.androidsvg.SVGImageView;
+import com.caverock.androidsvg.SVGParseException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -44,17 +47,18 @@ import com.google.firebase.storage.StorageReference;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Map;
 
 public class UsersListActivity extends AppCompatActivity {
 
-    private ImageButton favoritesButton;
+    private SVGImageView favoritesButton;
 
-    private ImageButton achieveListButton;
+    private SVGImageView achieveListButton;
 
-    private ImageButton leaderListButton;
+    private SVGImageView leaderListButton;
 
-    private ImageButton menuButton;
+    private SVGImageView menuButton;
 
     private FirebaseFirestore db;
     private FirebaseAuth mAuth;
@@ -161,7 +165,7 @@ public class UsersListActivity extends AppCompatActivity {
             }
         });
 
-        ImageButton usersListButton = findViewById(R.id.imageButtonUsersList);
+        SVGImageView usersListButton = findViewById(R.id.imageButtonUsersList);
         usersListButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -211,6 +215,46 @@ public class UsersListActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });*/
+        try {
+            InputStream inputStream = getAssets().open("interface_icon/home.svg");
+            SVG svg = SVG.getFromInputStream(inputStream);
+            SVGImageView svgImageView = findViewById(R.id.imageButtonMenu);
+            svgImageView.setSVG(svg);
+        } catch (IOException | SVGParseException e) {
+            e.printStackTrace();
+        }
+        try {
+            InputStream inputStream = getAssets().open("interface_icon/rate.svg");
+            SVG svg = SVG.getFromInputStream(inputStream);
+            SVGImageView svgImageView = findViewById(R.id.imageButtonLeaderList);
+            svgImageView.setSVG(svg);
+        } catch (IOException | SVGParseException e) {
+            e.printStackTrace();
+        }
+        try {
+            InputStream inputStream = getAssets().open("interface_icon/chel.svg");
+            SVG svg = SVG.getFromInputStream(inputStream);
+            SVGImageView svgImageView = findViewById(R.id.imageButtonUsersList);
+            svgImageView.setSVG(svg);
+        } catch (IOException | SVGParseException e) {
+            e.printStackTrace();
+        }
+        try {
+            InputStream inputStream = getAssets().open("interface_icon/kubok niz.svg");
+            SVG svg = SVG.getFromInputStream(inputStream);
+            SVGImageView svgImageView = findViewById(R.id.imageButtonAchieveList);
+            svgImageView.setSVG(svg);
+        } catch (IOException | SVGParseException e) {
+            e.printStackTrace();
+        }
+        try {
+            InputStream inputStream = getAssets().open("interface_icon/Star 1.svg");
+            SVG svg = SVG.getFromInputStream(inputStream);
+            SVGImageView svgImageView = findViewById(R.id.imageButtonFavorites);
+            svgImageView.setSVG(svg);
+        } catch (IOException | SVGParseException e) {
+            e.printStackTrace();
+        }
     }
 /*
     public void createUsersBlock(String name, int score, String avatarUrl, String userID){

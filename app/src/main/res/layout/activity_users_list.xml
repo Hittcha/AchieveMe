@@ -18,57 +18,57 @@
         android:visibility="gone"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
+    <View
+        android:id="@+id/view_palka"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_marginStart="14dp"
+        android:layout_marginEnd="14dp"
+        android:background="@drawable/rectangle_7_shape"
+        app:layout_constraintBottom_toTopOf="@id/group_2"/>
+
     <LinearLayout
         android:id="@+id/group_2"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="55dp"
         android:layout_gravity="bottom"
-        android:background="@drawable/rectangle_7_shape"
+        android:background="@null"
         app:layout_constraintBottom_toBottomOf="parent">
 
-        <ImageButton
+        <com.caverock.androidsvg.SVGImageView
             android:id="@+id/imageButtonMenu"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@null"
+            android:layout_height="55dp"
             android:scaleType="center"
-            app:srcCompat="@drawable/menuicon" />
+            android:layout_weight="1"/>
 
-        <ImageButton
+        <com.caverock.androidsvg.SVGImageView
             android:id="@+id/imageButtonLeaderList"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@null"
+            android:layout_height="55dp"
             android:scaleType="center"
-            android:src="@drawable/crownicon" />
+            android:layout_weight="1"/>
 
-        <ImageButton
+        <com.caverock.androidsvg.SVGImageView
             android:id="@+id/imageButtonUsersList"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@null"
+            android:layout_height="55dp"
             android:scaleType="center"
-            app:srcCompat="@drawable/otherusersclicked" />
+            android:layout_weight="1"/>
 
-        <ImageButton
+        <com.caverock.androidsvg.SVGImageView
             android:id="@+id/imageButtonAchieveList"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@null"
+            android:layout_height="55dp"
             android:scaleType="center"
-            app:srcCompat="@drawable/achievelist" />
+            android:layout_weight="1"/>
 
-        <ImageButton
+        <com.caverock.androidsvg.SVGImageView
             android:id="@+id/imageButtonFavorites"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@null"
-            app:srcCompat="@drawable/favoritesicon" />
+            android:layout_height="55dp"
+            android:scaleType="center"
+            android:layout_weight="1"/>
 
     </LinearLayout>
 
@@ -77,7 +77,7 @@
         android:layout_height="0dp"
         android:layout_marginStart="1dp"
         android:layout_marginEnd="1dp"
-        app:layout_constraintBottom_toTopOf="@+id/group_2"
+        app:layout_constraintBottom_toTopOf="@+id/view_palka"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolbar"

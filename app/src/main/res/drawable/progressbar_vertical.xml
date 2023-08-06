@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/bar_back">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/falseColor"/>
+            <corners android:radius="10dp"/>
+        </shape>
+    </item>
+    <item android:id="@+id/bar_value">
+        <clip>
+            <shape android:shape="rectangle">
+                <solid android:color="#3D382D"/>
+                <corners android:radius="10dp"/>
+            </shape>
+        </clip>
+    </item>
+</layer-list>

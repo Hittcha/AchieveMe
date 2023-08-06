@@ -355,8 +355,8 @@ public class NewslineActivity extends AppCompatActivity {
             // Отображение уменьшенного изображения с использованием Picasso
             Picasso.get()
                     .load(imageUrl)
-//                    .resize(500, 500) // Указываем желаемый размер
-//                    .centerCrop() // Обрезаем изображение по центру
+                    .resize(500, 500) // Указываем желаемый размер
+                    .centerCrop() // Обрезаем изображение по центру
                     .into(imageView);
             imageView.setAdjustViewBounds(true);
 

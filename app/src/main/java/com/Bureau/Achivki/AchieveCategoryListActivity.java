@@ -3,9 +3,12 @@ package com.Bureau.Achivki;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -17,6 +20,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.ProgressBar;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -33,7 +38,9 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
+import com.squareup.picasso.Picasso;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
@@ -76,6 +83,7 @@ public class AchieveCategoryListActivity extends AppCompatActivity {
         SVGImageView achieveListButton = findViewById(R.id.imageButtonAchieveList);
         SVGImageView usersListButton = findViewById(R.id.imageButtonUsersList);
 
+
         leaderListButton.setOnClickListener(v -> {
             Intent intent = new Intent(AchieveCategoryListActivity.this, LeaderBoardActivity.class);
             startActivity(intent);
@@ -106,83 +114,128 @@ public class AchieveCategoryListActivity extends AppCompatActivity {
         switch (categoryName) {
             case "Красноярск":
                 try {
-                    InputStream ims = getAssets().open("category_background/city_krsk.png");
-                    Drawable drawableBackground = Drawable.createFromStream(ims, null);
-                    backgroundImage.setImageDrawable(drawableBackground);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
+                    InputStream ims = getAssets().open("category_small/krasnoyarsk2.jpg");
+                    // Чтение файла в виде Bitmap
+                    Bitmap bitmap = BitmapFactory.decodeStream(ims);
+                    // Преобразование Bitmap в круговой вид (если необходимо)
+                    CircleTransform circleTransform = new CircleTransform();
+                    Bitmap circleBitmap = circleTransform.transform(bitmap);
+                    // Установка кругового Bitmap в качестве изображения для ImageView
+                    backgroundImage.setImageBitmap(circleBitmap);
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
                 break;
             case "Еда и напитки":
                 try {
-                    InputStream ims = getAssets().open("food_and_drink.png");
-                    Drawable drawableBackground = Drawable.createFromStream(ims, null);
-                    backgroundImage.setImageDrawable(drawableBackground);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
+                    InputStream ims = getAssets().open("category_small/food and drink.png");
+                    // Чтение файла в виде Bitmap
+                    Bitmap bitmap = BitmapFactory.decodeStream(ims);
+                    // Преобразование Bitmap в круговой вид (если необходимо)
+                    CircleTransform circleTransform = new CircleTransform();
+                    Bitmap circleBitmap = circleTransform.transform(bitmap);
+                    // Установка кругового Bitmap в качестве изображения для ImageView
+                    backgroundImage.setImageBitmap(circleBitmap);
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
                 break;
             case "Путешествия":
                 try {
-                    InputStream ims = getAssets().open("trips.png");
-                    Drawable drawableBackground = Drawable.createFromStream(ims, null);
-                    backgroundImage.setImageDrawable(drawableBackground);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
+                    InputStream ims = getAssets().open("category_small/traveling.png");
+                    // Чтение файла в виде Bitmap
+                    Bitmap bitmap = BitmapFactory.decodeStream(ims);
+                    // Преобразование Bitmap в круговой вид (если необходимо)
+                    CircleTransform circleTransform = new CircleTransform();
+                    Bitmap circleBitmap = circleTransform.transform(bitmap);
+                    // Установка кругового Bitmap в качестве изображения для ImageView
+                    backgroundImage.setImageBitmap(circleBitmap);
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
                 break;
             case "Кулинар":
                 try {
-                    InputStream ims = getAssets().open("chef.png");
-                    Drawable drawableBackground = Drawable.createFromStream(ims, null);
-                    backgroundImage.setImageDrawable(drawableBackground);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
+                    InputStream ims = getAssets().open("category_small/cooking.png");
+                    // Чтение файла в виде Bitmap
+                    Bitmap bitmap = BitmapFactory.decodeStream(ims);
+                    // Преобразование Bitmap в круговой вид (если необходимо)
+                    CircleTransform circleTransform = new CircleTransform();
+                    Bitmap circleBitmap = circleTransform.transform(bitmap);
+                    // Установка кругового Bitmap в качестве изображения для ImageView
+                    backgroundImage.setImageBitmap(circleBitmap);
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
                 break;
             case "Калининград":
                 try {
-                    InputStream ims = getAssets().open("category_background/city_kalina.png");
-                    Drawable drawableBackground = Drawable.createFromStream(ims, null);
-                    backgroundImage.setImageDrawable(drawableBackground);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
+                    InputStream ims = getAssets().open("category_small/kaliningrad.png");
+                    // Чтение файла в виде Bitmap
+                    Bitmap bitmap = BitmapFactory.decodeStream(ims);
+                    // Преобразование Bitmap в круговой вид (если необходимо)
+                    CircleTransform circleTransform = new CircleTransform();
+                    Bitmap circleBitmap = circleTransform.transform(bitmap);
+                    // Установка кругового Bitmap в качестве изображения для ImageView
+                    backgroundImage.setImageBitmap(circleBitmap);
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
                 break;
             case "Фильмы":
                 try {
                     InputStream ims = getAssets().open("category_small/films2.jpg");
-                    Drawable drawableBackground = Drawable.createFromStream(ims, null);
-                    backgroundImage.setImageDrawable(drawableBackground);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
+                    // Чтение файла в виде Bitmap
+                    Bitmap bitmap = BitmapFactory.decodeStream(ims);
+                    // Преобразование Bitmap в круговой вид (если необходимо)
+                    CircleTransform circleTransform = new CircleTransform();
+                    Bitmap circleBitmap = circleTransform.transform(bitmap);
+                    // Установка кругового Bitmap в качестве изображения для ImageView
+                    backgroundImage.setImageBitmap(circleBitmap);
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
                 break;
             case "Книги":
                 try {
                     InputStream ims = getAssets().open("category_small/books2.jpg");
-                    Drawable drawableBackground = Drawable.createFromStream(ims, null);
-                    backgroundImage.setImageDrawable(drawableBackground);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
+                    // Чтение файла в виде Bitmap
+                    Bitmap bitmap = BitmapFactory.decodeStream(ims);
+                    // Преобразование Bitmap в круговой вид (если необходимо)
+                    CircleTransform circleTransform = new CircleTransform();
+                    Bitmap circleBitmap = circleTransform.transform(bitmap);
+                    // Установка кругового Bitmap в качестве изображения для ImageView
+                    backgroundImage.setImageBitmap(circleBitmap);
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
                 break;
             case "Москва":
                 try {
                     InputStream ims = getAssets().open("category_small/moscow2.jpg");
-                    Drawable drawableBackground = Drawable.createFromStream(ims, null);
-                    backgroundImage.setImageDrawable(drawableBackground);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
+                    // Чтение файла в виде Bitmap
+                    Bitmap bitmap = BitmapFactory.decodeStream(ims);
+                    // Преобразование Bitmap в круговой вид (если необходимо)
+                    CircleTransform circleTransform = new CircleTransform();
+                    Bitmap circleBitmap = circleTransform.transform(bitmap);
+                    // Установка кругового Bitmap в качестве изображения для ImageView
+                    backgroundImage.setImageBitmap(circleBitmap);
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
                 break;
             case "Санкт Петербург":
                 try {
                     InputStream ims = getAssets().open("category_small/sankt_petersburg2.jpg");
-                    Drawable drawableBackground = Drawable.createFromStream(ims, null);
-                    backgroundImage.setImageDrawable(drawableBackground);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
+                    // Чтение файла в виде Bitmap
+                    Bitmap bitmap = BitmapFactory.decodeStream(ims);
+                    // Преобразование Bitmap в круговой вид (если необходимо)
+                    CircleTransform circleTransform = new CircleTransform();
+                    Bitmap circleBitmap = circleTransform.transform(bitmap);
+                    // Установка кругового Bitmap в качестве изображения для ImageView
+                    backgroundImage.setImageBitmap(circleBitmap);
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
                 break;
             default:
@@ -273,6 +326,7 @@ public class AchieveCategoryListActivity extends AppCompatActivity {
         Intent intentMain = getIntent();
         String categoryName = intentMain.getStringExtra("Category_key");
 
+
         // Получение ссылки на коллекцию пользователей
         CollectionReference usersCollectionRef = FirebaseFirestore.getInstance().collection("Users");
 
@@ -299,13 +353,32 @@ public class AchieveCategoryListActivity extends AppCompatActivity {
                     // Получение документов достижений из коллекции achievements
                     Query categoryQuery = achievementsCollectionRef.whereEqualTo("category", categoryName);
                     categoryQuery.get().addOnSuccessListener(querySnapshot -> {
+                        LinearLayout parentLayout = findViewById(R.id.scrollView1);
+                        ConstraintLayout blockLayout;
+                        // создаём таблицу достижений
+                        TableLayout tableLayout = new TableLayout(AchieveCategoryListActivity.this);
+                        TableLayout.LayoutParams layoutParams = new TableLayout.LayoutParams(
+                                TableLayout.LayoutParams.MATCH_PARENT,
+                                TableLayout.LayoutParams.MATCH_PARENT
+                        );
+                        tableLayout.setLayoutParams(layoutParams);
+                        WindowCalculation windowCalculation = new WindowCalculation(this);
+                        int screenWeight = windowCalculation.WindowCalculationWeight();
+                        int blockWeight = (screenWeight / 3 ) -25;
+                        int blockCount = 0;
+                        TableRow currentRow = null;
+
                         for (DocumentSnapshot document : querySnapshot.getDocuments()) {
                             count++;
 
                             boolean received;
-                            LinearLayout parentLayout = findViewById(R.id.scrollView1);
-                            ConstraintLayout blockLayout;
 
+
+                            if (blockCount == 0) {
+                                // Создать новую строку, если текущая строка пустая
+                                currentRow = new TableRow(AchieveCategoryListActivity.this);
+                                tableLayout.addView(currentRow);
+                            }
                             // Получаем имя достижения из документа
                             String achievementName = document.getString("name");
 
@@ -357,25 +430,62 @@ public class AchieveCategoryListActivity extends AppCompatActivity {
                                 if(Boolean.TRUE.equals(confirmed)){
                                     System.out.println("confirmed");
                                     blockLayout = (ConstraintLayout) LayoutInflater.from(AchieveCategoryListActivity.this)
-                                            .inflate(R.layout.block_achieve_green, parentLayout, false);
+                                            .inflate(R.layout.block_achieve_yellow, currentRow, false);
                                     received = true;
                                     achievedone++;
+                                    try {
+                                        InputStream inputStream = getAssets().open("interface_icon/photo.svg");
+                                        SVG svg = SVG.getFromInputStream(inputStream);
+                                        SVGImageView achieveIcon = blockLayout.findViewById(R.id.galka);
+                                        achieveIcon.setSVG(svg);
+                                        Log.d("Иконка", "срабатывает зелёный");
+                                    } catch (IOException | SVGParseException e) {
+                                        e.printStackTrace();
+                                    }
                                 }else if (Boolean.TRUE.equals(proofsended)) {
                                     blockLayout = (ConstraintLayout) LayoutInflater.from(AchieveCategoryListActivity.this)
-                                            .inflate(R.layout.block_achieve_yellow, parentLayout, false);
+                                            .inflate(R.layout.block_achieve_yellow, currentRow, false);
                                     received = true;
                                     System.out.println("proofsended");
+                                    try {
+                                        InputStream inputStream = getAssets().open("interface_icon/BigBanC.svg");
+                                        SVG svg = SVG.getFromInputStream(inputStream);
+                                        SVGImageView achieveIcon = blockLayout.findViewById(R.id.galka);
+                                        achieveIcon.setSVG(svg);
+                                        Log.d("Иконка", "срабатывает жёлтый");
+                                    } catch (IOException | SVGParseException e) {
+                                        e.printStackTrace();
+                                    }
+
                                 }else{
                                     blockLayout = (ConstraintLayout) LayoutInflater.from(AchieveCategoryListActivity.this)
-                                            .inflate(R.layout.block_achieve, parentLayout, false);
+                                            .inflate(R.layout.block_achieve, currentRow, false);
                                     received = false;
                                     System.out.println("not ");
+                                    try {
+                                        InputStream inputStream = getAssets().open("interface_icon/BigBan.svg");
+                                        SVG svg = SVG.getFromInputStream(inputStream);
+                                        SVGImageView achieveIcon = blockLayout.findViewById(R.id.galka);
+                                        achieveIcon.setSVG(svg);
+                                        Log.d("Иконка", "срабатывает серый");
+                                    } catch (IOException | SVGParseException e) {
+                                        e.printStackTrace();
+                                    }
                                 }
                             }else{
                                 blockLayout = (ConstraintLayout) LayoutInflater.from(AchieveCategoryListActivity.this)
-                                        .inflate(R.layout.block_achieve, parentLayout, false);
+                                        .inflate(R.layout.block_achieve, currentRow, false);
                                 received = false;
                                 System.out.println("Нет " + achievementName);
+                                try {
+                                    InputStream inputStream = getAssets().open("interface_icon/BigBan.svg");
+                                    SVG svg = SVG.getFromInputStream(inputStream);
+                                    SVGImageView achieveIcon = blockLayout.findViewById(R.id.galka);
+                                    achieveIcon.setSVG(svg);
+                                    Log.d("Иконка", "срабатывает серый");
+                                } catch (IOException | SVGParseException e) {
+                                    e.printStackTrace();
+                                }
                             }
 
                             if(collectable){
@@ -393,8 +503,25 @@ public class AchieveCategoryListActivity extends AppCompatActivity {
                             }
 
                             TextView AchieveNameTextView = blockLayout.findViewById(R.id.achieveName_blockTextView);
+
+                            // Создать новый blockLayout с названием достижения и установить ширину и высоту
+
+                            TableRow.LayoutParams blockLayoutParams = new TableRow.LayoutParams(
+                                    //TableRow.LayoutParams.MATCH_PARENT,
+                                    blockWeight,
+                                    blockWeight
+                            );
+                            blockLayoutParams.setMargins(10, 10, 10, 10); // Устанавливаем отступы между блоками
+                            blockLayout.setLayoutParams(blockLayoutParams);
+
                             AchieveNameTextView.setText(achievementName);
-                            parentLayout.addView(blockLayout);
+                            currentRow.addView(blockLayout);
+                            blockCount++;
+
+                            if (blockCount == 3) {
+                                blockCount = 0;
+                                currentRow = null;
+                            }
 
                             boolean finalCollectable = collectable;
                             boolean finalIsFavorites = isFavorites;
@@ -439,6 +566,7 @@ public class AchieveCategoryListActivity extends AppCompatActivity {
                                 startActivityForResult(intent, REQUEST_CODE);
                             });
                         }
+                        parentLayout.addView(tableLayout);
                         p(achievedone , count);
                     });
                 }
