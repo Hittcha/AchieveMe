@@ -6,6 +6,15 @@
     android:layout_height="112dp"
     android:background="@drawable/achieve_proof">
 
+    <ImageView
+        android:id="@+id/back_imageView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="2dp"
+        android:src="@drawable/achieve_proof_background"
+        android:visibility="visible"
+        />
+
     <ProgressBar
         android:id="@+id/achieveProgressBar"
         style="?android:attr/progressBarStyleHorizontal"
@@ -16,16 +25,24 @@
         android:visibility="gone"
         tools:visibility="visible"
         android:rotation="-90"
+        android:layout_margin="2dp"
         android:elevation="0dp"/>
 
     <TextView
         android:id="@+id/achieveName_blockTextView"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="TextView"
-        android:textColor="@color/white"
+        android:textColor="@color/button"
         android:textSize="14sp"
         android:textAlignment="center"
+        android:gravity="center_horizontal"
+        android:autoSizeTextType="uniform"
+        android:autoSizeMinTextSize="10sp"
+        android:autoSizeMaxTextSize="22sp"
+        android:layout_marginStart="5dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginBottom="5dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

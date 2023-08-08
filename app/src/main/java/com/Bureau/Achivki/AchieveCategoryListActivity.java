@@ -8,13 +8,16 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -302,6 +305,7 @@ public class AchieveCategoryListActivity extends AppCompatActivity {
         } catch (IOException | SVGParseException e) {
             e.printStackTrace();
         }
+
     }
 
     private void p(int a, int count){
@@ -318,6 +322,8 @@ public class AchieveCategoryListActivity extends AppCompatActivity {
         editor.putLong(categoryName+"UserDoneScore", a);
         editor.putLong(categoryName+"MaxScore", count);
         editor.apply();
+        TextView progressText = findViewById(R.id.progress_text);
+        progressText.setText(a + "/" + count);
     }
 
     public void createAchieveList(String userId){
@@ -430,11 +436,11 @@ public class AchieveCategoryListActivity extends AppCompatActivity {
                                 if(Boolean.TRUE.equals(confirmed)){
                                     System.out.println("confirmed");
                                     blockLayout = (ConstraintLayout) LayoutInflater.from(AchieveCategoryListActivity.this)
-                                            .inflate(R.layout.block_achieve_yellow, currentRow, false);
+                                            .inflate(R.layout.block_achieve_green, currentRow, false);
                                     received = true;
                                     achievedone++;
                                     try {
-                                        InputStream inputStream = getAssets().open("interface_icon/photo.svg");
+                                        InputStream inputStream = getAssets().open("interface_icon/BigBanC.svg");
                                         SVG svg = SVG.getFromInputStream(inputStream);
                                         SVGImageView achieveIcon = blockLayout.findViewById(R.id.galka);
                                         achieveIcon.setSVG(svg);
@@ -491,8 +497,13 @@ public class AchieveCategoryListActivity extends AppCompatActivity {
                             if(collectable){
                                 ProgressBar progress = blockLayout.findViewById(R.id.achieveProgressBar);
                                 TextView progressDesc = blockLayout.findViewById(R.id.countDesc);
+                                try {
+                                    ImageView imageView = blockLayout.findViewById(R.id.back_imageView);
+                                    imageView.setVisibility(View.GONE);
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
                                 progress.setVisibility(View.VISIBLE);
-                                progressDesc.setVisibility(View.VISIBLE);
                                 progress.setMax((int)achieveCount);
                                 progress.setProgress((int) doneCount);
                                 if(countDesc.equals(null)){
@@ -501,8 +512,9 @@ public class AchieveCategoryListActivity extends AppCompatActivity {
                                     progressDesc.setText(countDesc + ": " + (int) doneCount + " из " + (int) achieveCount);
                                 }
                             }
-
                             TextView AchieveNameTextView = blockLayout.findViewById(R.id.achieveName_blockTextView);
+
+
 
                             // Создать новый blockLayout с названием достижения и установить ширину и высоту
 
@@ -513,6 +525,15 @@ public class AchieveCategoryListActivity extends AppCompatActivity {
                             );
                             blockLayoutParams.setMargins(10, 10, 10, 10); // Устанавливаем отступы между блоками
                             blockLayout.setLayoutParams(blockLayoutParams);
+
+
+                            double textWeight = blockWeight * 0.8;
+                            double textHeight = blockWeight * 0.3;
+                            ViewGroup.LayoutParams textViewLayoutParams = AchieveNameTextView.getLayoutParams();
+                            textViewLayoutParams.width = (int) textWeight;
+                            textViewLayoutParams.height = (int) textHeight;
+                            AchieveNameTextView.setLayoutParams(textViewLayoutParams);
+                            AchieveNameTextView.requestLayout();
 
                             AchieveNameTextView.setText(achievementName);
                             currentRow.addView(blockLayout);
