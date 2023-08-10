@@ -375,42 +375,41 @@ public class AdminActivity extends AppCompatActivity {
         });
     }
     private void updateLeaderList(){
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference usersRef = db.collection("Users");
 
-        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
-        CollectionReference sourceCollection = firestore.collection(SOURCE_COLLECTION);
-        CollectionReference targetCollection = firestore.collection(TARGET_COLLECTION);
+        DocumentReference leadersRef = db.collection("Leaders").document("IiSkYx3cqYvapeN6W8wc");
 
-        sourceCollection.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    QuerySnapshot querySnapshot = task.getResult();
-                    if (querySnapshot != null && !querySnapshot.isEmpty()) {
-                        for (QueryDocumentSnapshot documentSnapshot : querySnapshot) {
-                            String userId = documentSnapshot.getId();
-                            if (documentSnapshot.contains("userPhotos")) {
-                                // Get userPhotos map
-                                Map<String, Object> userPhotos = (Map<String, Object>) documentSnapshot.get("userPhotos");
-                                if (userPhotos != null && !userPhotos.isEmpty()) {
-                                    // Save userPhotos in target collection
-                                    Map<String, Object> targetMap = new HashMap<>();
-                                    targetMap.put(TARGET_MAP, userPhotos);
-                                    targetCollection.document(TARGET_DOCUMENT)
-                                            .set(targetMap, /* SetOptions.merge() */ SetOptions.mergeFields(TARGET_MAP))
-                                            .addOnSuccessListener(documentReference ->
-                                                    System.out.println("User photos migrated successfully for user: " + userId))
-                                            .addOnFailureListener(e ->
-                                                    System.err.println("Failed to migrate user photos for user: " + userId));
-                                }
-                            }
-                        }
-                    }
-                } else {
-                    Exception exception = task.getException();
-                    if (exception != null) {
-                        System.err.println("Error retrieving documents: " + exception.getMessage());
-                    }
+        // Создание запроса для сортировки пользователей по полю "score"
+        Query scoreQuery = usersRef.orderBy("score", Query.Direction.DESCENDING).limit(6);
+
+        // Получение отсортированных данных
+        scoreQuery.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                // Обработка полученных данных
+                Map<String, Object> leaders = new HashMap<>();
+                for (QueryDocumentSnapshot document : task.getResult()) {
+                    // Получение данных пользователя
+                    String name = document.getString("name");
+                    String profileImageUrl = document.getString("profileImageUrl");
+                    String token = document.getId();
+                    int score = Objects.requireNonNull(document.getLong("score")).intValue();
+
+                    // Дальнейшая обработка данных...
+                    System.out.println("name " + name + " profileImageUrl " + profileImageUrl + " token " + token + " score " + score);
+
+                    Map<String, Object> newLeader = new HashMap<>();
+                    newLeader.put("name", name);
+                    newLeader.put("profileImageUrl", profileImageUrl);
+                    newLeader.put("token", token);
+                    newLeader.put("score", score);
+
+                    leaders.put(name, newLeader);
                 }
+                addLeader(leadersRef, leaders);
+            } else {
+                // Обработка ошибок при получении данных
+                Toast.makeText(AdminActivity.this, "Что то пошло не так.", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -439,6 +438,7 @@ public class AdminActivity extends AppCompatActivity {
 
                                         // Add the "token" field to each photoMap
                                         photoMap.put("token", userId);
+                                        photoMap.put("extraName", mapName);
 
                                         String fullMapName = userId + "_" + mapName;
                                         Map<String, Object> targetMap = new HashMap<>();

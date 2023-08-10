@@ -100,11 +100,12 @@ public class NewslineActivity extends AppCompatActivity {
                                 String time = (String) postMap.get("time");
                                 String status = (String) postMap.get("status");
                                 String otherUserToken = (String) postMap.get("token");
+                                String extraName = (String) postMap.get("extraName");
                                 ArrayList<String> people = (ArrayList<String>) postMap.get("like");
 
                                 // Вызов функции createImageBlock() с полученными данными
                                 System.out.println(achname);
-                                createImageBlock(url, likes, people, savedName, achname, time, status, otherUserToken);
+                                createImageBlock(url, likes, people, savedName, achname, time, status, otherUserToken, extraName);
                             }
                         }
                     }
@@ -115,13 +116,9 @@ public class NewslineActivity extends AppCompatActivity {
                 // Ошибка при выполнении запроса
             }
         });
-
-
-
-
     }
 
-    private void createImageBlock(String url, Long likes, ArrayList people, String userName, String achname, String time, String status, String otherUserToken){
+    private void createImageBlock(String url, Long likes, ArrayList people, String userName, String achname, String time, String status, String otherUserToken, String extraName){
 
         mAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = mAuth.getCurrentUser();
@@ -191,7 +188,7 @@ public class NewslineActivity extends AppCompatActivity {
             if (isChecked) {
                 likeButton.setBackgroundResource(R.drawable.likeimageclicked);
                 System.out.println("url " + url);
-                addLike(userName, achname, otherUserToken);
+                addLike(userName, extraName, otherUserToken);
 
                 int score = Integer.parseInt(likesTextView.getText().toString());
                 score++;
@@ -199,7 +196,7 @@ public class NewslineActivity extends AppCompatActivity {
             } else {
                 likeButton.setBackgroundResource(R.drawable.likeimage);
                 System.out.println("url2 " + url);
-                delLike(userName, achname, otherUserToken);
+                delLike(userName, extraName, otherUserToken);
 
                 int score = Integer.parseInt(likesTextView.getText().toString());
                 score--;
