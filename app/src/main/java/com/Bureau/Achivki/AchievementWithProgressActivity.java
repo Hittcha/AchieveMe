@@ -98,6 +98,7 @@ public class AchievementWithProgressActivity extends AppCompatActivity {
         descMessage = findViewById(R.id.desc_message);
         confirmButton = findViewById(R.id.confirmButton);
         TextView achieveText = findViewById(R.id.AchieveName);
+        TextView progressDesc = findViewById(R.id.progressDescription_TextView);
 
         achieveText.setText(achieveName);
 
@@ -142,9 +143,9 @@ public class AchievementWithProgressActivity extends AppCompatActivity {
                                 //String description = document.getString("desc");
                                 System.out.println("description" + desc);
                                 if(achievePrice < 1){
-                                    descMessage.setText(description + "\nВыполнено " + doneCount + " из " + achieveCount);
+                                    progressDesc.setText(description + "\nВыполнено " + doneCount + " из " + achieveCount);
                                 }else {
-                                    descMessage.setText(description + " (+" + achievePrice + " ОС)." + "\nВыполнено " + doneCount + " из " + achieveCount);
+                                    progressDesc.setText(description + " (+" + achievePrice + " ОС)." + "\nВыполнено " + doneCount + " из " + achieveCount);
                                 }
                             }
                         } else {
@@ -159,13 +160,13 @@ public class AchievementWithProgressActivity extends AppCompatActivity {
                                 String description = document.getString("desc");
 
                                 if("desc".equals(null)){
-                                    descMessage.setText(description + "\nВыполнено " + doneCount + " из " + achieveCount);
+                                    progressDesc.setText(description + "\nВыполнено " + doneCount + " из " + achieveCount);
                                 }else {
 
                                     if (achievePrice < 1) {
-                                        descMessage.setText(description + "\nВыполнено " + doneCount + " из " + achieveCount);
+                                        progressDesc.setText(description + "\nВыполнено " + doneCount + " из " + achieveCount);
                                     } else {
-                                        descMessage.setText(description + " (+" + achievePrice + " ОС)." + "\nВыполнено " + doneCount + " из " + achieveCount);
+                                        progressDesc.setText(description + " (+" + achievePrice + " ОС)." + "\nВыполнено " + doneCount + " из " + achieveCount);
                                     }
                                 }
                             }
@@ -519,28 +520,18 @@ public class AchievementWithProgressActivity extends AppCompatActivity {
         // изменения цвета рамки, при добавление в избранное
         View mainConstraintLayout = findViewById(R.id.main_constraintLayout_description);
         @SuppressLint("UseCompatLoadingForDrawables")
-        Drawable drawable = getDrawable(R.drawable.achievedescriptionbackground);
-        LayerDrawable layerDrawable = (LayerDrawable) drawable;
-        int layerIndex = 0;
-        Drawable layer = layerDrawable.getDrawable(layerIndex);
-        GradientDrawable gradientDrawable = (GradientDrawable) layer;
+        GradientDrawable drawable = (GradientDrawable) getDrawable(R.drawable.achievedescriptionbackground);
         int color = ContextCompat.getColor(this,R.color.button);
-        gradientDrawable.setStroke(3, color);
-        layerDrawable.setDrawable(layerIndex, gradientDrawable);
-        mainConstraintLayout.setBackground(layerDrawable);
+        drawable.setStroke(3, color);
+        mainConstraintLayout.setBackground(drawable);
     }
     private void changeStrokeColorBack() {
         // изменения цвета рамки, при добавление в избранное
         View mainConstraintLayout = findViewById(R.id.main_constraintLayout_description);
         @SuppressLint("UseCompatLoadingForDrawables")
-        Drawable drawable = getDrawable(R.drawable.achievedescriptionbackground);
-        LayerDrawable layerDrawable = (LayerDrawable) drawable;
-        int layerIndex = 0;
-        Drawable layer = layerDrawable.getDrawable(layerIndex);
-        GradientDrawable gradientDrawable = (GradientDrawable) layer;
+        GradientDrawable drawable = (GradientDrawable) getDrawable(R.drawable.achievedescriptionbackground);
         int color = ContextCompat.getColor(this,R.color.black);
-        gradientDrawable.setStroke(3, color);
-        layerDrawable.setDrawable(layerIndex, gradientDrawable);
-        mainConstraintLayout.setBackground(layerDrawable);
+        drawable.setStroke(3, color);
+        mainConstraintLayout.setBackground(drawable);
     }
 }

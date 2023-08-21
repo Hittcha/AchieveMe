@@ -91,6 +91,17 @@
             android:paddingTop="15dp"
             android:paddingBottom="15dp"
             app:layout_constraintTop_toBottomOf="@id/view_palka1"/>
+        <TextView
+            android:id="@+id/progressDescription_TextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/desc_message"
+            app:layout_constraintBottom_toTopOf="@id/view_palka2"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:textSize="16sp"
+            android:textColor="@color/white"
+            tools:text="322 012 / 1 000 000"/>
         <View
             android:id="@+id/view_palka2"
             android:layout_width="match_parent"
