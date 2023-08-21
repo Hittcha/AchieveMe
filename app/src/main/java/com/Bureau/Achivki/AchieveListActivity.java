@@ -27,6 +27,9 @@ import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
 
+import com.caverock.androidsvg.SVG;
+import com.caverock.androidsvg.SVGImageView;
+import com.caverock.androidsvg.SVGParseException;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -71,31 +74,31 @@ public class AchieveListActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        ImageButton leaderListButton = findViewById(R.id.imageButtonLeaderList);
+        SVGImageView leaderListButton = findViewById(R.id.imageButtonLeaderList);
         leaderListButton.setOnClickListener(v -> {
             Intent intent = new Intent(AchieveListActivity.this, LeaderBoardActivity.class);
             startActivity(intent);
         });
 
-        ImageButton menuButton = findViewById(R.id.imageButtonMenu);
+        SVGImageView menuButton = findViewById(R.id.imageButtonMenu);
         menuButton.setOnClickListener(v -> {
             Intent intent = new Intent(AchieveListActivity.this, MainActivity.class);
             startActivity(intent);
         });
 
-        ImageButton achieveListButton = findViewById(R.id.imageButtonAchieveList);
+        SVGImageView achieveListButton = findViewById(R.id.imageButtonAchieveList);
         achieveListButton.setOnClickListener(v -> {
             Intent intent = new Intent(AchieveListActivity.this, AchieveListActivity.class);
             startActivity(intent);
         });
 
-        ImageButton favoritesButton = findViewById(R.id.imageButtonFavorites);
+        SVGImageView favoritesButton = findViewById(R.id.imageButtonFavorites);
         favoritesButton.setOnClickListener(v -> {
             Intent intent = new Intent(AchieveListActivity.this, ListOfFavoritesActivity.class);
             startActivity(intent);
         });
 
-        ImageButton usersListButton = findViewById(R.id.imageButtonUsersList);
+        SVGImageView usersListButton = findViewById(R.id.imageButtonUsersList);
         usersListButton.setOnClickListener(v -> {
             Intent intent = new Intent(AchieveListActivity.this, UsersListActivity.class);
             startActivity(intent);
@@ -169,11 +172,11 @@ public class AchieveListActivity extends AppCompatActivity {
                         switch (categoryName) {
                             case "Красноярск":
                                 try {
-                                    InputStream inputStream = getAssets().open("category_small/krasnoyarsk.png");
+                                    InputStream inputStream = getAssets().open("category_small/krasnoyarsk2.jpg");
                                     Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
                                     RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), bitmap);
                                     roundedBitmapDrawable.setCornerRadius(20); // Здесь можно указать радиус закругления
-                                    favorites_icon_Button.setImageDrawable(roundedBitmapDrawable);
+                                    favorites_icon_Button.setBackground(roundedBitmapDrawable);
                                 } catch (IOException e) {
                                     e.printStackTrace();
                                 }
@@ -184,7 +187,7 @@ public class AchieveListActivity extends AppCompatActivity {
                                     Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
                                     RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), bitmap);
                                     roundedBitmapDrawable.setCornerRadius(20); // Здесь можно указать радиус закругления
-                                    favorites_icon_Button.setImageDrawable(roundedBitmapDrawable);
+                                    favorites_icon_Button.setBackground(roundedBitmapDrawable);
                                 } catch (IOException e) {
                                     e.printStackTrace();
                                 }
@@ -195,7 +198,7 @@ public class AchieveListActivity extends AppCompatActivity {
                                     Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
                                     RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), bitmap);
                                     roundedBitmapDrawable.setCornerRadius(20); // Здесь можно указать радиус закругления
-                                    favorites_icon_Button.setImageDrawable(roundedBitmapDrawable);
+                                    favorites_icon_Button.setBackground(roundedBitmapDrawable);
                                 } catch (IOException e) {
                                     e.printStackTrace();
                                 }
@@ -206,7 +209,7 @@ public class AchieveListActivity extends AppCompatActivity {
                                     Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
                                     RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), bitmap);
                                     roundedBitmapDrawable.setCornerRadius(20); // Здесь можно указать радиус закругления
-                                    favorites_icon_Button.setImageDrawable(roundedBitmapDrawable);
+                                    favorites_icon_Button.setBackground(roundedBitmapDrawable);
                                 } catch (IOException e) {
                                     e.printStackTrace();
                                 }
@@ -217,18 +220,18 @@ public class AchieveListActivity extends AppCompatActivity {
                                     Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
                                     RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), bitmap);
                                     roundedBitmapDrawable.setCornerRadius(20); // Здесь можно указать радиус закругления
-                                    favorites_icon_Button.setImageDrawable(roundedBitmapDrawable);
+                                    favorites_icon_Button.setBackground(roundedBitmapDrawable);
                                 } catch (IOException e) {
                                     e.printStackTrace();
                                 }
                                 break;
                             case "Фильмы":
                                 try {
-                                    InputStream inputStream = assetManager.open("category_small/films.png");
+                                    InputStream inputStream = assetManager.open("category_small/films2.jpg");
                                     Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
                                     RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), bitmap);
                                     roundedBitmapDrawable.setCornerRadius(20); // Здесь можно указать радиус закругления
-                                    favorites_icon_Button.setImageDrawable(roundedBitmapDrawable);
+                                    favorites_icon_Button.setBackground(roundedBitmapDrawable);
                                 } catch (IOException e) {
                                     e.printStackTrace();
                                 }
@@ -236,11 +239,11 @@ public class AchieveListActivity extends AppCompatActivity {
                                 break;
                             case "Книги":
                                 try {
-                                    InputStream inputStream = assetManager.open("category_small/books.png");
+                                    InputStream inputStream = assetManager.open("category_small/books2.jpg");
                                     Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
                                     RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), bitmap);
                                     roundedBitmapDrawable.setCornerRadius(20); // Здесь можно указать радиус закругления
-                                    favorites_icon_Button.setImageDrawable(roundedBitmapDrawable);
+                                    favorites_icon_Button.setBackground(roundedBitmapDrawable);
                                 } catch (IOException e) {
                                     e.printStackTrace();
                                 }
@@ -248,11 +251,11 @@ public class AchieveListActivity extends AppCompatActivity {
                                 break;
                             case "Москва":
                                 try {
-                                    InputStream inputStream = assetManager.open("category_small/moscow.png");
+                                    InputStream inputStream = assetManager.open("category_small/moscow2.jpg");
                                     Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
                                     RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), bitmap);
                                     roundedBitmapDrawable.setCornerRadius(20); // Здесь можно указать радиус закругления
-                                    favorites_icon_Button.setImageDrawable(roundedBitmapDrawable);
+                                    favorites_icon_Button.setBackground(roundedBitmapDrawable);
                                 } catch (IOException e) {
                                     e.printStackTrace();
                                 }
@@ -260,11 +263,11 @@ public class AchieveListActivity extends AppCompatActivity {
                                 break;
                             case "Санкт Петербург":
                                 try {
-                                    InputStream inputStream = assetManager.open("category_small/sankt_petersburg.png");
+                                    InputStream inputStream = assetManager.open("category_small/sankt_petersburg2.jpg");
                                     Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
                                     RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory.create(getResources(), bitmap);
                                     roundedBitmapDrawable.setCornerRadius(20); // Здесь можно указать радиус закругления
-                                    favorites_icon_Button.setImageDrawable(roundedBitmapDrawable);
+                                    favorites_icon_Button.setBackground(roundedBitmapDrawable);
                                 } catch (IOException e) {
                                     e.printStackTrace();
                                 }
@@ -275,7 +278,7 @@ public class AchieveListActivity extends AppCompatActivity {
                                 break;
                         }
 
-                        blockLayout.setOnClickListener(v -> {
+                        favorites_icon_Button.setOnClickListener(v -> {
                             // Обработка нажатия кнопки
                             Intent intent = new Intent(AchieveListActivity.this, AchieveCategoryListActivity.class);
                             intent.putExtra("Category_key", categoryName);
@@ -291,6 +294,47 @@ public class AchieveListActivity extends AppCompatActivity {
         // Добавление таблицы в родительский контейнер
         ViewGroup parentLayout = findViewById(R.id.scrollView2);
         parentLayout.addView(tableLayout);
+
+        try {
+            InputStream inputStream = getAssets().open("interface_icon/home.svg");
+            SVG svg = SVG.getFromInputStream(inputStream);
+            SVGImageView svgImageView = findViewById(R.id.imageButtonMenu);
+            svgImageView.setSVG(svg);
+        } catch (IOException | SVGParseException e) {
+            e.printStackTrace();
+        }
+        try {
+            InputStream inputStream = getAssets().open("interface_icon/rate.svg");
+            SVG svg = SVG.getFromInputStream(inputStream);
+            SVGImageView svgImageView = findViewById(R.id.imageButtonLeaderList);
+            svgImageView.setSVG(svg);
+        } catch (IOException | SVGParseException e) {
+            e.printStackTrace();
+        }
+        try {
+            InputStream inputStream = getAssets().open("interface_icon/chel.svg");
+            SVG svg = SVG.getFromInputStream(inputStream);
+            SVGImageView svgImageView = findViewById(R.id.imageButtonUsersList);
+            svgImageView.setSVG(svg);
+        } catch (IOException | SVGParseException e) {
+            e.printStackTrace();
+        }
+        try {
+            InputStream inputStream = getAssets().open("interface_icon/kubok niz.svg");
+            SVG svg = SVG.getFromInputStream(inputStream);
+            SVGImageView svgImageView = findViewById(R.id.imageButtonAchieveList);
+            svgImageView.setSVG(svg);
+        } catch (IOException | SVGParseException e) {
+            e.printStackTrace();
+        }
+        try {
+            InputStream inputStream = getAssets().open("interface_icon/Star 1.svg");
+            SVG svg = SVG.getFromInputStream(inputStream);
+            SVGImageView svgImageView = findViewById(R.id.imageButtonFavorites);
+            svgImageView.setSVG(svg);
+        } catch (IOException | SVGParseException e) {
+            e.printStackTrace();
+        }
 
     }
 

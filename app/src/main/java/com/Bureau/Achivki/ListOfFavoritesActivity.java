@@ -1,8 +1,10 @@
 package com.Bureau.Achivki;
 
 import android.content.Intent;
+import android.content.res.AssetManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,6 +21,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 
+import com.caverock.androidsvg.SVG;
+import com.caverock.androidsvg.SVGImageView;
+import com.caverock.androidsvg.SVGParseException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -28,11 +33,26 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
+//import com.google.gson.JsonArray;
+//import com.google.gson.JsonObject;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.Set;
+
+import io.grpc.internal.JsonParser;
 
 public class ListOfFavoritesActivity extends AppCompatActivity {
 
@@ -53,6 +73,79 @@ public class ListOfFavoritesActivity extends AppCompatActivity {
         }
 
 
+        /*try {
+            // Получение AssetManager
+            AssetManager manager = getAssets();
+
+            // Открытие JSON-файла
+            InputStream inputStream = manager.open("data.json");
+
+            // Чтение данных из файла
+            int size = inputStream.available();
+            byte[] buffer = new byte[size];
+            inputStream.read(buffer);
+            inputStream.close();
+
+            // Преобразование данных в строку
+            String jsonString = new String(buffer, StandardCharsets.UTF_8);
+
+            // Преобразование строки в объект JSON
+            JSONObject jsonObject = new JSONObject(jsonString);
+
+            // Обработка данных из JSON
+            String name = jsonObject.getString("name");
+            int age = jsonObject.getInt("age");
+            //JSONArray hobbies = jsonObject.getJSONArray("hobbies");
+
+            // Пример использования данных
+            Log.d("MainActivity", "Name: " + name);
+            Log.d("MainActivity", "Age: " + age);
+            //Log.d("MainActivity", "Hobbies: " + hobbies.toString());
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+        }*/
+
+        try {
+            // Получение AssetManager
+            AssetManager manager = getAssets();
+
+            // Открытие JSON-файла
+            InputStream inputStream = manager.open("data.json");
+
+            // Чтение данных из файла
+            int size = inputStream.available();
+            byte[] buffer = new byte[size];
+            inputStream.read(buffer);
+            inputStream.close();
+
+            // Преобразование данных в строку
+            String jsonString = new String(buffer, StandardCharsets.UTF_8);
+
+            // Преобразование строки в объект JSON
+            JSONObject jsonObject = new JSONObject(jsonString);
+
+            // Обработка данных из JSON
+            JSONArray season1Array = jsonObject.getJSONArray("season1");
+            for (int i = 0; i < season1Array.length(); i++) {
+                JSONObject item = season1Array.getJSONObject(i);
+                String desc = item.getString("desc");
+                String name = item.getString("name");
+                int price = item.getInt("price");
+                boolean proof = item.getBoolean("proof");
+
+                // Пример использования данных
+                Log.d("MainActivity", "Desc: " + desc);
+                Log.d("MainActivity", "Name: " + name);
+                Log.d("MainActivity", "Price: " + price);
+                Log.d("MainActivity", "Proof: " + proof);
+            }
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+        }
+
+
+
+
         androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.toolbar);
 
         setSupportActionBar(toolbar);
@@ -69,13 +162,54 @@ public class ListOfFavoritesActivity extends AppCompatActivity {
 
         List<String> achievementNames = new ArrayList<>();
 
-        ImageButton leaderListButton = findViewById(R.id.imageButtonLeaderList);
+        SVGImageView leaderListButton = findViewById(R.id.imageButtonLeaderList);
 
-        ImageButton menuButton = findViewById(R.id.imageButtonMenu);
+        SVGImageView menuButton = findViewById(R.id.imageButtonMenu);
 
-        ImageButton favoritesButton = findViewById(R.id.imageButtonFavorites);
+        SVGImageView favoritesButton = findViewById(R.id.imageButtonFavorites);
 
-        ImageButton achieveListButton = findViewById(R.id.imageButtonAchieveList);
+        SVGImageView achieveListButton = findViewById(R.id.imageButtonAchieveList);
+
+        try {
+            InputStream inputStream = getAssets().open("interface_icon/home.svg");
+            SVG svg = SVG.getFromInputStream(inputStream);
+            SVGImageView svgImageView = findViewById(R.id.imageButtonMenu);
+            svgImageView.setSVG(svg);
+        } catch (IOException | SVGParseException e) {
+            e.printStackTrace();
+        }
+        try {
+            InputStream inputStream = getAssets().open("interface_icon/rate.svg");
+            SVG svg = SVG.getFromInputStream(inputStream);
+            SVGImageView svgImageView = findViewById(R.id.imageButtonLeaderList);
+            svgImageView.setSVG(svg);
+        } catch (IOException | SVGParseException e) {
+            e.printStackTrace();
+        }
+        try {
+            InputStream inputStream = getAssets().open("interface_icon/chel.svg");
+            SVG svg = SVG.getFromInputStream(inputStream);
+            SVGImageView svgImageView = findViewById(R.id.imageButtonUsersList);
+            svgImageView.setSVG(svg);
+        } catch (IOException | SVGParseException e) {
+            e.printStackTrace();
+        }
+        try {
+            InputStream inputStream = getAssets().open("interface_icon/kubok niz.svg");
+            SVG svg = SVG.getFromInputStream(inputStream);
+            SVGImageView svgImageView = findViewById(R.id.imageButtonAchieveList);
+            svgImageView.setSVG(svg);
+        } catch (IOException | SVGParseException e) {
+            e.printStackTrace();
+        }
+        try {
+            InputStream inputStream = getAssets().open("interface_icon/Star 1.svg");
+            SVG svg = SVG.getFromInputStream(inputStream);
+            SVGImageView svgImageView = findViewById(R.id.imageButtonFavorites);
+            svgImageView.setSVG(svg);
+        } catch (IOException | SVGParseException e) {
+            e.printStackTrace();
+        }
 
         leaderListButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -109,7 +243,7 @@ public class ListOfFavoritesActivity extends AppCompatActivity {
             }
         });
 
-        ImageButton usersListButton = findViewById(R.id.imageButtonUsersList);
+        SVGImageView usersListButton = findViewById(R.id.imageButtonUsersList);
         usersListButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -413,5 +547,10 @@ public class ListOfFavoritesActivity extends AppCompatActivity {
                 }
             });
         }
+    }
+
+    private static String inputStreamToString(InputStream inputStream) {
+        Scanner scanner = new Scanner(inputStream, StandardCharsets.UTF_8.name()).useDelimiter("\\A");
+        return scanner.hasNext() ? scanner.next() : "";
     }
 }

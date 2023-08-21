@@ -7,15 +7,19 @@ import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.Shape;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,6 +28,9 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
+import com.caverock.androidsvg.SVG;
+import com.caverock.androidsvg.SVGImageView;
+import com.caverock.androidsvg.SVGParseException;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
@@ -32,6 +39,8 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -44,7 +53,12 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
     private Button addButton;
     private Button delButton;
     private Button confirmButton;
+    private SVGImageView confirmIcon;
     private FirebaseAuth mAuth;
+
+    private boolean isAdded = false;
+    private boolean isDeleted = false;
+
 
 
     @SuppressLint({"MissingInflatedId", "ClickableViewAccessibility"})
@@ -62,21 +76,35 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
         Intent intentFromMain = getIntent();
         String achieveName = intentFromMain.getStringExtra("Achieve_key");
         String categoryName = intentFromMain.getStringExtra("Category_key");
+
+        int blockPosition = intentFromMain.getIntExtra("blockPosition", 0);
+
         Long achievePrice = intentFromMain.getLongExtra("achievePrice", 0);
 
         Window window = getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         window.setStatusBarColor(ContextCompat.getColor(this, R.color.StatusBarColor));
+        WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams();
+        layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
+        window.setAttributes(layoutParams);
 
-        ScrollView scrollView = findViewById(R.id.description_scrollview);
+
+
         addButton = findViewById(R.id.submit_button);
         delButton = findViewById(R.id.delete_button);
         ImageButton backButton = findViewById(R.id.BackButton);
         descMessage = findViewById(R.id.desc_message);
         confirmButton = findViewById(R.id.confirmButton);
         TextView achieveText = findViewById(R.id.AchieveName);
+        confirmIcon = findViewById(R.id.iconConfirm_imageView);
 
-        achieveText.setText(achieveName);
+        WindowCalculation windowCalculation = new WindowCalculation(this);
+        double textWeight = windowCalculation.WindowCalculationWeight() * 0.8;
+        ViewGroup.LayoutParams textViewLayoutParams = achieveText.getLayoutParams();
+        textViewLayoutParams.width = (int) textWeight;
+        achieveText.setLayoutParams(textViewLayoutParams);
+        achieveText.requestLayout();
+        achieveText.setText(achieveName);//изменям размер контейнера названия достижения
 
         boolean received = getIntent().getBooleanExtra("Is_Received", false);
         boolean proof = getIntent().getBooleanExtra("ProofNeeded", false);
@@ -92,6 +120,23 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
 
         System.out.println("achievePrice " + achievePrice);
         System.out.println("-------isFavorites " + favorite);
+
+        // выставляем иконки
+        try {
+            InputStream inputStream = getAssets().open("interface_icon/photo.svg");
+            SVG svg = SVG.getFromInputStream(inputStream);
+            confirmIcon.setSVG(svg);
+        } catch (IOException | SVGParseException e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            InputStream inputStream = getAssets().open("interface_icon/BigBan.svg");
+            SVG svg = SVG.getFromInputStream(inputStream);
+            SVGImageView svgImageView = findViewById(R.id.achieveIcon_imageView);
+            svgImageView.setSVG(svg);
+        } catch (SVGParseException | IOException e) {
+            throw new RuntimeException(e);
+        }
 
 
         if (received) {
@@ -161,7 +206,25 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
 
         backButton.setOnClickListener(v -> {
 
+            /*Intent resultIntent = new Intent();
+            setResult(RESULT_OK, resultIntent);
+            finish();*/
+            /*Intent resultIntent = new Intent();
+            resultIntent.putExtra("Is_Received", true);
+            resultIntent.putExtra("Block_Position", blockPosition);
+            setResult(RESULT_OK, resultIntent);
+            finish();*/
+
             Intent resultIntent = new Intent();
+
+            if (isAdded) {
+                resultIntent.putExtra("Is_Added", true);
+                resultIntent.putExtra("Block_Position", blockPosition);
+            } else if (isDeleted) {
+                resultIntent.putExtra("Is_Cancelled", true);
+                resultIntent.putExtra("Block_Position", blockPosition);
+            }
+
             setResult(RESULT_OK, resultIntent);
             finish();
 
@@ -177,6 +240,10 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
 
 
         addButton.setOnClickListener(v -> {
+
+            //isProofSended = true;
+            isAdded = true;
+            isDeleted = false;
 
             if (proof) {
                 showProofButton();
@@ -233,6 +300,9 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
         });
         delButton.setOnClickListener(v -> {
 
+            isDeleted = true;
+            isAdded = false;
+
             mAuth = FirebaseAuth.getInstance();
             FirebaseUser currentUser = mAuth.getCurrentUser();
             FirebaseFirestore db12 = FirebaseFirestore.getInstance();
@@ -253,7 +323,7 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
             showButtonAdd();
         });
 
-        scrollView.setOnTouchListener(new View.OnTouchListener() {
+        descMessage.setOnTouchListener(new View.OnTouchListener() {
             private final GestureDetector gestureDetector = new GestureDetector(AchievementDescriptionActivity.this, new GestureDetector.SimpleOnGestureListener(){
                 @Override
                 public boolean onDoubleTap(@NonNull MotionEvent e) {
@@ -267,6 +337,7 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
                 return true;
             }
         });
+
     }
 
     private void showButtonDel(){
@@ -322,6 +393,7 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
     public void showProofButton(){
         addButton.setVisibility(View.GONE); // скрываем кнопку
         confirmButton.setVisibility(View.VISIBLE); // отображаем кнопку
+        confirmIcon.setVisibility(View.VISIBLE);
         delButton.setVisibility(View.GONE);
     }
 
@@ -364,28 +436,18 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
         // изменения цвета рамки, при добавление в избранное
         View mainConstraintLayout = findViewById(R.id.main_constraintLayout_description);
         @SuppressLint("UseCompatLoadingForDrawables")
-        Drawable drawable = getDrawable(R.drawable.achievedescriptionbackground);
-        LayerDrawable layerDrawable = (LayerDrawable) drawable;
-        int layerIndex = 0;
-        Drawable layer = layerDrawable.getDrawable(layerIndex);
-        GradientDrawable gradientDrawable = (GradientDrawable) layer;
+        GradientDrawable drawable = (GradientDrawable) getDrawable(R.drawable.achievedescriptionbackground);
         int color = ContextCompat.getColor(this,R.color.button);
-        gradientDrawable.setStroke(3, color);
-        layerDrawable.setDrawable(layerIndex, gradientDrawable);
-        mainConstraintLayout.setBackground(layerDrawable);
+        drawable.setStroke(3, color);
+        mainConstraintLayout.setBackground(drawable);
     }
     private void changeStrokeColorBack() {
         // изменения цвета рамки, при добавление в избранное
         View mainConstraintLayout = findViewById(R.id.main_constraintLayout_description);
         @SuppressLint("UseCompatLoadingForDrawables")
-        Drawable drawable = getDrawable(R.drawable.achievedescriptionbackground);
-        LayerDrawable layerDrawable = (LayerDrawable) drawable;
-        int layerIndex = 0;
-        Drawable layer = layerDrawable.getDrawable(layerIndex);
-        GradientDrawable gradientDrawable = (GradientDrawable) layer;
+        GradientDrawable drawable = (GradientDrawable) getDrawable(R.drawable.achievedescriptionbackground);
         int color = ContextCompat.getColor(this,R.color.black);
-        gradientDrawable.setStroke(3, color);
-        layerDrawable.setDrawable(layerIndex, gradientDrawable);
-        mainConstraintLayout.setBackground(layerDrawable);
+        drawable.setStroke(3, color);
+        mainConstraintLayout.setBackground(drawable);
     }
 }

@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapShader;
@@ -28,6 +29,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -52,6 +54,9 @@ import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import com.caverock.androidsvg.SVG;
+import com.caverock.androidsvg.SVGImageView;
+import com.caverock.androidsvg.SVGParseException;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -72,10 +77,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+
 
 
 public class UserProfile extends AppCompatActivity {
@@ -256,7 +264,7 @@ public class UserProfile extends AppCompatActivity {
             askPermission();
         });
 
-        TextView scoreText = findViewById(R.id.scoreTextView);
+        TextView scoreText = findViewById(R.id.userScore);
 
         friendsListText.setOnClickListener(v -> {
             Intent intent = new Intent(UserProfile.this, MyFriendsList.class);
@@ -273,35 +281,93 @@ public class UserProfile extends AppCompatActivity {
             startActivity(intent);
         });
 
-        ImageButton leaderListButton = findViewById(R.id.imageButtonLeaderList);
+        SVGImageView leaderListButton = findViewById(R.id.imageButtonLeaderList);
         leaderListButton.setOnClickListener(v -> {
             Intent intent = new Intent(UserProfile.this, LeaderBoardActivity.class);
             startActivity(intent);
         });
 
-        ImageButton menuButton = findViewById(R.id.imageButtonMenu);
+        SVGImageView menuButton = findViewById(R.id.imageButtonMenu);
         menuButton.setOnClickListener(v -> {
             Intent intent = new Intent(UserProfile.this, MainActivity.class);
             startActivity(intent);
         });
 
-        ImageButton achieveListButton = findViewById(R.id.imageButtonAchieveList);
+        SVGImageView achieveListButton = findViewById(R.id.imageButtonAchieveList);
         achieveListButton.setOnClickListener(v -> {
             Intent intent = new Intent(UserProfile.this, AchieveListActivity.class);
             startActivity(intent);
         });
 
-        ImageButton favoritesButton = findViewById(R.id.imageButtonFavorites);
+        SVGImageView favoritesButton = findViewById(R.id.imageButtonFavorites);
         favoritesButton.setOnClickListener(v -> {
             Intent intent = new Intent(UserProfile.this, ListOfFavoritesActivity.class);
             startActivity(intent);
         });
 
-        ImageButton usersListButton = findViewById(R.id.imageButtonUsersList);
+        SVGImageView usersListButton = findViewById(R.id.imageButtonUsersList);
         usersListButton.setOnClickListener(v -> {
             Intent intent = new Intent(UserProfile.this, UsersListActivity.class);
             startActivity(intent);
         });
+
+        // выставляем иконки
+        try {
+            InputStream inputStream = getAssets().open("interface_icon/kubok.svg");
+            SVG svg = SVG.getFromInputStream(inputStream);
+            SVGImageView svgImageView = findViewById(R.id.score_cup);
+            svgImageView.setSVG(svg);
+        } catch (IOException | SVGParseException e) {
+            e.printStackTrace();
+        }
+        try {
+            InputStream inputStream = getAssets().open("interface_icon/mesto.svg");
+            SVG svg = SVG.getFromInputStream(inputStream);
+            SVGImageView svgImageView = findViewById(R.id.location_icon);
+            svgImageView.setSVG(svg);
+        } catch (IOException | SVGParseException e) {
+            e.printStackTrace();
+        }
+        try {
+            InputStream inputStream = getAssets().open("interface_icon/home.svg");
+            SVG svg = SVG.getFromInputStream(inputStream);
+            SVGImageView svgImageView = findViewById(R.id.imageButtonMenu);
+            svgImageView.setSVG(svg);
+        } catch (IOException | SVGParseException e) {
+            e.printStackTrace();
+        }
+        try {
+            InputStream inputStream = getAssets().open("interface_icon/rate.svg");
+            SVG svg = SVG.getFromInputStream(inputStream);
+            SVGImageView svgImageView = findViewById(R.id.imageButtonLeaderList);
+            svgImageView.setSVG(svg);
+        } catch (IOException | SVGParseException e) {
+            e.printStackTrace();
+        }
+        try {
+            InputStream inputStream = getAssets().open("interface_icon/chel.svg");
+            SVG svg = SVG.getFromInputStream(inputStream);
+            SVGImageView svgImageView = findViewById(R.id.imageButtonUsersList);
+            svgImageView.setSVG(svg);
+        } catch (IOException | SVGParseException e) {
+            e.printStackTrace();
+        }
+        try {
+            InputStream inputStream = getAssets().open("interface_icon/kubok niz.svg");
+            SVG svg = SVG.getFromInputStream(inputStream);
+            SVGImageView svgImageView = findViewById(R.id.imageButtonAchieveList);
+            svgImageView.setSVG(svg);
+        } catch (IOException | SVGParseException e) {
+            e.printStackTrace();
+        }
+        try {
+            InputStream inputStream = getAssets().open("interface_icon/Star 1.svg");
+            SVG svg = SVG.getFromInputStream(inputStream);
+            SVGImageView svgImageView = findViewById(R.id.imageButtonFavorites);
+            svgImageView.setSVG(svg);
+        } catch (IOException | SVGParseException e) {
+            e.printStackTrace();
+        }
     }
 
     public void selectImageFromLibrary() {
@@ -347,6 +413,7 @@ public class UserProfile extends AppCompatActivity {
             }
         }
     }
+
 
     public static Bitmap getCircleBitmap(Bitmap bitmap) {
         Bitmap output = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
@@ -417,7 +484,7 @@ public class UserProfile extends AppCompatActivity {
         }
     }
 
-    public void setImage(String imageRef) {
+    /*public void setImage(String imageRef) {
 
         StorageReference storageRef = FirebaseStorage.getInstance().getReference();
         StorageReference imageRef1 = storageRef.child(imageRef);
@@ -446,9 +513,33 @@ public class UserProfile extends AppCompatActivity {
                 });
             }
         });
+    }*/
+
+    public void setImage(String imageRef) {
+        StorageReference storageRef = FirebaseStorage.getInstance().getReference();
+        StorageReference imageRef1 = storageRef.child(imageRef);
+
+        ImageView userButton = findViewById(R.id.image_view);
+        imageRef1.getMetadata().addOnSuccessListener(storageMetadata -> {
+            String mimeType = storageMetadata.getName();
+            System.out.println("mimeType " + mimeType);
+            if (mimeType != null && mimeType.startsWith("User")) {
+                imageRef1.getBytes(Long.MAX_VALUE).addOnSuccessListener(bytes -> {
+                    Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+
+                    CircleTransform circleTransform = new CircleTransform();
+                    Bitmap circleBitmap = circleTransform.transform(bitmap);
+
+                    userButton.setImageBitmap(circleBitmap);
+                }).addOnFailureListener(exception -> {
+                    // Обработка ошибок
+                });
+            }
+        });
     }
 
-    private void loadAvatarFromLocalFiles() {
+
+    /*private void loadAvatarFromLocalFiles() {
         ImageView userButton = findViewById(R.id.image_view);
 
         try {
@@ -476,7 +567,29 @@ public class UserProfile extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }*/
+
+    private void loadAvatarFromLocalFiles() {
+        ImageView userButton = findViewById(R.id.image_view);
+
+        try {
+            // Создание файла с указанным именем в локальной директории приложения
+            File file = new File(this.getFilesDir(), "UserAvatar");
+
+            // Чтение файла в виде Bitmap
+            Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
+
+            // Преобразование Bitmap в круговой вид (если необходимо)
+            CircleTransform circleTransform = new CircleTransform();
+            Bitmap circleBitmap = circleTransform.transform(bitmap);
+
+            // Установка кругового Bitmap в качестве изображения для ImageView
+            userButton.setImageBitmap(circleBitmap);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
+
 
     private void createImageBlock(String url, Long likes, ArrayList people, String userName, String key, String achname, String time, String status){
         LinearLayout parentLayout = findViewById(R.id.scrollView);
@@ -488,9 +601,25 @@ public class UserProfile extends AppCompatActivity {
         TextView AchieveNameTextView = blockLayout.findViewById(R.id.achname);
         TextView DateTextView = blockLayout.findViewById(R.id.date);
         TextView likesTextView = blockLayout.findViewById(R.id.likesCount);
+        SVGImageView achieveIcon = blockLayout.findViewById(R.id.imageView_achieveIcon);
 
         likesTextView.setText(likes.toString());
 
+        // изменение размера textview названия ачивки
+        WindowCalculation windowCalculation = new WindowCalculation(this);
+        double textWeight = windowCalculation.WindowCalculationWeight() * 0.55;
+        ViewGroup.LayoutParams textViewLayoutParams = AchieveNameTextView.getLayoutParams();
+        textViewLayoutParams.width = (int) textWeight;
+        AchieveNameTextView.setLayoutParams(textViewLayoutParams);
+        AchieveNameTextView.requestLayout();
+
+        try {
+            InputStream inputStream = getAssets().open("interface_icon/home.svg");
+            SVG svg = SVG.getFromInputStream(inputStream);
+            achieveIcon.setSVG(svg);
+        } catch (IOException | SVGParseException e) {
+            e.printStackTrace();
+        }
         DateTextView.setText(time);
 
         parentLayout.addView(blockLayout);
@@ -504,7 +633,6 @@ public class UserProfile extends AppCompatActivity {
                 LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
         );
-
         likeButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -537,9 +665,9 @@ public class UserProfile extends AppCompatActivity {
 
         System.out.println("status " + status);
 
-        ImageView statusImageView = blockLayout.findViewById(R.id.statusImageView);
+//        ImageView statusImageView = blockLayout.findViewById(R.id.statusImageView);
 
-        statusImageView.setOnClickListener(v -> {
+        achieveIcon.setOnClickListener(v -> {
 
             FirebaseAuth mAuth = FirebaseAuth.getInstance();
             FirebaseUser currentUser = mAuth.getCurrentUser();
@@ -626,16 +754,16 @@ public class UserProfile extends AppCompatActivity {
 
         switch (status) {
             case "yellow":
-                statusImageView.setImageResource(R.drawable.galka_yellow);
+                achieveIcon.setBackgroundResource(R.drawable.galka_yellow);
                 break;
             case "green":
-                statusImageView.setImageResource(R.drawable.galka_green);
+                achieveIcon.setBackgroundResource(R.drawable.galka_green);
                 break;
             case "red":
-                statusImageView.setImageResource(R.drawable.galka_red);
+                achieveIcon.setBackgroundResource(R.drawable.galka_red);
                 break;
             default:
-                statusImageView.setImageResource(R.drawable.galka_grey);
+                achieveIcon.setBackgroundResource(R.drawable.galka_grey);
                 break;
         }
 
@@ -879,9 +1007,11 @@ public class UserProfile extends AppCompatActivity {
             } else {
                 // Если разрешение есть, вызываем окно выбора фотографий
                 selectImageFromLibrary();
+                //loadfile();
             }
         }else{
             selectImageFromLibrary();
+            //loadfile();
         }
     }
 

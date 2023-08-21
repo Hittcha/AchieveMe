@@ -324,29 +324,67 @@ public class SeasonsAchievements extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
+        LinearLayout parentLayout = findViewById(R.id.scrollView1);
 
-            //перезагружаем список ачивок и обновляем счетсчик
+        boolean received = false;
 
-            count = 0;
-            achievedone = 0;
+        if (requestCode == REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                // Получение данных из возвращенного Intent
+                boolean isAdded = data.getBooleanExtra("Is_Added", false);
+                int blockPosition = data.getIntExtra("Block_Position", -1);
 
-            LinearLayout parentLayout = findViewById(R.id.scrollView1);
-            parentLayout.removeAllViews();
+                long doneCount = data.getLongExtra("doneCount", -1);
+                long achieveCount = data.getLongExtra("achieveCount", -1);
+                String countDesc = data.getStringExtra("countDesc");
 
-            FirebaseAuth mAuth = FirebaseAuth.getInstance();
-            FirebaseUser currentUser = mAuth.getCurrentUser();
+                boolean isCancelled = data.getBooleanExtra("Is_Cancelled", false);
 
-            FirebaseFirestore db = FirebaseFirestore.getInstance();
-            DocumentReference mAuthDocRef = db.collection("Users").document(currentUser.getUid());
 
-            mAuthDocRef.get().addOnSuccessListener(documentSnapshot -> {
-                if (documentSnapshot.exists()) {
-                    createAchieveList(currentUser.getUid());
-                } else {
-                    // документ не найден
+                if (isAdded) {
+                    // Действия при получении результата
+                    if (blockPosition != -1) {
+                        // Получение конкретного созданного блока по его позиции
+                        ConstraintLayout blockLayout = (ConstraintLayout) parentLayout.getChildAt(blockPosition);
+
+                        // Изменение фона блока на @drawable/achieve_proof
+                        blockLayout.setBackgroundResource(R.drawable.achieve_proof);
+                        received = true;
+
+                        blockLayout.setTag(received);
+                        blockLayout.setTag(R.id.countDesc, doneCount);
+
+                        // Обновить текст progressDesc
+                        ProgressBar progress = blockLayout.findViewById(R.id.achieveProgressBar);
+                        TextView progressDesc = blockLayout.findViewById(R.id.countDesc);
+                        progressDesc.setText(countDesc + ": " + doneCount + " из " + achieveCount);
+                        progress.setMax((int)achieveCount);
+                        progress.setProgress((int) doneCount);
+
+                        if(achieveCount < 1) {
+                            achievedone = achievedone + 1;
+                        }else{
+                            p(achievedone, count);
+                        }
+                        p(achievedone, count);
+                    }
+                }else if (isCancelled) {
+                    // Действия при отмене
+
+                    // Получение конкретного созданного блока по его позиции
+                    ConstraintLayout blockLayout = (ConstraintLayout) parentLayout.getChildAt(blockPosition);
+
+                    // Изменение фона блока на @drawable/achieve_unchecked
+                    blockLayout.setBackgroundResource(R.drawable.achieve_unchecked);
+
+                    received = false;
+                    achievedone = achievedone - 1;
+                    p(achievedone, count);
+
+                    blockLayout.setTag(received);
                 }
-            });
+
+            }
         }
     }
 

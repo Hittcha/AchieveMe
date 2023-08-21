@@ -1,0 +1,72 @@
+{
+  "season1": [
+    {
+      "desc": "Сделать заказ Биг-Смоука в общепите. (4 обычных бургера, 1 большой, 2 картошки и большая содовая)",
+      "name": "I'll have two number 9s...",
+      "price": 25,
+      "proof": true
+    },
+    {
+      "desc": "Попробовать тортик.",
+      "name": "Торт - это не выдумка",
+      "price": 20,
+      "proof": true
+    },
+    {
+      "collectable": true,
+      "count": 5,
+      "countDesc": "Закатов",
+      "dayLimit": 5,
+      "desc": "Сделать 5 разных фотографий закатов",
+      "name": "Фотограф закатов",
+      "price": 10,
+      "proof": true
+    },
+    {
+      "collectable": true,
+      "count": 5,
+      "countDesc": "Шавух",
+      "dayLimit": 5,
+      "desc": "аываываыва",
+      "name": "Щаы",
+      "price": 10,
+      "proof": false
+    },
+    {
+      "desc": "тортик.",
+      "name": "Торт ",
+      "price": 20,
+      "proof": false
+    },
+    {
+      "desc": "тортик.",
+      "name": "Торт 2.0 ",
+      "price": 20,
+      "proof": false
+    },
+    {
+      "desc": "тортик.",
+      "name": "Торт 3.0 ",
+      "price": 20,
+      "proof": false
+    },
+    {
+      "desc": "тортик.",
+      "name": "Торт 4.0 ",
+      "price": 20,
+      "proof": false
+    },
+    {
+      "desc": "тортик.",
+      "name": "Торт 5.0 ",
+      "price": 20,
+      "proof": false
+    },
+    {
+      "desc": "тортик.",
+      "name": "Торт 6.0 ",
+      "price": 20,
+      "proof": false
+    }
+  ]
+}

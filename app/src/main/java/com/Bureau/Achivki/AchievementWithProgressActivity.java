@@ -49,6 +49,12 @@ public class AchievementWithProgressActivity extends AppCompatActivity {
     long dayLimit;
     long doneCount;
 
+    private boolean isAdded = false;
+
+    private boolean isDeleted = false;
+
+    private boolean outOfLimit = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,7 +74,12 @@ public class AchievementWithProgressActivity extends AppCompatActivity {
 
         doneCount = intentFromMain.getLongExtra("doneCount", 0);
 
+
         Long achievePrice = intentFromMain.getLongExtra("achievePrice", 0);
+
+        int blockPosition = intentFromMain.getIntExtra("blockPosition", 0);
+
+        String countDesc = intentFromMain.getStringExtra("countDesc");
 
         Window window = getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
@@ -87,6 +98,7 @@ public class AchievementWithProgressActivity extends AppCompatActivity {
         descMessage = findViewById(R.id.desc_message);
         confirmButton = findViewById(R.id.confirmButton);
         TextView achieveText = findViewById(R.id.AchieveName);
+        TextView progressDesc = findViewById(R.id.progressDescription_TextView);
 
         achieveText.setText(achieveName);
 
@@ -131,9 +143,9 @@ public class AchievementWithProgressActivity extends AppCompatActivity {
                                 //String description = document.getString("desc");
                                 System.out.println("description" + desc);
                                 if(achievePrice < 1){
-                                    descMessage.setText(description + "\nВыполнено " + doneCount + " из " + achieveCount);
+                                    progressDesc.setText(description + "\nВыполнено " + doneCount + " из " + achieveCount);
                                 }else {
-                                    descMessage.setText(description + " (+" + achievePrice + " ОС)." + "\nВыполнено " + doneCount + " из " + achieveCount);
+                                    progressDesc.setText(description + " (+" + achievePrice + " ОС)." + "\nВыполнено " + doneCount + " из " + achieveCount);
                                 }
                             }
                         } else {
@@ -148,13 +160,13 @@ public class AchievementWithProgressActivity extends AppCompatActivity {
                                 String description = document.getString("desc");
 
                                 if("desc".equals(null)){
-                                    descMessage.setText(description + "\nВыполнено " + doneCount + " из " + achieveCount);
+                                    progressDesc.setText(description + "\nВыполнено " + doneCount + " из " + achieveCount);
                                 }else {
 
                                     if (achievePrice < 1) {
-                                        descMessage.setText(description + "\nВыполнено " + doneCount + " из " + achieveCount);
+                                        progressDesc.setText(description + "\nВыполнено " + doneCount + " из " + achieveCount);
                                     } else {
-                                        descMessage.setText(description + " (+" + achievePrice + " ОС)." + "\nВыполнено " + doneCount + " из " + achieveCount);
+                                        progressDesc.setText(description + " (+" + achievePrice + " ОС)." + "\nВыполнено " + doneCount + " из " + achieveCount);
                                     }
                                 }
                             }
@@ -163,10 +175,44 @@ public class AchievementWithProgressActivity extends AppCompatActivity {
                         }
                     });
         }
-        backButton.setOnClickListener(v -> {
+        /*backButton.setOnClickListener(v -> {
             Intent resultIntent = new Intent();
             setResult(RESULT_OK, resultIntent);
             finish();
+        });*/
+
+        backButton.setOnClickListener(v -> {
+
+            /*Intent resultIntent = new Intent();
+            setResult(RESULT_OK, resultIntent);
+            finish();*/
+            /*Intent resultIntent = new Intent();
+            resultIntent.putExtra("Is_Received", true);
+            resultIntent.putExtra("Block_Position", blockPosition);
+            setResult(RESULT_OK, resultIntent);
+            finish();*/
+
+            Intent resultIntent = new Intent();
+
+            if (isAdded) {
+                resultIntent.putExtra("Is_Added", true);
+                resultIntent.putExtra("Block_Position", blockPosition);
+                if(!outOfLimit){
+                    doneCount = doneCount+1;
+                }else {
+                    doneCount = achieveCount;
+                }
+            } else if (isDeleted) {
+                resultIntent.putExtra("Is_Cancelled", true);
+                resultIntent.putExtra("Block_Position", blockPosition);
+            }
+            resultIntent.putExtra("doneCount", doneCount);
+            resultIntent.putExtra("achieveCount", achieveCount);
+            resultIntent.putExtra("countDesc", countDesc);
+
+            setResult(RESULT_OK, resultIntent);
+            finish();
+
         });
 
         System.out.println("isUserAchieve" + isUserAchieve);
@@ -189,6 +235,9 @@ public class AchievementWithProgressActivity extends AppCompatActivity {
 
 
         addButton.setOnClickListener(v -> {
+
+            isAdded = true;
+            isDeleted = false;
 
             mAuth = FirebaseAuth.getInstance();
             FirebaseUser currentUser = mAuth.getCurrentUser();
@@ -218,12 +267,13 @@ public class AchievementWithProgressActivity extends AppCompatActivity {
                     Map<String, Object> existingAchieveMap = (Map<String, Object>) achieveMap.get(achieveName);
 
                     // Увеличиваем значение doneCount на 1
-                    long doneCount = (long) existingAchieveMap.get("doneCount");
+                    doneCount = (long) existingAchieveMap.get("doneCount");
                     dayLimit = (long) existingAchieveMap.get("dayLimit");
                     long dayDone = (long) existingAchieveMap.get("dayDone");
                     String achieveTime = (String) existingAchieveMap.get("time");
                     if(doneCount == achieveCount){
                         hideButtonAdd();
+                        outOfLimit = true;
                     }else{
                         boolean isSameDay = compareDay(currentTime, achieveTime);
                         if (isSameDay) {
@@ -278,34 +328,34 @@ public class AchievementWithProgressActivity extends AppCompatActivity {
             });
         });
 
-        delButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        delButton.setOnClickListener(v -> {
 
-                mAuth = FirebaseAuth.getInstance();
-                FirebaseUser currentUser = mAuth.getCurrentUser();
-                FirebaseFirestore db = FirebaseFirestore.getInstance();
-                DocumentReference usersRef = db.collection("Users").document(currentUser.getUid());
+            isDeleted = true;
+            isAdded = false;
 
-                usersRef.get().addOnSuccessListener(documentSnapshot -> {
-                    Map<String, Object> userAchievements = documentSnapshot.getData();
+            mAuth = FirebaseAuth.getInstance();
+            FirebaseUser currentUser = mAuth.getCurrentUser();
+            FirebaseFirestore db12 = FirebaseFirestore.getInstance();
+            DocumentReference usersRef = db12.collection("Users").document(currentUser.getUid());
 
-                    Map<String, Object> achieveMap = (Map<String, Object>) userAchievements.get("userAchievements");
+            usersRef.get().addOnSuccessListener(documentSnapshot -> {
+                Map<String, Object> userAchievements = documentSnapshot.getData();
 
-                    achieveMap.remove(achieveName);
+                Map<String, Object> achieveMap = (Map<String, Object>) userAchievements.get("userAchievements");
 
-                    userAchievements.put("userAchievements", achieveMap);
+                achieveMap.remove(achieveName);
 
-                    usersRef.set(userAchievements);
+                userAchievements.put("userAchievements", achieveMap);
 
-                    //delScore(currentUser.getUid());
+                usersRef.set(userAchievements);
 
-                    delScore(currentUser.getUid(), achievePrice);
+                //delScore(currentUser.getUid());
 
-                    Toast.makeText(AchievementWithProgressActivity.this, "Достижение удалено", Toast.LENGTH_SHORT).show();
-                });
-                //showButtonAdd();
-            }
+                delScore(currentUser.getUid(), achievePrice);
+
+                Toast.makeText(AchievementWithProgressActivity.this, "Достижение удалено", Toast.LENGTH_SHORT).show();
+            });
+            //showButtonAdd();
         });
 
         scrollView.setOnTouchListener(new View.OnTouchListener() {
@@ -470,28 +520,18 @@ public class AchievementWithProgressActivity extends AppCompatActivity {
         // изменения цвета рамки, при добавление в избранное
         View mainConstraintLayout = findViewById(R.id.main_constraintLayout_description);
         @SuppressLint("UseCompatLoadingForDrawables")
-        Drawable drawable = getDrawable(R.drawable.achievedescriptionbackground);
-        LayerDrawable layerDrawable = (LayerDrawable) drawable;
-        int layerIndex = 0;
-        Drawable layer = layerDrawable.getDrawable(layerIndex);
-        GradientDrawable gradientDrawable = (GradientDrawable) layer;
+        GradientDrawable drawable = (GradientDrawable) getDrawable(R.drawable.achievedescriptionbackground);
         int color = ContextCompat.getColor(this,R.color.button);
-        gradientDrawable.setStroke(3, color);
-        layerDrawable.setDrawable(layerIndex, gradientDrawable);
-        mainConstraintLayout.setBackground(layerDrawable);
+        drawable.setStroke(3, color);
+        mainConstraintLayout.setBackground(drawable);
     }
     private void changeStrokeColorBack() {
         // изменения цвета рамки, при добавление в избранное
         View mainConstraintLayout = findViewById(R.id.main_constraintLayout_description);
         @SuppressLint("UseCompatLoadingForDrawables")
-        Drawable drawable = getDrawable(R.drawable.achievedescriptionbackground);
-        LayerDrawable layerDrawable = (LayerDrawable) drawable;
-        int layerIndex = 0;
-        Drawable layer = layerDrawable.getDrawable(layerIndex);
-        GradientDrawable gradientDrawable = (GradientDrawable) layer;
+        GradientDrawable drawable = (GradientDrawable) getDrawable(R.drawable.achievedescriptionbackground);
         int color = ContextCompat.getColor(this,R.color.black);
-        gradientDrawable.setStroke(3, color);
-        layerDrawable.setDrawable(layerIndex, gradientDrawable);
-        mainConstraintLayout.setBackground(layerDrawable);
+        drawable.setStroke(3, color);
+        mainConstraintLayout.setBackground(drawable);
     }
 }

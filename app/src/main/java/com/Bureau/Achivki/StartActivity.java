@@ -2,6 +2,8 @@ package com.Bureau.Achivki;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -20,7 +22,7 @@ import java.util.Random;
 
 public class StartActivity extends AppCompatActivity {
 
-    private final String appVersion = "0.30";
+    private final String appVersion = "0.31";
 
 
     @Override
@@ -37,6 +39,8 @@ public class StartActivity extends AppCompatActivity {
         TextView text1 = findViewById(R.id.textView1);
         TextView text2 = findViewById(R.id.textView2);
         TextView text3 = findViewById(R.id.textView3);
+
+
 
 
         boolean result = random50_50();
@@ -84,6 +88,7 @@ public class StartActivity extends AppCompatActivity {
 
     }
 
+
     private boolean isUserLoggedIn() {
         FirebaseAuth auth = FirebaseAuth.getInstance();
         return auth.getCurrentUser() != null;
@@ -104,4 +109,6 @@ public class StartActivity extends AppCompatActivity {
         Random random = new Random();
         return random.nextBoolean();
     }
+
+
 }

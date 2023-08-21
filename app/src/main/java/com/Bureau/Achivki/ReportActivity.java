@@ -86,25 +86,20 @@ public class ReportActivity extends AppCompatActivity {
 
                 newAchieveMap.put("BadPicture", isBadPictureEnabled);
                 newAchieveMap.put("BadContent", isBadContentEnabled);
-                /*if(isBadPictureEnabled){
-                    newAchieveMap.put("BadPicture", isBadPictureEnabled);
-                }else{
-                    newAchieveMap.put("achievePrice", 10);
-                }
 
-                if(isBadContentEnabled){
-                    newAchieveMap.put("collectable", collectable);
-                }else{
-                    newAchieveMap.put("achievePrice", 10);
-                }*/
 
                 // Добавляем новое достижение в Map achieve пользователя
                 achieveMap.put(achieveName, newAchieveMap);
 
                 // Сохраняем обновленный Map achieve в Firestore
                 userAchievements.put(userId, achieveMap);
-                usersLogsRef.set(userAchievements);
-
+                usersLogsRef.set(userAchievements)
+                        .addOnSuccessListener(aVoid -> {
+                            Toast.makeText(getApplicationContext(), "Жалоба успешно отправлена", Toast.LENGTH_SHORT).show();
+                        })
+                        .addOnFailureListener(e -> {
+                            Toast.makeText(getApplicationContext(), "Ошибка при отправке жалобы", Toast.LENGTH_SHORT).show();
+                        });
 
             });
         });

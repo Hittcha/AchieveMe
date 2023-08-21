@@ -164,6 +164,7 @@ public class AchieveConfirmation extends AppCompatActivity {
                         }
                     }else{
                         //selectImageFromLibrary();
+                        //loadfile();
                         askPermission();
                     }
                 } else {
@@ -172,6 +173,7 @@ public class AchieveConfirmation extends AppCompatActivity {
                     if (collectable) {
                     }
                     //selectImageFromLibrary();
+                    //loadfile();
                     askPermission();
                 }
 
@@ -233,10 +235,12 @@ public class AchieveConfirmation extends AppCompatActivity {
                 // Если разрешение есть, вызываем окно выбора фотографий
                 selectImageFromLibrary();
                 //loadPhotosFromGallery();
+                //loadfile();
             }
         }else{
             selectImageFromLibrary();
             //loadPhotosFromGallery();
+            //loadfile();
         }
     }
 
@@ -635,6 +639,7 @@ public class AchieveConfirmation extends AppCompatActivity {
         }
         return false;
     }
+
     private void closeWindow() {
         informationText.setVisibility(View.INVISIBLE);
     }

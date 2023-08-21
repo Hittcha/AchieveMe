@@ -18,6 +18,7 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="information_photo">Размер фото не должен превышать 5 мб.\nНа фото должно быть подтверждение достижения, соответствующее описанию.</string>
+    <string name="seasonsChellendge">Сезонный челлендж</string>
 
     <string-array name="options_array">
         <item>Опция 1</item>

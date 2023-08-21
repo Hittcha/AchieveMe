@@ -16,6 +16,9 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
+import com.caverock.androidsvg.SVG;
+import com.caverock.androidsvg.SVGImageView;
+import com.caverock.androidsvg.SVGParseException;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
@@ -23,8 +26,11 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.squareup.picasso.Picasso;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -198,10 +204,10 @@ public class LeaderBoardActivity extends AppCompatActivity {
                     }
                 });
 
-        ImageButton leaderListButton = findViewById(R.id.imageButtonLeaderList);
-        ImageButton menuButton = findViewById(R.id.imageButtonMenu);
-        ImageButton favoritesButton = findViewById(R.id.imageButtonFavorites);
-        ImageButton achieveListButton = findViewById(R.id.imageButtonAchieveList);
+        SVGImageView leaderListButton = findViewById(R.id.imageButtonLeaderList);
+        SVGImageView menuButton = findViewById(R.id.imageButtonMenu);
+        SVGImageView favoritesButton = findViewById(R.id.imageButtonFavorites);
+        SVGImageView achieveListButton = findViewById(R.id.imageButtonAchieveList);
 
         leaderListButton.setOnClickListener(v -> {
             Intent intent = new Intent(LeaderBoardActivity.this, LeaderBoardActivity.class);
@@ -223,14 +229,55 @@ public class LeaderBoardActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        ImageButton usersListButton = findViewById(R.id.imageButtonUsersList);
+        SVGImageView usersListButton = findViewById(R.id.imageButtonUsersList);
         usersListButton.setOnClickListener(v -> {
             Intent intent = new Intent(LeaderBoardActivity.this, UsersListActivity.class);
             startActivity(intent);
         });
+        try {
+            InputStream inputStream = getAssets().open("interface_icon/home.svg");
+            SVG svg = SVG.getFromInputStream(inputStream);
+            SVGImageView svgImageView = findViewById(R.id.imageButtonMenu);
+            svgImageView.setSVG(svg);
+        } catch (IOException | SVGParseException e) {
+            e.printStackTrace();
+        }
+        try {
+            InputStream inputStream = getAssets().open("interface_icon/rate.svg");
+            SVG svg = SVG.getFromInputStream(inputStream);
+            SVGImageView svgImageView = findViewById(R.id.imageButtonLeaderList);
+            svgImageView.setSVG(svg);
+        } catch (IOException | SVGParseException e) {
+            e.printStackTrace();
+        }
+        try {
+            InputStream inputStream = getAssets().open("interface_icon/chel.svg");
+            SVG svg = SVG.getFromInputStream(inputStream);
+            SVGImageView svgImageView = findViewById(R.id.imageButtonUsersList);
+            svgImageView.setSVG(svg);
+        } catch (IOException | SVGParseException e) {
+            e.printStackTrace();
+        }
+        try {
+            InputStream inputStream = getAssets().open("interface_icon/kubok niz.svg");
+            SVG svg = SVG.getFromInputStream(inputStream);
+            SVGImageView svgImageView = findViewById(R.id.imageButtonAchieveList);
+            svgImageView.setSVG(svg);
+        } catch (IOException | SVGParseException e) {
+            e.printStackTrace();
+        }
+        try {
+            InputStream inputStream = getAssets().open("interface_icon/Star 1.svg");
+            SVG svg = SVG.getFromInputStream(inputStream);
+            SVGImageView svgImageView = findViewById(R.id.imageButtonFavorites);
+            svgImageView.setSVG(svg);
+        } catch (IOException | SVGParseException e) {
+            e.printStackTrace();
+        }
 
     }
-    public void setImage(String a, int count, String token){
+
+    public void setImage(String a, int count, String token) {
 
         StorageReference storageRef = FirebaseStorage.getInstance().getReference();
         StorageReference imageRef1 = storageRef.child(a);
@@ -247,20 +294,11 @@ public class LeaderBoardActivity extends AppCompatActivity {
             if (mimeType != null && mimeType.startsWith("User")) {
                 imageRef1.getBytes(Long.MAX_VALUE).addOnSuccessListener(bytes -> {
                     Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                    Bitmap circleBitmap = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
-                    BitmapShader shader = new BitmapShader(bitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
-                    Paint paint = new Paint();
-                    paint.setShader(shader);
-
-                    Canvas canvas = new Canvas(circleBitmap);
-                    if (bitmap.getHeight() > bitmap.getWidth()){
-                        canvas.drawCircle(bitmap.getWidth() / 2f, bitmap.getHeight() / 2f, bitmap.getWidth() / 2f, paint);
-                    }else{
-                        canvas.drawCircle(bitmap.getWidth() / 2f, bitmap.getHeight() / 2f, bitmap.getHeight() / 2f, paint);
-                    }
+                    CircleTransform circleTransform = new CircleTransform();
+                    Bitmap circleBitmap = circleTransform.transform(bitmap);
                     imageUserButtons.get(count).setImageBitmap(circleBitmap);
                 }).addOnFailureListener(exception -> {
-                    // Handle any errors
+                    // Обработка ошибок
                 });
             }
         });
@@ -277,56 +315,35 @@ public class LeaderBoardActivity extends AppCompatActivity {
             Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
 
             // Преобразование Bitmap в круговой вид
-            Bitmap circleBitmap = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
-            BitmapShader shader = new BitmapShader(bitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
-            Paint paint = new Paint();
-            paint.setShader(shader);
-
-            Canvas canvas = new Canvas(circleBitmap);
-            if (bitmap.getHeight() > bitmap.getWidth()){
-                canvas.drawCircle(bitmap.getWidth() / 2f, bitmap.getHeight() / 2f, bitmap.getWidth() / 2f, paint);
-            }else{
-                canvas.drawCircle(bitmap.getWidth() / 2f, bitmap.getHeight() / 2f, bitmap.getHeight() / 2f, paint);
-            }
+            CircleTransform circleTransform = new CircleTransform();
+            Bitmap circleBitmap = circleTransform.transform(bitmap);
 
             // Установка кругового Bitmap в качестве изображения для кнопки
             userButton.setImageBitmap(circleBitmap);
         } catch (Exception e) {
             e.printStackTrace();
-            //setImage(profileImageUrl);
         }
     }
 
     public void setUserImage(String imageRef) {
-
         StorageReference storageRef = FirebaseStorage.getInstance().getReference();
         StorageReference imageRef1 = storageRef.child(imageRef);
 
         ImageButton userButton = findViewById(R.id.userAvatar);
-        imageRef1.getMetadata().addOnSuccessListener(storageMetadata -> {
-            String mimeType = storageMetadata.getName();
-            System.out.println("mimeType " + mimeType);
-            if (mimeType != null && mimeType.startsWith("User")) {
-                imageRef1.getBytes(Long.MAX_VALUE).addOnSuccessListener(bytes -> {
-                    Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                    Bitmap circleBitmap = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
-                    BitmapShader shader = new BitmapShader(bitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
-                    Paint paint = new Paint();
-                    paint.setShader(shader);
 
-                    Canvas canvas = new Canvas(circleBitmap);
-                    if (bitmap.getHeight() > bitmap.getWidth()){
-                        canvas.drawCircle(bitmap.getWidth() / 2f, bitmap.getHeight() / 2f, bitmap.getWidth() / 2f, paint);
-                    }else{
-                        canvas.drawCircle(bitmap.getWidth() / 2f, bitmap.getHeight() / 2f, bitmap.getHeight() / 2f, paint);
-                    }
-                    userButton.setImageBitmap(circleBitmap);
-                }).addOnFailureListener(exception -> {
-                    // Handle any errors
-                });
-            }
+        imageRef1.getDownloadUrl().addOnSuccessListener(uri -> {
+            Picasso.get()
+                    .load(uri)
+                    .fit()
+                    .centerCrop()
+                    .transform(new CircleTransform()) // Применение скругления к изображению
+                    .into(userButton);
+        }).addOnFailureListener(exception -> {
+            // Обработка ошибок
         });
     }
+
+
     protected void onPause() {
         super.onPause();
         overridePendingTransition(0, 0);

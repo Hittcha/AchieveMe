@@ -8,344 +8,286 @@
     tools:context=".MainActivity">
 
 
-    <androidx.core.widget.NestedScrollView
-        android:id="@+id/nestedScrollView"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/group_2"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+    <LinearLayout
+            android:id="@+id/activityMain_linearLayoutTop"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/view_palka"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="290dp">
 
-                <HorizontalScrollView
-                    android:id="@+id/horizontalScrollView"
-                    android:layout_width="match_parent"
-                    android:layout_height="150dp"
-                    android:layout_marginStart="6dp"
-                    android:layout_marginTop="24dp"
-                    android:layout_marginEnd="6dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.0"
+                <TextView
+                    android:id="@+id/friendsCountTextView"
+                    android:layout_width="82dp"
+                    android:layout_height="55dp"
+                    android:text="12k"
+                    android:textAlignment="center"
+                    android:textColor="@color/white"
+                    android:textSize="48sp"
+                    app:layout_constraintBottom_toTopOf="@id/friendsList"
+                    app:layout_constraintEnd_toStartOf="@id/userButton"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/imageButtonSeasonAchieve">
-
-                    <LinearLayout
-                        android:id="@+id/scrollView1"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:orientation="horizontal">
-
-                    </LinearLayout>
-                </HorizontalScrollView>
+                    app:layout_constraintTop_toTopOf="@id/userButton"
+                    app:layout_constraintVertical_chainStyle="packed" />
+                <TextView
+                    android:id="@+id/friendsList"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Подписки"
+                    android:textSize="14sp"
+                    android:textColor="@color/white"
+                    app:layout_constraintStart_toStartOf="@id/friendsCountTextView"
+                    app:layout_constraintEnd_toEndOf="@id/friendsCountTextView"
+                    app:layout_constraintTop_toBottomOf="@id/friendsCountTextView"
+                    app:layout_constraintBottom_toBottomOf="@id/userButton"
+                    />
 
                 <ImageButton
-                    android:id="@+id/imageButtonSeasonAchieve"
-                    android:layout_width="0dp"
-                    android:layout_height="128dp"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginEnd="8dp"
-                    android:background="@null"
-                    android:scaleType="fitXY"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/favoritesScrollView"
-                    app:srcCompat="@drawable/summer_challenge" />
-
-                <HorizontalScrollView
-                    android:id="@+id/favoritesScrollView"
-                    android:layout_width="0dp"
-                    android:layout_height="108dp"
-                    android:layout_marginTop="24dp"
-                    android:layout_marginEnd="4dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/constraintLayout">
-
-                    <LinearLayout
-                        android:id="@+id/favoritesLinearLayout"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:orientation="horizontal">
-
-                        <ImageButton
-                            android:id="@+id/imageButton11"
-                            android:layout_width="94dp"
-                            android:layout_height="94dp"
-                            android:layout_marginStart="4dp"
-
-                            android:layout_marginTop="4dp"
-
-                            android:layout_marginEnd="4dp"
-                            android:layout_marginBottom="4dp"
-                            android:layout_weight="1"
-                            android:background="@drawable/addfavoritesbutton"
-                            android:visibility="gone"
-                            tools:visibility="visible" />
-
-                    </LinearLayout>
-                </HorizontalScrollView>
+                    android:id="@+id/userButton"
+                    android:layout_width="130dp"
+                    android:layout_height="130dp"
+                    android:background="@drawable/ellipse_1_shape"
+                    android:scaleType="centerCrop"
+                    android:layout_marginTop="15dp"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/friendsCountTextView"
+                    app:layout_constraintEnd_toStartOf="@id/subsCountTextView"
+                    app:layout_constraintBottom_toTopOf="@id/welcome_message"/>
 
                 <TextView
-                    android:id="@+id/textView2"
+                    android:id="@+id/subsCountTextView"
+                    android:layout_width="80dp"
+                    android:layout_height="55dp"
+                    android:text="30"
+                    android:textSize="48sp"
+                    android:textColor="@color/white"
+                    android:textAlignment="center"
+                    app:layout_constraintVertical_chainStyle="packed"
+                    app:layout_constraintStart_toEndOf="@id/userButton"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/userButton"
+                    app:layout_constraintBottom_toTopOf="@id/subscriptionsList"/>
+
+                <TextView
+                    android:id="@+id/subscriptionsList"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginTop="8dp"
-                    android:text="Избранное:"
-                    android:textColor="@color/white"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/constraintLayout" />
-
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/constraintLayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
-
-                    <Button
-                        android:id="@+id/adminButton"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Админка"
-                        android:visibility="gone"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-                    <TextView
-                        android:id="@+id/friendsCountTextView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="0"
-                        android:textColor="@color/white"
-                        app:layout_constraintEnd_toEndOf="@+id/friendsList"
-                        app:layout_constraintHorizontal_bias="0.516"
-                        app:layout_constraintStart_toStartOf="@+id/friendsList"
-                        app:layout_constraintTop_toBottomOf="@+id/friendsList" />
-
-                    <TextView
-                        android:id="@+id/subsCountTextView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="0"
-                        android:textColor="@color/white"
-                        app:layout_constraintEnd_toEndOf="@+id/subscriptionsList"
-                        app:layout_constraintStart_toStartOf="@+id/subscriptionsList"
-                        app:layout_constraintTop_toBottomOf="@+id/subscriptionsList" />
-
-                    <TextView
-                        android:id="@+id/friendsList"
-                        android:layout_width="wrap_content"
-                        android:layout_height="24dp"
-                        android:layout_marginTop="36dp"
-                        android:layout_marginEnd="16dp"
-                        android:text="Подписки"
-                        android:textColor="@color/white"
-                        android:textSize="15sp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.655"
-                        app:layout_constraintStart_toEndOf="@+id/subscriptionsList"
-                        app:layout_constraintTop_toBottomOf="@+id/welcome_message" />
-
-                    <TextView
-                        android:id="@+id/subscriptionsList"
-                        android:layout_width="wrap_content"
-                        android:layout_height="24dp"
-                        android:layout_marginStart="20dp"
-                        android:layout_marginTop="36dp"
-                        android:layout_marginEnd="20dp"
-                        android:text="Подписчики"
-                        android:textColor="@color/white"
-                        android:textSize="15sp"
-                        app:layout_constraintEnd_toStartOf="@+id/friendsList"
-                        app:layout_constraintStart_toEndOf="@+id/scoreTextView"
-                        app:layout_constraintTop_toBottomOf="@+id/welcome_message" />
-
-                    <TextView
-                        android:id="@+id/userScore"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:text="0"
-                        android:textColor="@color/white"
-                        app:layout_constraintEnd_toEndOf="@+id/scoreTextView"
-                        app:layout_constraintStart_toStartOf="@+id/scoreTextView"
-                        app:layout_constraintTop_toBottomOf="@+id/scoreTextView" />
-
-                    <TextView
-                        android:id="@+id/scoreTextView"
-                        android:layout_width="wrap_content"
-                        android:layout_height="24dp"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginTop="36dp"
-                        android:layout_marginEnd="8dp"
-                        android:text="Счет"
-                        android:textColor="@color/white"
-                        android:textSize="15sp"
-                        app:layout_constraintEnd_toStartOf="@+id/subscriptionsList"
-                        app:layout_constraintStart_toEndOf="@+id/userButton"
-                        app:layout_constraintTop_toBottomOf="@+id/welcome_message" />
-
-                    <ImageButton
-                        android:id="@+id/userButton"
-                        android:layout_width="100dp"
-                        android:layout_height="100dp"
-                        android:layout_alignParentLeft="true"
-                        android:layout_alignParentTop="true"
-                        android:layout_alignParentRight="true"
-                        android:layout_alignParentBottom="true"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginTop="12dp"
-                        android:background="@drawable/ellipse_1_shape"
-                        android:baselineAligned="false"
-                        android:scaleType="centerCrop"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.026"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/welcome_message" />
-
-                    <TextView
-                        android:id="@+id/welcome_message"
-                        android:layout_width="220dp"
-                        android:layout_height="25dp"
-                        android:layout_marginStart="4dp"
-                        android:layout_marginTop="4dp"
-                        android:text="Привет !"
-                        android:textAlignment="viewStart"
-                        android:textColor="@color/white"
-                        android:textSize="20sp"
-                        app:layout_constraintBottom_toTopOf="@+id/userButton"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.064"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintVertical_bias="0.231" />
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
-                <TextView
-                    android:id="@+id/textView3"
-                    android:layout_width="wrap_content"
-                    android:layout_height="0dp"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginTop="6dp"
-                    android:text="Новые категории:"
+                    android:text="Подписчики"
                     android:textColor="@color/white"
                     android:textSize="14sp"
-                    app:layout_constraintBottom_toTopOf="@+id/horizontalScrollView"
+                    app:layout_constraintEnd_toEndOf="@id/subsCountTextView"
+                    app:layout_constraintStart_toStartOf="@id/subsCountTextView"
+                    app:layout_constraintTop_toBottomOf="@id/subsCountTextView"
+                    app:layout_constraintBottom_toBottomOf="@id/userButton"/>
+
+                <TextView
+                    android:id="@+id/welcome_message"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="John Massovich"
+                    android:textColor="@color/white"
+                    android:textSize="36sp"
+                    app:layout_constraintTop_toBottomOf="@id/userButton"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/imageButtonSeasonAchieve"
-                    app:layout_constraintVertical_bias="0.47" />
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toTopOf="@id/location_textview"
+
+                    />
+
+                <com.caverock.androidsvg.SVGImageView
+                    android:id="@+id/location_icon"
+                    android:layout_width="24dp"
+                    android:layout_height="32dp"
+                    android:paddingEnd="5dp"
+                    app:layout_constraintStart_toStartOf="@id/welcome_message"
+                    app:layout_constraintEnd_toStartOf="@id/location_textview"
+                    app:layout_constraintBottom_toBottomOf="@id/location_textview"
+                    app:layout_constraintTop_toTopOf="@id/location_textview"
+                    app:layout_constraintHorizontal_chainStyle="packed"
+                    />
 
                 <TextView
-                    android:id="@+id/textView5"
+                    android:id="@+id/location_textview"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:shadowColor="#000000"
-                    android:shadowDx="2"
-                    android:shadowDy="2"
-                    android:shadowRadius="1"
-                    android:text="ЛЕТНИЙ ЧЕЛЛЕНДЖ"
+                    android:text="Россия, Красноярск"
                     android:textColor="@color/white"
-                    android:textSize="20sp"
-                    android:textStyle="normal|bold"
-                    app:layout_constraintBottom_toBottomOf="@+id/imageButtonSeasonAchieve"
-                    app:layout_constraintEnd_toEndOf="@+id/imageButtonSeasonAchieve"
-                    app:layout_constraintHorizontal_bias="0.497"
-                    app:layout_constraintStart_toStartOf="@+id/imageButtonSeasonAchieve"
-                    app:layout_constraintTop_toTopOf="@+id/imageButtonSeasonAchieve"
-                    app:layout_constraintVertical_bias="0.376" />
+                    android:textSize="16sp"
+                    app:layout_constraintStart_toEndOf="@id/location_icon"
+                    app:layout_constraintEnd_toEndOf="@id/welcome_message"
+                    app:layout_constraintTop_toBottomOf="@id/welcome_message"
+                    app:layout_constraintBottom_toTopOf="@id/userScore"
+                    android:textAlignment="center"
+                    />
+
+            <com.caverock.androidsvg.SVGImageView
+                android:id="@+id/score_cup"
+                android:layout_width="24dp"
+                android:layout_height="32dp"
+                app:layout_constraintEnd_toStartOf="@id/userScore"
+                app:layout_constraintBottom_toBottomOf="@id/userScore"
+                app:layout_constraintTop_toTopOf="@id/userScore"
+                />
+
+            <TextView
+                android:id="@+id/userScore"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=" 223"
+                android:textSize="24sp"
+                android:textColor="#F5C566"
+                app:layout_constraintStart_toStartOf="@id/location_textview"
+                app:layout_constraintEnd_toEndOf="@id/location_textview"
+                app:layout_constraintTop_toBottomOf="@id/location_textview"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <HorizontalScrollView
+            android:id="@+id/horizontal_menu"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:scrollbars="none">
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/textView6"
+                    android:id="@+id/textViewSeason"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="0dp"
-                    android:shadowColor="#000000"
-                    android:shadowDx="2"
-                    android:shadowDy="2"
-                    android:shadowRadius="1"
-                    android:text="50 ачивок"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:text="@string/seasonsChellendge"
                     android:textColor="@color/white"
-                    android:textSize="14sp"
-                    android:textStyle="normal|bold"
-                    app:layout_constraintEnd_toEndOf="@+id/textView5"
-                    app:layout_constraintHorizontal_bias="0.503"
-                    app:layout_constraintStart_toStartOf="@+id/textView5"
-                    app:layout_constraintTop_toBottomOf="@+id/textView5" />
+                    android:textSize="18sp"
+                    android:clickable="true"/>
 
-            </androidx.constraintlayout.widget.ConstraintLayout>
-        </LinearLayout>
-    </androidx.core.widget.NestedScrollView>
+                <View
+                    android:layout_width="6dp"
+                    android:layout_height="6dp"
+                    android:background="@drawable/ellipse_12"
+                    android:layout_gravity="center"/>
+                <TextView
+                    android:id="@+id/textViewNewCategory"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Новые категории"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:textSize="18sp"
+                    android:textColor="@color/inactive_button"
+                    android:clickable="true"/>
+                <View
+                    android:layout_width="6dp"
+                    android:layout_height="6dp"
+                    android:background="@drawable/ellipse_12"
+                    android:layout_gravity="center"/>
+                <TextView
+                    android:id="@+id/textViewFavorites"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Избранное"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:textSize="18sp"
+                    android:textColor="@color/inactive_button"
+                    android:clickable="true"/>
+            </LinearLayout>
+
+        </HorizontalScrollView>
+            <ScrollView
+            android:id="@+id/scrollView_season"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="visible"/>
+            <ScrollView
+            android:id="@+id/scrollView_newCategory"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"/>
+            <ScrollView
+            android:id="@+id/scrollView_Favorites"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"/>
+
+        <Button
+            android:id="@+id/adminButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Админка"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </LinearLayout>
+    <View
+        android:id="@+id/view_palka"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_marginStart="14dp"
+        android:layout_marginEnd="14dp"
+        android:background="@drawable/rectangle_7_shape"
+        app:layout_constraintBottom_toTopOf="@id/group_2"/>
 
     <LinearLayout
         android:id="@+id/group_2"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="55dp"
         android:layout_gravity="bottom"
-        android:background="@drawable/rectangle_7_shape"
+        android:background="@null"
         app:layout_constraintBottom_toBottomOf="parent">
 
-        <ImageButton
+        <com.caverock.androidsvg.SVGImageView
             android:id="@+id/imageButtonMenu"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@null"
+            android:layout_height="55dp"
             android:scaleType="center"
-            app:srcCompat="@drawable/menuiconclicked" />
+            android:layout_weight="1"
+            />
 
-        <ImageButton
+        <com.caverock.androidsvg.SVGImageView
             android:id="@+id/imageButtonLeaderList"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@null"
+            android:layout_height="55dp"
             android:scaleType="center"
-            android:src="@drawable/crownicon" />
+            android:layout_weight="1" />
 
-        <ImageButton
+        <com.caverock.androidsvg.SVGImageView
             android:id="@+id/imageButtonUsersList"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@null"
+            android:layout_height="55dp"
             android:scaleType="center"
-            app:srcCompat="@drawable/otherusers" />
+            android:layout_weight="1" />
 
-        <ImageButton
+        <com.caverock.androidsvg.SVGImageView
             android:id="@+id/imageButtonAchieveList"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@null"
+            android:layout_height="55dp"
             android:scaleType="center"
-            app:srcCompat="@drawable/achievelist" />
+            android:layout_weight="1" />
 
-        <ImageButton
+        <com.caverock.androidsvg.SVGImageView
             android:id="@+id/imageButtonFavorites"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@null"
-            app:srcCompat="@drawable/favoritesicon" />
+            android:layout_height="55dp"
+            android:scaleType="center"
+            android:layout_weight="1"/>
 
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+

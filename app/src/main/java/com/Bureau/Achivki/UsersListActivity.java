@@ -25,7 +25,11 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.caverock.androidsvg.SVG;
+import com.caverock.androidsvg.SVGImageView;
+import com.caverock.androidsvg.SVGParseException;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -40,19 +44,21 @@ import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Map;
 
 public class UsersListActivity extends AppCompatActivity {
 
-    private ImageButton favoritesButton;
+    private SVGImageView favoritesButton;
 
-    private ImageButton achieveListButton;
+    private SVGImageView achieveListButton;
 
-    private ImageButton leaderListButton;
+    private SVGImageView leaderListButton;
 
-    private ImageButton menuButton;
+    private SVGImageView menuButton;
 
     private FirebaseFirestore db;
     private FirebaseAuth mAuth;
@@ -159,7 +165,7 @@ public class UsersListActivity extends AppCompatActivity {
             }
         });
 
-        ImageButton usersListButton = findViewById(R.id.imageButtonUsersList);
+        SVGImageView usersListButton = findViewById(R.id.imageButtonUsersList);
         usersListButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -209,28 +215,62 @@ public class UsersListActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });*/
+        try {
+            InputStream inputStream = getAssets().open("interface_icon/home.svg");
+            SVG svg = SVG.getFromInputStream(inputStream);
+            SVGImageView svgImageView = findViewById(R.id.imageButtonMenu);
+            svgImageView.setSVG(svg);
+        } catch (IOException | SVGParseException e) {
+            e.printStackTrace();
+        }
+        try {
+            InputStream inputStream = getAssets().open("interface_icon/rate.svg");
+            SVG svg = SVG.getFromInputStream(inputStream);
+            SVGImageView svgImageView = findViewById(R.id.imageButtonLeaderList);
+            svgImageView.setSVG(svg);
+        } catch (IOException | SVGParseException e) {
+            e.printStackTrace();
+        }
+        try {
+            InputStream inputStream = getAssets().open("interface_icon/chel.svg");
+            SVG svg = SVG.getFromInputStream(inputStream);
+            SVGImageView svgImageView = findViewById(R.id.imageButtonUsersList);
+            svgImageView.setSVG(svg);
+        } catch (IOException | SVGParseException e) {
+            e.printStackTrace();
+        }
+        try {
+            InputStream inputStream = getAssets().open("interface_icon/kubok niz.svg");
+            SVG svg = SVG.getFromInputStream(inputStream);
+            SVGImageView svgImageView = findViewById(R.id.imageButtonAchieveList);
+            svgImageView.setSVG(svg);
+        } catch (IOException | SVGParseException e) {
+            e.printStackTrace();
+        }
+        try {
+            InputStream inputStream = getAssets().open("interface_icon/Star 1.svg");
+            SVG svg = SVG.getFromInputStream(inputStream);
+            SVGImageView svgImageView = findViewById(R.id.imageButtonFavorites);
+            svgImageView.setSVG(svg);
+        } catch (IOException | SVGParseException e) {
+            e.printStackTrace();
+        }
     }
-
+/*
     public void createUsersBlock(String name, int score, String avatarUrl, String userID){
         LinearLayout parentLayout = findViewById(R.id.scrollView);
-
 
         ConstraintLayout blockFriends = (ConstraintLayout) LayoutInflater.from(UsersListActivity.this)
                 .inflate(R.layout.block_userslist, parentLayout, false);
 
         TextView usernameTextView = blockFriends.findViewById(R.id.userName);
         TextView scoreTextView = blockFriends.findViewById(R.id.userScore);
-        //TextView likesTextView = blockFriends.findViewById(R.id.likesCount);
 
         usernameTextView.setText(name);
 
         scoreTextView.setText("Счет: " + score);
 
         parentLayout.addView(blockFriends);
-
-
-        //Button delButton = blockFriends.findViewById(R.id.delete_button);
-
 
         ImageButton imageUserButton = blockFriends.findViewById(R.id.imageUserButton);
 
@@ -243,19 +283,6 @@ public class UsersListActivity extends AppCompatActivity {
                 public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
                     Bitmap bitmap = BitmapFactory.decodeFile(localFile.getAbsolutePath());
 
-                    // определяем размеры экрана
-                    /*DisplayMetrics displayMetrics = new DisplayMetrics();
-                    Display display = ContextCompat.getSystemService(MyFriendsList.this, DisplayManager.class).getDisplay(Display.DEFAULT_DISPLAY);
-
-
-                    int targetWidth = getResources().getDisplayMetrics().widthPixels / 3;
-
-
-                    int targetHeight = targetWidth;
-                    Bitmap resizedBitmap = Bitmap.createScaledBitmap(bitmap, targetWidth, targetHeight, true);
-*/
-
-                    // Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
                     Bitmap circleBitmap = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
                     BitmapShader shader = new BitmapShader(bitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
                     Paint paint = new Paint();
@@ -288,6 +315,132 @@ public class UsersListActivity extends AppCompatActivity {
             e.printStackTrace();
         }
     }
+*/
+/*public void createUsersBlock(String name, int score, String avatarUrl, String userID) {
+    LinearLayout parentLayout = findViewById(R.id.scrollView);
+
+    ConstraintLayout blockFriends = (ConstraintLayout) LayoutInflater.from(UsersListActivity.this)
+            .inflate(R.layout.block_userslist, parentLayout, false);
+
+    TextView usernameTextView = blockFriends.findViewById(R.id.userName);
+    TextView scoreTextView = blockFriends.findViewById(R.id.userScore);
+
+    usernameTextView.setText(name);
+    scoreTextView.setText("Счет: " + score);
+
+    parentLayout.addView(blockFriends);
+
+    ImageButton imageUserButton = blockFriends.findViewById(R.id.imageUserButton);
+
+    StorageReference storageRef = FirebaseStorage.getInstance().getReference();
+    StorageReference userImageRef = storageRef.child(avatarUrl);
+    try {
+        final File localFile = File.createTempFile("images", "jpg");
+        userImageRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                Bitmap bitmap = BitmapFactory.decodeFile(localFile.getAbsolutePath());
+                if (bitmap != null) {
+                    int desiredWidth = imageUserButton.getWidth(); // Задайте требуемую ширину
+                    int desiredHeight = imageUserButton.getHeight(); // Задайте требуемую высоту
+
+                    Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap, desiredWidth, desiredHeight, false);
+
+                    Bitmap circleBitmap = Bitmap.createBitmap(desiredWidth, desiredHeight, Bitmap.Config.ARGB_8888);
+                    BitmapShader shader = new BitmapShader(scaledBitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
+                    Paint paint = new Paint();
+                    paint.setShader(shader);
+
+                    Canvas canvas = new Canvas(circleBitmap);
+                    float radius = Math.min(desiredWidth, desiredHeight) / 2f;
+                    canvas.drawCircle(desiredWidth / 2f, desiredHeight / 2f, radius, paint);
+
+                    imageUserButton.setImageBitmap(circleBitmap);
+
+                    String s = "UsersListActivity";
+
+                    imageUserButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent intent = new Intent(UsersListActivity.this, OtherUserActivity.class);
+                            intent.putExtra("User_token", userID);
+                            startActivity(intent);
+                        }
+                    });
+                } else {
+                    // Обработка случая, когда загруженное изображение не удалось декодировать
+                }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                // Обработка ошибки загрузки изображения
+            }
+        });
+    } catch (IOException e) {
+        e.printStackTrace();
+        // Обработка ошибки создания временного файла
+    }
+}*/
+
+    public void createUsersBlock(String name, int score, String avatarUrl, String userID) {
+        LinearLayout parentLayout = findViewById(R.id.scrollView);
+
+        ConstraintLayout blockFriends = (ConstraintLayout) LayoutInflater.from(UsersListActivity.this)
+                .inflate(R.layout.block_userslist, parentLayout, false);
+
+        TextView usernameTextView = blockFriends.findViewById(R.id.userName);
+        TextView scoreTextView = blockFriends.findViewById(R.id.userScore);
+
+        usernameTextView.setText(name);
+        scoreTextView.setText("Счет: " + score);
+
+        parentLayout.addView(blockFriends);
+
+        ImageButton imageUserButton = blockFriends.findViewById(R.id.imageUserButton);
+
+        StorageReference storageRef = FirebaseStorage.getInstance().getReference();
+        StorageReference userImageRef = storageRef.child(avatarUrl);
+        try {
+            final File localFile = File.createTempFile("images", "jpg");
+            userImageRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                    Bitmap bitmap = BitmapFactory.decodeFile(localFile.getAbsolutePath());
+                    if (bitmap != null) {
+
+                        CircleTransform circleTransform = new CircleTransform();
+                        Bitmap circleBitmap = circleTransform.transform(bitmap);
+
+                        imageUserButton.setImageBitmap(circleBitmap);
+
+                        imageUserButton.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Intent intent = new Intent(UsersListActivity.this, OtherUserActivity.class);
+                                intent.putExtra("User_token", userID);
+                                startActivity(intent);
+                            }
+                        });
+                    } else {
+                        // Обработка случая, когда загруженное изображение не удалось декодировать
+                    }
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    // Обработка ошибки загрузки изображения
+                }
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+            // Обработка ошибки создания временного файла
+        }
+    }
+
+
+
+
     protected void onPause() {
         super.onPause();
         overridePendingTransition(0, 0);
