@@ -45,20 +45,14 @@
         <item name="android:textSize">30sp</item>
         <item name="android:textColor">#FFFFFF</item>
     </style>
-    <style name="category_topText" parent="AppTheme">
-        <item name="android:shadowColor">#000000</item>
-        <item name="android:shadowDx">2</item>
-        <item name="android:shadowDy">2</item>
-        <item name="android:shadowRadius">3</item>
-        <item name="android:textColor">@color/white</item>
-    </style>
 
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- ... -->
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="colorPrimary">#4A4C4D</item>
-        <item name="fontFamily">@font/nunito</item>
+        <item name="fontFamily">@font/nunito_normal</item>
+
         <item name="android:textColorPrimary">#FFFFFF</item> <!-- Цвет текста -->
     </style>
     <style name="AchievementDialog" parent="Theme.AppCompat.Light.Dialog">

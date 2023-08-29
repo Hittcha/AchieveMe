@@ -97,9 +97,10 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
         confirmButton = findViewById(R.id.confirmButton);
         TextView achieveText = findViewById(R.id.AchieveName);
         confirmIcon = findViewById(R.id.iconConfirm_imageView);
+        TextView progressDesc = findViewById(R.id.progressDescription_TextView);
 
         WindowCalculation windowCalculation = new WindowCalculation(this);
-        double textWeight = windowCalculation.WindowCalculationWeight() * 0.8;
+        double textWeight = windowCalculation.WindowCalculationWeight() * 0.65;
         ViewGroup.LayoutParams textViewLayoutParams = achieveText.getLayoutParams();
         textViewLayoutParams.width = (int) textWeight;
         achieveText.setLayoutParams(textViewLayoutParams);
@@ -138,6 +139,7 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
             throw new RuntimeException(e);
         }
 
+        progressDesc.setVisibility(View.GONE);
 
         if (received) {
             addButton.setVisibility(View.GONE); // скрываем кнопку
@@ -149,6 +151,7 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
 
         if (proof) {
             showProofButton();
+            Log.d("Пруф", String.valueOf(proof));
         }
 
         if (favorite) {
@@ -156,6 +159,7 @@ public class AchievementDescriptionActivity extends AppCompatActivity {
         }else{
             changeStrokeColorBack();
         }
+
 
         System.out.println(achieveName);
         System.out.println(categoryName);

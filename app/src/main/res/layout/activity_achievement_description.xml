@@ -11,7 +11,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:minHeight="220dp"
+    android:minHeight="260dp"
     app:layout_constraintTop_toTopOf="parent"
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintStart_toStartOf="parent"
@@ -31,12 +31,26 @@
         android:id="@+id/main_constraintLayout_description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:minHeight="260dp"
         android:background="@drawable/achievedescriptionbackground"
         android:layout_marginTop="35dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.77" />
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_achieveName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.33" />
 
         <com.caverock.androidsvg.SVGImageView
             android:id="@+id/achieveIcon_imageView"
@@ -45,25 +59,25 @@
             android:background="@drawable/achieve_unchecked"
             android:padding="4dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/AchieveName"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toTopOf="@id/view_palka1"
             app:layout_constraintHorizontal_chainStyle="packed"
             android:layout_marginTop="15dp"
-            android:layout_marginBottom="10dp"/>
+            android:layout_marginBottom="10dp"
+            android:layout_marginStart="15dp"/>
 
         <TextView
             android:id="@+id/AchieveName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/white"
-            app:layout_constraintStart_toEndOf="@id/achieveIcon_imageView"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/achieveIcon_imageView"
-            app:layout_constraintBottom_toBottomOf="@id/achieveIcon_imageView"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/view_palka1"
             android:autoSizeTextType="uniform"
             android:autoSizeMinTextSize="12sp"
-            android:autoSizeMaxTextSize="24sp"
+            android:autoSizeMaxTextSize="26sp"
             android:text="@null"
             android:textSize="24sp"
             android:textAlignment="center"
@@ -74,9 +88,9 @@
             android:layout_height="2dp"
             android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp"
-            android:layout_marginTop="15dp"
+
             android:background="@drawable/rectangle_7_shape"
-            app:layout_constraintTop_toBottomOf="@id/achieveIcon_imageView"/>
+            app:layout_constraintTop_toBottomOf="@id/guideline_achieveName"/>
 
         <TextView
             android:id="@+id/desc_message"
@@ -90,16 +104,18 @@
             android:paddingEnd="15dp"
             android:paddingTop="15dp"
             android:paddingBottom="15dp"
-            app:layout_constraintTop_toBottomOf="@id/view_palka1"/>
+            tools:text="322 012 / 1 000 000"
+            app:layout_constraintTop_toBottomOf="@id/view_palka1"
+            app:layout_constraintBottom_toTopOf="@id/progressDescription_TextView"/>
         <TextView
             android:id="@+id/progressDescription_TextView"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toBottomOf="@id/desc_message"
             app:layout_constraintBottom_toTopOf="@id/view_palka2"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginBottom="5dp"
             android:textSize="16sp"
+            android:textAlignment="center"
             android:textColor="@color/white"
             tools:text="322 012 / 1 000 000"/>
         <View
@@ -109,7 +125,7 @@
             android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp"
             android:background="@drawable/rectangle_7_shape"
-            app:layout_constraintTop_toBottomOf="@id/desc_message"/>
+            app:layout_constraintTop_toTopOf="@id/guideline_button"/>
 
             <com.caverock.androidsvg.SVGImageView
                 android:id="@+id/iconConfirm_imageView"
@@ -121,7 +137,7 @@
                 app:layout_constraintTop_toTopOf="@id/confirmButton"
                 app:layout_constraintBottom_toBottomOf="@id/confirmButton"
                 app:layout_constraintHorizontal_chainStyle="packed"
-                android:visibility="gone"/>
+                android:visibility="invisible"/>
 
             <Button
                 style="@style/description_button"
@@ -130,9 +146,7 @@
                 android:background="@null"
                 android:visibility="gone"
                 android:textSize="20sp"
-                android:layout_marginBottom="10dp"
-                android:layout_marginTop="10dp"
-                app:layout_constraintTop_toBottomOf="@id/view_palka2"
+                app:layout_constraintTop_toBottomOf="@id/guideline_button"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
@@ -144,12 +158,10 @@
                 android:background="@null"
                 android:visibility="gone"
                 android:textSize="20sp"
-                app:layout_constraintTop_toBottomOf="@id/view_palka2"
+                app:layout_constraintTop_toBottomOf="@id/guideline_button"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                android:layout_marginBottom="10dp"
-                android:layout_marginTop="10dp"
                 tools:visibility="visible"/>
 
             <Button
@@ -159,12 +171,10 @@
                 android:text="Подтвердить ачивку"
                 android:visibility="gone"
                 android:textSize="20sp"
-                app:layout_constraintTop_toBottomOf="@id/view_palka2"
+                app:layout_constraintTop_toBottomOf="@id/guideline_button"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@id/iconConfirm_imageView"
                 app:layout_constraintEnd_toEndOf="parent"
-                android:layout_marginBottom="10dp"
-                android:layout_marginTop="10dp"
                 tools:visibility="gone" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

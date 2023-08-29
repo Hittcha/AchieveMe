@@ -389,6 +389,7 @@ public class AchieveCategoryListActivity extends AppCompatActivity {
                             String achievementName = document.getString("name");
 
                             boolean proof = Boolean.TRUE.equals(document.getBoolean("proof"));
+                            System.out.println("proof " + proof);
                             boolean collectable = false;
                             long achieveCount = 0;
                             long doneCount = 0;
@@ -444,7 +445,6 @@ public class AchieveCategoryListActivity extends AppCompatActivity {
                                         SVG svg = SVG.getFromInputStream(inputStream);
                                         SVGImageView achieveIcon = blockLayout.findViewById(R.id.galka);
                                         achieveIcon.setSVG(svg);
-                                        Log.d("Иконка", "срабатывает зелёный");
                                     } catch (IOException | SVGParseException e) {
                                         e.printStackTrace();
                                     }
@@ -458,7 +458,6 @@ public class AchieveCategoryListActivity extends AppCompatActivity {
                                         SVG svg = SVG.getFromInputStream(inputStream);
                                         SVGImageView achieveIcon = blockLayout.findViewById(R.id.galka);
                                         achieveIcon.setSVG(svg);
-                                        Log.d("Иконка", "срабатывает жёлтый");
                                     } catch (IOException | SVGParseException e) {
                                         e.printStackTrace();
                                     }

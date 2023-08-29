@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -24,6 +25,9 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
+import com.caverock.androidsvg.SVG;
+import com.caverock.androidsvg.SVGImageView;
+import com.caverock.androidsvg.SVGParseException;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
@@ -32,6 +36,8 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -44,6 +50,7 @@ public class AchievementWithProgressActivity extends AppCompatActivity {
     private TextView descMessage;
     private Button delButton;
     private Button confirmButton;
+    private SVGImageView confirmIcon;
     private Button addButton;
     private FirebaseAuth mAuth;
     long dayLimit;
@@ -64,7 +71,7 @@ public class AchievementWithProgressActivity extends AppCompatActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL,
                 WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL);
 
-        setContentView(R.layout.activity_achievement_with_progress);
+        setContentView(R.layout.activity_achievement_description);
         Intent intentFromMain = getIntent();
         String achieveName = intentFromMain.getStringExtra("Achieve_key");
         String categoryName = intentFromMain.getStringExtra("Category_key");
@@ -77,15 +84,19 @@ public class AchievementWithProgressActivity extends AppCompatActivity {
 
         Long achievePrice = intentFromMain.getLongExtra("achievePrice", 0);
 
+        Window window = getWindow();
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.setStatusBarColor(ContextCompat.getColor(this, R.color.StatusBarColor));
+        WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams();
+        layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
+        window.setAttributes(layoutParams);
+
         int blockPosition = intentFromMain.getIntExtra("blockPosition", 0);
 
         String countDesc = intentFromMain.getStringExtra("countDesc");
 
-        Window window = getWindow();
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        window.setStatusBarColor(ContextCompat.getColor(this, R.color.StatusBarColor));
 
-        ScrollView scrollView = findViewById(R.id.description_scrollview);
+//        ScrollView scrollView = findViewById(R.id.description_scrollview);
 
         /*androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -99,8 +110,16 @@ public class AchievementWithProgressActivity extends AppCompatActivity {
         confirmButton = findViewById(R.id.confirmButton);
         TextView achieveText = findViewById(R.id.AchieveName);
         TextView progressDesc = findViewById(R.id.progressDescription_TextView);
+        confirmIcon = findViewById(R.id.iconConfirm_imageView);
 
-        achieveText.setText(achieveName);
+        WindowCalculation windowCalculation = new WindowCalculation(this);
+        double textWeight = windowCalculation.WindowCalculationWeight() * 0.65;
+        ViewGroup.LayoutParams textViewLayoutParams = achieveText.getLayoutParams();
+        textViewLayoutParams.width = (int) textWeight;
+        achieveText.setLayoutParams(textViewLayoutParams);
+        achieveText.requestLayout();
+        achieveText.setText(achieveName);//изменям размер контейнера названия достижения
+
 
 
         boolean received = getIntent().getBooleanExtra("Is_Received", false);
@@ -112,9 +131,27 @@ public class AchievementWithProgressActivity extends AppCompatActivity {
         boolean isUserAchieve = getIntent().getBooleanExtra("isUserAchieve", false);
         String desc = intentFromMain.getStringExtra("desc");
 
+        // выставляем иконки
+        try {
+            InputStream inputStream = getAssets().open("interface_icon/photo.svg");
+            SVG svg = SVG.getFromInputStream(inputStream);
+            confirmIcon.setSVG(svg);
+        } catch (IOException | SVGParseException e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            InputStream inputStream = getAssets().open("interface_icon/BigBan.svg");
+            SVG svg = SVG.getFromInputStream(inputStream);
+            SVGImageView svgImageView = findViewById(R.id.achieveIcon_imageView);
+            svgImageView.setSVG(svg);
+        } catch (SVGParseException | IOException e) {
+            throw new RuntimeException(e);
+        }
 
         if (proof) {
             showProofButton();
+        }else {
+            Log.d("Пруф", String.valueOf(proof));
         }
 
         if (favorite) {
@@ -143,9 +180,11 @@ public class AchievementWithProgressActivity extends AppCompatActivity {
                                 //String description = document.getString("desc");
                                 System.out.println("description" + desc);
                                 if(achievePrice < 1){
-                                    progressDesc.setText(description + "\nВыполнено " + doneCount + " из " + achieveCount);
+                                    descMessage.setText(description);
+                                    progressDesc.setText("Выполнено " + doneCount + " из " + achieveCount);
                                 }else {
-                                    progressDesc.setText(description + " (+" + achievePrice + " ОС)." + "\nВыполнено " + doneCount + " из " + achieveCount);
+                                    descMessage.setText(description + " (+" + achievePrice + " ОС).");
+                                    progressDesc.setText("Выполнено " + doneCount + " из " + achieveCount);
                                 }
                             }
                         } else {
@@ -160,13 +199,15 @@ public class AchievementWithProgressActivity extends AppCompatActivity {
                                 String description = document.getString("desc");
 
                                 if("desc".equals(null)){
-                                    progressDesc.setText(description + "\nВыполнено " + doneCount + " из " + achieveCount);
+                                    progressDesc.setText("Выполнено " + doneCount + " из " + achieveCount);
                                 }else {
 
                                     if (achievePrice < 1) {
-                                        progressDesc.setText(description + "\nВыполнено " + doneCount + " из " + achieveCount);
+                                        descMessage.setText(description);
+                                        progressDesc.setText("Выполнено " + doneCount + " из " + achieveCount);
                                     } else {
-                                        progressDesc.setText(description + " (+" + achievePrice + " ОС)." + "\nВыполнено " + doneCount + " из " + achieveCount);
+                                        descMessage.setText(description + " (+" + achievePrice + " ОС).");
+                                        progressDesc.setText("Выполнено " + doneCount + " из " + achieveCount);
                                     }
                                 }
                             }
@@ -358,20 +399,20 @@ public class AchievementWithProgressActivity extends AppCompatActivity {
             //showButtonAdd();
         });
 
-        scrollView.setOnTouchListener(new View.OnTouchListener() {
-            private final GestureDetector gestureDetector = new GestureDetector(AchievementWithProgressActivity.this, new GestureDetector.SimpleOnGestureListener(){
-                @Override
-                public boolean onDoubleTap(@NonNull MotionEvent e) {
-                    addFavorites();
-                    return super.onDoubleTap(e);
-                }
-            });
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                gestureDetector.onTouchEvent(event);
-                return true;
-            }
-        });
+//        scrollView.setOnTouchListener(new View.OnTouchListener() {
+//            private final GestureDetector gestureDetector = new GestureDetector(AchievementWithProgressActivity.this, new GestureDetector.SimpleOnGestureListener(){
+//                @Override
+//                public boolean onDoubleTap(@NonNull MotionEvent e) {
+//                    addFavorites();
+//                    return super.onDoubleTap(e);
+//                }
+//            });
+//            @Override
+//            public boolean onTouch(View v, MotionEvent event) {
+//                gestureDetector.onTouchEvent(event);
+//                return true;
+//            }
+//        });
     }
 
     public boolean compareDay(String time1, String time2) {
@@ -472,6 +513,7 @@ public class AchievementWithProgressActivity extends AppCompatActivity {
     public void showProofButton(){
         addButton.setVisibility(View.GONE); // скрываем кнопку
         confirmButton.setVisibility(View.VISIBLE); // отображаем кнопку
+        confirmIcon.setVisibility(View.VISIBLE);
         delButton.setVisibility(View.GONE);
     }
     private void addFavorites(){

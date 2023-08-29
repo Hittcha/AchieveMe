@@ -159,8 +159,8 @@ public class MainActivity extends AppCompatActivity {
         welcomeMessage.setText(savedName);
 
 
-        TextView friendsListText = findViewById(R.id.friendsList);
-        TextView subscriptionsListText = findViewById(R.id.subscriptionsList);
+        TextView friendsListText = findViewById(R.id.friendsCountTextView);
+        TextView subscriptionsListText = findViewById(R.id.subsCountTextView);
 //        TextView scoreText = findViewById(R.id.scoreTextView);
 
         TextView userScoreText = findViewById(R.id.userScore);

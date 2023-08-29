@@ -131,7 +131,7 @@ public class OtherUserActivity extends AppCompatActivity {
         userScoreText = findViewById(R.id.scoreText);
         friendsCountText = findViewById(R.id.friendsCount);
         subsCountText = findViewById(R.id.subsTextView);
-        TextView subscriptionsListTextView = findViewById(R.id.subscriptionsList2);
+        TextView subscriptionsListTextView = findViewById(R.id.subsTextView);
 
         mAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = mAuth.getCurrentUser();
@@ -309,7 +309,7 @@ public class OtherUserActivity extends AppCompatActivity {
             startActivity(intent18);
         });
 
-        TextView friendsListTextView = findViewById(R.id.friendsList2);
+        TextView friendsListTextView = findViewById(R.id.friendsCount);
 
         friendsListTextView.setOnClickListener(v -> {
             Intent intent1 = new Intent(OtherUserActivity.this, OtherUserFriends.class);

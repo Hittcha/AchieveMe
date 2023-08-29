@@ -17,6 +17,7 @@
       android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
       android:visibility="visible"
       app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintHorizontal_bias="0.0"
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintTop_toTopOf="parent"
       app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
@@ -44,13 +45,13 @@
 
     <TextView
         android:id="@+id/progress_text"
-        style="@style/category_topText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="6dp"
         android:text=""
         android:textSize="25sp"
         android:textStyle="bold"
+        android:textColor="@color/white"
         app:layout_constraintTop_toBottomOf="@id/categoryNameTextView"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -59,12 +60,12 @@
 
     <TextView
         android:id="@+id/categoryNameTextView"
-        style="@style/category_topText"
+        android:textColor="@color/white"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="TextView"
         android:textSize="34sp"
-        android:textStyle="bold"
+
         app:layout_constraintBottom_toTopOf="@id/progress_text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
