@@ -25,8 +25,8 @@
     <color name="Primary_500">#222222</color>
     <color name="button">#F5C566</color>
     <color name="achieveBack">#3D382D</color>
-    <color name="hintColor">#939393</color>
-    <color name="editTextColor">#585858</color>
+    <color name="hintColor">#727272</color>
+    <color name="editTextColor">#414141</color>
     <color name="falseColor">#05000000</color>
     <color name="lowWhite">#CFCFCF</color>
     <color name="categoryTextBack">#99000000</color>

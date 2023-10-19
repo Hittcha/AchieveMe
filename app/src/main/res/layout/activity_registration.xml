@@ -36,6 +36,7 @@
             app:layout_constraintTop_toBottomOf="@id/ActivityLogin_password_edit_text"
             app:layout_constraintBottom_toBottomOf="@id/ActivityLogin_guideline"
             android:hint="@string/userName_hint"
+
             android:inputType="textEmailAddress" />
 
         <Button
@@ -45,6 +46,7 @@
             app:layout_constraintTop_toTopOf="@id/ActivityLogin_guideline"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            android:textSize="20sp"
             />
 
 
@@ -57,13 +59,13 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintVertical_chainStyle="packed"
-        android:src="@drawable/ellipse_12"
+        android:src="@drawable/logo_kubok"
         android:contentDescription="TODO" />
 
     <TextView
         android:id="@+id/activityLogin_textLogo"
         style="@style/text_logo"
-        android:textSize="30sp"
+        android:textSize="44sp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/app_name"
@@ -80,7 +82,7 @@
         android:text="Ваш Е-mail"
         app:layout_constraintTop_toTopOf="@id/ActivityLogin_guidelineTop"
         app:layout_constraintBottom_toTopOf="@id/ActivityLogin_email_edit_text"
-        app:layout_constraintStart_toStartOf="@id/ActivityLogin_vertical_guidelineLeft"/>
+        app:layout_constraintStart_toStartOf="@id/ActivityLogin_email_edit_text"/>
     <TextView
         android:id="@+id/activityRegistration_PasswordSupportText"
         style="@style/supportText"
@@ -89,7 +91,7 @@
         android:text="Ваш пароль"
         app:layout_constraintTop_toBottomOf="@id/ActivityLogin_email_edit_text"
         app:layout_constraintBottom_toTopOf="@id/ActivityLogin_password_edit_text"
-        app:layout_constraintStart_toStartOf="@id/ActivityLogin_vertical_guidelineLeft"/>
+        app:layout_constraintStart_toStartOf="@id/ActivityLogin_password_edit_text"/>
     <TextView
         android:id="@+id/activityRegistration_LoginSupportText"
         style="@style/supportText"
@@ -98,7 +100,7 @@
         android:text="Ваш логин"
         app:layout_constraintTop_toBottomOf="@id/ActivityLogin_password_edit_text"
         app:layout_constraintBottom_toTopOf="@id/ActivityReg_userName_edit_text"
-        app:layout_constraintStart_toStartOf="@id/ActivityLogin_vertical_guidelineLeft"/>
+        app:layout_constraintStart_toStartOf="@id/ActivityReg_userName_edit_text"/>
 
     <ImageButton
         android:id="@+id/activityLogin_backButton"
@@ -111,14 +113,14 @@
         android:visibility="visible"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:background="@color/falseColor"/>
+        android:background="@color/Primary"/>
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/ActivityLogin_guideline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.8" />
+        app:layout_constraintGuide_percent="0.79" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/ActivityLogin_guidelineTop"
@@ -126,13 +128,6 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.33" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/ActivityLogin_vertical_guidelineLeft"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.15"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

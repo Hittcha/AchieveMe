@@ -34,7 +34,6 @@
         android:textSize="20sp"
         android:visibility="visible"
         app:layout_constraintEnd_toEndOf="@id/activity_start_main_loginButton"
-
         app:layout_constraintStart_toStartOf="@id/activity_start_main_loginButton"
         app:layout_constraintTop_toBottomOf="@+id/activity_start_main_loginButton" />
 
